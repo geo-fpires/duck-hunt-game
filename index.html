@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duck Hunt</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    @font-face {
+      font-family: 'RubberDuck';
+      src: url('rubber-duck.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    :root {
+      --accent: #22c55e;
+      --error: #dc2626;
+      --text: #1f2933;
+      --muted: #4b5563;
+      --border: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: url('duck-hunt-bg.png') no-repeat center top;
+      background-size: cover;
+      background-attachment: scroll;
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; /* Changed to system font for general text */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      text-align: center;
+      padding: 300px 16px 16px;
+    }
+
+    h1 { display: none; }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #374151;
+      margin-top: 8px;
+    }
+
+    .grid {
+      width: 100%;
+      max-width: 1240px;
+      padding: 16px 16px 48px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    /* CARD */
+    .card {
+      background: radial-gradient(circle at top, #fef9c3 0, #fef3c7 50%, #fde68a 100%);
+      border-radius: 20px;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 0 rgba(234,179,8,0.85), 0 12px 28px rgba(180,83,9,0.35);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .duck-btn {
+      width: 100%;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 10px 10px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: transform 0.15s;
+    }
+
+    .duck-btn:hover { transform: translateY(-3px) scale(1.02); }
+    .duck-btn:active { transform: translateY(1px) scale(0.98); }
+    .duck-btn.locked { cursor: not-allowed; opacity: 0.7; } /* Style for locked cards */
+    .duck-btn.locked:hover { transform: none; }
+    .duck-btn.locked:active { transform: none; }
+
+
+    .duck-cover {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(120,53,15,0.35);
+      background: #fde68a;
+    }
+
+    .duck-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(1.2) contrast(1.05);
+      transform: scale(1.02);
+    }
+
+    .duck-cover.cleared {
+      filter: grayscale(0.5);
+    }
+
+    .cleared-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(34, 197, 94, 0.7);
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      pointer-events: none;
+      border-radius: 16px;
+    }
+
+    .tier-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #92400e;
+      background: rgba(253,224,71,0.9);
+      border: 1px solid rgba(234,179,8,0.8);
+      padding: 2px 8px;
+      border-radius: 999px;
+      align-self: flex-start;
+      margin-left: 2px;
+    }
+
+    .aura-label {
+      font-size: 0.72rem;
+      color: #166534;
+      font-weight: 600;
+      align-self: flex-end;
+      margin-right: 2px;
+    }
+
+    .collapse {
+      width: 100%;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .collapse.open { max-height: 620px; }
+
+    .collapse-inner {
+      padding: 10px 14px 16px;
+      border-top: 1px solid rgba(234,179,8,0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .label-small {
+      font-size: 0.67rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .pw-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    input[type="password"],
+    textarea {
+      flex: 1;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #facc15;
+      background: rgba(255,251,235,0.97);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      outline: none;
+    }
+
+    textarea {
+      border-radius: 10px;
+      resize: vertical;
+      min-height: 56px;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 6px 14px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      background: linear-gradient(to right, #22c55e, #16a34a);
+      color: #022c22;
+      box-shadow: 0 2px 0 rgba(21,128,61,0.8);
+      white-space: nowrap;
+      transition: filter 0.1s, transform 0.1s;
+    }
+
+    .btn:hover { filter: brightness(1.07); transform: translateY(-1px); }
+    .btn:active { filter: brightness(0.95); transform: translateY(1px); box-shadow: none; }
+
+    .error-msg {
+      font-size: 0.7rem;
+      color: var(--error);
+      min-height: 14px;
+    }
+
+    .task-text {
+      font-size: 0.8rem;
+      line-height: 1.45;
+      color: #1f2933;
+    }
+
+    .task-note {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .gap-list {
+      font-size: 0.75rem;
+      color: #374151;
+      margin-left: 14px;
+    }
+    .gap-list li { margin-bottom: 2px; }
+
+    .success-area {
+      text-align: center;
+      padding: 4px 0 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .success-main { font-size: 1rem; font-weight: 700; color: #166534; }
+    .success-sub  { font-size: 0.82rem; color: #b45309; font-weight: 600; }
+    .success-timer{ font-size: 0.68rem; color: var(--muted); }
+
+    footer {
+      font-size: 0.72rem;
+      color: #4b5563;
+      text-align: center;
+      padding-bottom: 16px;
+    }
+
+    /* Hunter Selection UI */
+    .hunter-selection {
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .current-hunter-info {
+      font-weight: bold;
+      color: var(--text);
+      font-size: 1.1rem;
+      margin-right: 15px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #hunterNameInput {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+      flex-grow: 1;
+      max-width: 250px;
+    }
+
+    #selectHunterBtn, #resetProgressBtn, #endGameBtn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      background-color: var(--accent);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      white-space: nowrap;
+    }
+
+    #selectHunterBtn:hover { background-color: #16a34a; }
+    #resetProgressBtn { background-color: #dc2626; margin-left: 10px; }
+    #resetProgressBtn:hover { background-color: #b91c1c; }
+    #endGameBtn { background-color: #f97316; margin-left: 10px; } /* Orange for End Game */
+    #endGameBtn:hover { background-color: #ea580c; }
+
+
+    /* Game Timer Display */
+    .game-timer {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--text);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .game-timer.critical {
+      color: var(--error);
+    }
+
+    /* Scoreboard */
+    #scoreboard {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      margin-top: 30px;
+      width: 90%;
+      max-width: 800px;
+      text-align: center;
+      display: none; /* Hidden by default */
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    #scoreboard h2 {
+      font-size: 2.5rem;
+      color: #f97316;
+      margin-bottom: 15px;
+      font-family: 'RubberDuck', system-ui;
+      text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+    }
+
+    .podium {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .podium-spot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #fef9c3;
+      border-radius: 10px;
+      padding: 15px 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      min-width: 120px;
+    }
+
+    .podium-spot.first { height: 180px; background-color: #ffd700; } /* Gold */
+    .podium-spot.second { height: 140px; background-color: #c0c0c0; } /* Silver */
+    .podium-spot.third { height: 100px; background-color: #cd7f32; } /* Bronze */
+
+    .podium-rank { font-size: 2.5rem; font-weight: bold; color: #333; margin-bottom: 5px; }
+    .podium-name { font-size: 1.2rem; font-weight: bold; color: var(--text); }
+    .podium-aura { font-size: 1rem; color: #166534; margin-top: 5px; }
+    .podium-bonus { font-size: 0.8rem; color: #f97316; font-weight: bold; margin-top: 5px; }
+
+    .all-scores-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 300px;
+      overflow-y: auto;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+    }
+
+    .all-scores-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed #eee;
+      font-size: 1rem;
+      color: var(--text);
+    }
+    .all-scores-list li:last-child { border-bottom: none; }
+    .all-scores-list li span:first-child { font-weight: bold; }
+    .all-scores-list li span:last-child { color: #166534; font-weight: bold; }
+
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 520px) {
+      .grid { grid-template-columns: repeat(1, 1fr); padding-inline: 10px; }
+      .hunter-selection {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .current-hunter-info {
+        margin-right: 0;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+      #hunterNameInput {
+        max-width: none;
+      }
+      #resetProgressBtn, #endGameBtn {
+        margin-left: 0;
+        margin-top: 10px;
+      }
+      .podium { flex-direction: column; align-items: center; }
+      .podium-spot { width: 100%; max-width: 200px; }
+      .podium-spot.first { height: auto; }
+      .podium-spot.second { height: auto; }
+      .podium-spot.third { height: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1></h1>
+  <div class="subtitle">Click your duck · type the password · unlock the mission · farm aura.</div>
+</header>
+
+<div class="hunter-selection">
+  <div class="current-hunter-info">
+    <span id="hunterNameDisplay">No hunter selected</span>
+    <span style="color: #ccc;">|</span>
+    <span id="hunterAuraDisplay">Aura: 0</span>
+  </div>
+  <input type="text" id="hunterNameInput" placeholder="Enter your hunter name to start" />
+  <button id="selectHunterBtn">Go!</button>
+  <button id="endGameBtn">End Game</button> <!-- New button for teacher to end game -->
+  <button id="resetProgressBtn">Reset All Progress</button>
+</div>
+
+<div class="game-timer" id="gameTimer">
+  Time Left: <span id="timerDisplay">15:00</span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div id="scoreboard" style="display: none;">
+  <h2>Game Over! Final Scores</h2>
+  <div class="podium" id="podiumContainer">
+    <!-- Podium spots will be inserted here by JS -->
+  </div>
+  <h3>All Hunters:</h3>
+  <ul class="all-scores-list" id="allScoresList">
+    <!-- All scores will be inserted here by JS -->
+  </ul>
+</div>
+
+<footer>
+  If the mission asks you to talk to your teacher, do it <strong>before</strong> pressing Approve.
+</footer>
+
+<script>
+  const duckConfigs = [
+    { id:  1, password: "DUCK-1-GALAXY",  aura: 5, tier: "Easy",   image: "duck_1.png"  },
+    { id:  2, password: "DUCK-2-NEON",    aura: 5, tier: "Easy",   image: "duck_2.png"  },
+    { id:  3, password: "DUCK-3-PIXEL",   aura: 5, tier: "Easy",   image: "duck_3.png"  },
+    { id:  4, password: "DUCK-4-GLITCH",  aura: 5, tier: "Easy",   image: "duck_4.png"  },
+    { id:  5, password: "DUCK-5-VIBES",   aura: 5, tier: "Easy",   image: "duck_5.png"  },
+    { id:  6, password: "DUCK-6-HYPE",    aura: 5, tier: "Easy",   image: "duck_6.png"  },
+    { id:  7, password: "DUCK-7-67AURA",  aura: 15, tier: "Bonus",  image: "duck_7.png"  },
+    { id:  8, password: "DUCK-8-CHAOS",   aura: 10, tier: "Medium", image: "duck_8.png"  },
+    { id:  9, password: "DUCK-9-SHADOW",  aura: 10, tier: "Medium", image: "duck_9.png"  },
+    { id: 10, password: "DUCK-10-STATIC", aura: 10, tier: "Medium", image: "duck_10.png" },
+    { id: 11, password: "DUCK-11-NOVA",   aura: 10, tier: "Medium", image: "duck_11.png" },
+    { id: 12, password: "DUCK-12-BOOST",  aura: 10, tier: "Medium", image: "duck_12.png" },
+    { id: 13, password: "DUCK-13-MATRIX", aura: 10, tier: "Medium", image: "duck_13.png" },
+    { id: 14, password: "DUCK-14-CRYPTO", aura: 10, tier: "Medium", image: "duck_14.png" },
+    { id: 15, password: "DUCK-15-CHAIR",  aura: 10, tier: "Medium", image: "duck_15.png" },
+    { id: 16, password: "DUCK-16-BLIP",   aura: 15, tier: "Hard",   image: "duck_16.png" },
+    { id: 17, password: "DUCK-17-LOFI",   aura: 15, tier: "Hard",   image: "duck_17.png" },
+    { id: 18, password: "DUCK-18-POWER",  aura: 15, tier: "Hard",   image: "duck_18.png" },
+    { id: 19, password: "DUCK-19-SECRET", aura: 15, tier: "Hard",   image: "duck_19.png" },
+    { id: 20, password: "DUCK-20-LEVELUP",aura: 20, tier: "Boss",   image: "duck_20.png" },
+  ];
+
+  const tasks = {
+    1:  { type:"speak-write",      text: `Ask your teacher this question: <strong>"What would you do on your perfect day?"</strong> Then write one sentence with the teacher's answer.`, note:"Speak to your teacher first. After they say it's correct, you can press Approve.", placeholder:"Example: My teacher would play games and sleep a lot." },
+    2:  { type:"fill-gap",         text: "Complete the sentences with WOULD.", note:"Write the full sentences using WOULD.", gaps:["1) I ______ listen to music after school.","2) My best friend ______ travel to Japan.","3) We ______ eat pizza every day if we could."] },
+    3:  { type:"would-you-rather", text: `Ask 2 classmates: <strong>"Would you rather be able to fly or be invisible?"</strong> Then write their answers.`, note:"Talk to your classmates, then write. Show your sentences to the teacher before you press Approve.", placeholder:"Example: Ana would rather be invisible. João would rather fly." },
+    4:  { type:"preference",       text: "Write 2 sentences about your preferences using <strong>WOULD RATHER</strong>.", note:"Use your real preferences.", placeholder:"Example: I would rather watch series than do homework." },
+    5:  { type:"polite-request",   text: `Come to your teacher and say: <strong>"Would you help me with my English, please?"</strong> Then write the sentence you said.`, note:"You must say the sentence to your teacher before pressing Approve.", placeholder:"Type the sentence you said to your teacher." },
+    6:  { type:"fill-gap",         text: "Complete the sentences using WOULD.", note:"You can invent the details.", gaps:["1) Yesterday I thought I ______ watch a movie, but I didn't.","2) Last weekend we decided we ______ play football, but it rained."] },
+    7:  { type:"bonus-67",         text: `<strong>🔥 67 AURA DUCK!</strong> Write 3 fun things you would do if you had +100 aura in real life.`, note:"Be creative. Make it fun or totally crazy.", placeholder:"Example: I would buy all the skins. I would travel with my friends..." },
+    8:  { type:"would-you",        text: "Write 3 questions with <strong>WOULD</strong> that you could ask a new friend.", note:"Then choose one and ask it to your teacher or a classmate.", placeholder:"Example: Would you like to visit another country?" },
+    9:  { type:"school-change",    text: "Write 2 things you <strong>would</strong> change about school to make it better.", note:"Use WOULD to talk about your ideas.", placeholder:"Example: I would have a game room. I would start classes later." },
+    10: { type:"polite-offer",     text: `Imagine your friend is tired. Write 2 polite offers using <strong>WOULD</strong>.`, note:`Use "Would you like…?" or "Would you like me to…?"`, placeholder:"Example: Would you like me to help you with your homework?" },
+    11: { type:"teacher-question", text: `Ask your teacher: <strong>"What would you change in this school?"</strong> Then write one sentence with the answer.`, note:"Speak first, then write what your teacher said.", placeholder:"Example: My teacher would change the timetable." },
+    12: { type:"music",            text: "Write 2 sentences about music using <strong>WOULD</strong>.", note:"Think about your music habits or dreams.", placeholder:"Example: I would go to a Taylor Swift concert. I would listen to music all day." },
+    13: { type:"never-would",      text: `Write 3 sentences about things you <strong>would never</strong> do.`, note:`Use "I would never…"`, placeholder:"Example: I would never jump from a plane." },
+    14: { type:"game",             text: "Imagine you are creating a video game. Write 3 things a player <strong>would</strong> be able to do in your game.", note:`Use "The player would…"`, placeholder:"Example: The player would fly. The player would talk to animals." },
+    15: { type:"food",             text: "Write 2 sentences about food using <strong>WOULD RATHER</strong>.", note:"Compare foods you like.", placeholder:"Example: I would rather eat burgers than salad." },
+    16: { type:"schedule",         text: "Write 2 sentences about how you <strong>would</strong> change your daily routine.", note:"Use WOULD to talk about changes.", placeholder:"Example: I would sleep more. I would study English in the afternoon." },
+    17: { type:"trip",             text: "Choose one city or country. Write 3 things you <strong>would</strong> do there.", note:`Use "I would…" for each idea.`, placeholder:"Example: I would visit museums. I would try the food..." },
+    18: { type:"friend",           text: "Describe your best friend in 2 sentences using <strong>WOULD</strong>.", note:"Think about what they would do in different situations.", placeholder:"Example: My best friend would always help me. He would share his food." },
+    19: { type:"class-rule",       text: "Create 2 funny class rules using <strong>WOULD</strong>.", note:"Use your imagination.", placeholder:"Example: Students would get 5 minutes of memes after every exercise." },
+    20: { type:"final-boss",       text: `<strong>🏆 FINAL BOSS DUCK!</strong> Come to your teacher and ask 2 questions with WOULD about their life. Then write 2 sentences with the answers.`, note:"Ask your teacher first. If your questions are correct, they will let you press Approve.", placeholder:"Example: My teacher would live by the sea. My teacher would adopt many pets." },
+  };
+
+  // --- GAME STATE & TIMER ---
+  const GAME_DURATION_SECONDS = 15 * 60; // 15 minutes
+  let gameTimerInterval;
+  let timeLeft = GAME_DURATION_SECONDS;
+  let gameEnded = false;
+
+  const timerDisplay = document.getElementById("timerDisplay");
+  const gameTimerElement = document.getElementById("gameTimer");
+  const endGameBtn = document.getElementById("endGameBtn");
+  const scoreboard = document.getElementById("scoreboard");
+  const podiumContainer = document.getElementById("podiumContainer");
+  const allScoresList = document.getElementById("allScoresList");
+  const gridElement = document.getElementById("grid");
+
+
+  // --- HUNTER & PROGRESS MANAGEMENT ---
+
+  const ALL_STUDENTS_KEY = "duck_hunt_all_students_v1";
+  let allStudents = loadAllStudents();
+  let currentHunter = null;
+
+  function loadAllStudents() {
+    try {
+      const raw = localStorage.getItem(ALL_STUDENTS_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (error) {
+      console.error("Error loading hunter data:", error);
+      return {};
+    }
+  }
+
+  function saveAllStudents() {
+    localStorage.setItem(ALL_STUDENTS_KEY, JSON.stringify(allStudents));
+  }
+
+  function setCurrentHunter(hunterName) {
+    if (gameEnded) {
+      alert("The game has ended. You can view scores but not play.");
+      return;
+    }
+    if (!allStudents[hunterName]) {
+      allStudents[hunterName] = { cleared: [], totalAura: 0, hasBonus: false }; // Added hasBonus
+    }
+    currentHunter = allStudents[hunterName];
+    saveAllStudents();
+    updateHunterDisplay();
+    renderDucks();
+  }
+
+  function isCleared(id) {
+    return currentHunter && currentHunter.cleared.includes(id);
+  }
+
+  function markCleared(duck) {
+    if (currentHunter && !isCleared(duck.id)) {
+      currentHunter.cleared.push(duck.id);
+      currentHunter.totalAura += duck.aura;
+      // Check for bonus: if all ducks are cleared
+      if (currentHunter.cleared.length === duckConfigs.length) {
+        currentHunter.hasBonus = true;
+      }
+      saveAllStudents();
+      updateHunterDisplay();
+    }
+  }
+
+  function canAccessDuck(duck) {
+    if (!currentHunter) return false;
+    if (duck.id === 7 && currentHunter.totalAura < 20) return false;
+    if (duck.id === 20 && currentHunter.totalAura < 40) return false;
+    return true;
+  }
+
+  function accessMessage(duck) {
+    if (!currentHunter) {
+      return "Please enter your hunter name first to start playing!";
+    }
+    if (duck.id === 7) {
+      return `You need at least 20 aura to open the BONUS duck. You currently have ${currentHunter.totalAura} aura.`;
+    }
+    if (duck.id === 20) {
+      return `You need at least 40 aura to open the BOSS duck. You currently have ${currentHunter.totalAura} aura.`;
+    }
+    return "";
+  }
+
+  // --- Hunter Selection UI ---
+
+  const hunterNameInput = document.getElementById("hunterNameInput");
+  const selectHunterBtn = document.getElementById("selectHunterBtn");
+  const resetProgressBtn = document.getElementById("resetProgressBtn");
+  const hunterNameDisplay = document.getElementById("hunterNameDisplay");
+  const hunterAuraDisplay = document.getElementById("hunterAuraDisplay");
+
+  function updateHunterDisplay() {
+    if (currentHunter) {
+      hunterNameDisplay.textContent = `Hunter: ${hunterNameInput.value}`;
+      hunterAuraDisplay.textContent = `Aura: ${currentHunter.totalAura}`;
+    } else {
+      hunterNameDisplay.textContent = "No hunter selected";
+      hunterAuraDisplay.textContent = "Aura: 0";
+    }
+  }
+
+  selectHunterBtn.addEventListener("click", () => {
+    const name = hunterNameInput.value.trim();
+    if (name) {
+      setCurrentHunter(name);
+      if (!gameTimerInterval && !gameEnded) { // Start timer only if not already running and game not ended
+        startGameTimer();
+      }
+    } else {
+      alert("Please enter your hunter name!");
+    }
+  });
+
+  resetProgressBtn.addEventListener("click", () => {
+    if (confirm("Are you sure you want to reset ALL hunters' progress? This cannot be undone!")) {
+      localStorage.removeItem(ALL_STUDENTS_KEY);
+      allStudents = {};
+      currentHunter = null;
+      updateHunterDisplay();
+      renderDucks();
+      alert("All progress has been reset.");
+      resetGame(); // Reset game state as well
+    }
+  });
+
+  endGameBtn.addEventListener("click", () => {
+    if (confirm("Are you sure you want to end the game now? All ducks will be locked and scores displayed.")) {
+      endGame();
+    }
+  });
+
+  function renderDucks() {
+    gridElement.innerHTML = '';
+    duckConfigs.forEach(cfg => gridElement.appendChild(buildCard(cfg)));
+  }
+
+  // --- Game Timer Functions ---
+
+  function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
+
+  function startGameTimer() {
+    if (gameTimerInterval) clearInterval(gameTimerInterval); // Clear any existing timer
+    gameEnded = false;
+    timeLeft = GAME_DURATION_SECONDS;
+    gameTimerElement.classList.remove("critical");
+    timerDisplay.textContent = formatTime(timeLeft);
+    gameTimerElement.style.display = 'flex'; // Show timer
+
+    gameTimerInterval = setInterval(() => {
+      timeLeft--;
+      timerDisplay.textContent = formatTime(timeLeft);
+
+      if (timeLeft <= 60) { // Less than 1 minute left
+        gameTimerElement.classList.add("critical");
+      }
+
+      if (timeLeft <= 0) {
+        clearInterval(gameTimerInterval);
+        gameTimerInterval = null;
+        endGame();
+      }
+    }, 1000);
+  }
+
+  function endGame() {
+    gameEnded = true;
+    if (gameTimerInterval) {
+      clearInterval(gameTimerInterval);
+      gameTimerInterval = null;
+    }
+    gameTimerElement.style.display = 'none'; // Hide timer
+    gridElement.style.display = 'none'; // Hide ducks
+    scoreboard.style.display = 'flex'; // Show scoreboard
+
+    displayScores();
+  }
+
+  function resetGame() {
+    gameEnded = false;
+    timeLeft = GAME_DURATION_SECONDS;
+    if (gameTimerInterval) {
+      clearInterval(gameTimerInterval);
+      gameTimerInterval = null;
+    }
+    gameTimerElement.style.display = 'none'; // Hide timer initially
+    scoreboard.style.display = 'none'; // Hide scoreboard
+    gridElement.style.display = 'grid'; // Show ducks
+    renderDucks(); // Re-render ducks to ensure they are clickable again
+  }
+
+  function displayScores() {
+    const sortedHunters = Object.entries(allStudents)
+      .map(([name, data]) => ({ name, ...data }))
+      .sort((a, b) => b.totalAura - a.totalAura); // Sort by aura descending
+
+    // Clear previous scores
+    podiumContainer.innerHTML = '';
+    allScoresList.innerHTML = '';
+
+    // Build Podium
+    const podiumRanks = ["second", "first", "third"]; // Order for display: 2nd, 1st, 3rd
+    const podiumData = [sortedHunters[1], sortedHunters[0], sortedHunters[2]]; // Get top 3
+
+    podiumData.forEach((hunter, index) => {
+      if (hunter) {
+        const spot = document.createElement("div");
+        spot.className = `podium-spot ${podiumRanks[index]}`;
+        spot.innerHTML = `
+          <div class="podium-rank">${index === 1 ? '🥇' : (index === 0 ? '🥈' : '🥉')}</div>
+          <div class="podium-name">${hunter.name}</div>
+          <div class="podium-aura">${hunter.totalAura} Aura</div>
+          ${hunter.hasBonus ? '<div class="podium-bonus">Bonus: Ask Teacher!</div>' : ''}
+        `;
+        podiumContainer.appendChild(spot);
+      }
+    });
+
+    // Build All Scores List
+    sortedHunters.forEach(hunter => {
+      const listItem = document.createElement("li");
+      listItem.innerHTML = `
+        <span>${hunter.name}</span>
+        <span>${hunter.totalAura} Aura ${hunter.hasBonus ? '(Bonus!)' : ''}</span>
+      `;
+      allScoresList.appendChild(listItem);
+    });
+  }
+
+  // --- Initial Setup ---
+  renderDucks();
+  updateHunterDisplay();
+  gameTimerElement.style.display = 'none'; // Hide timer initially until game starts
+
+  function buildCard(duck) {
+    const task = tasks[duck.id];
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const duckBtn = document.createElement("button");
+    duckBtn.className = "duck-btn";
+    duckBtn.setAttribute("aria-label", `Open Duck ${duck.id}`);
+
+    // Add 'locked' class if game has ended
+    if (gameEnded) {
+      duckBtn.classList.add('locked');
+    }
+
+    duckBtn.innerHTML = `
+      <div class="duck-cover ${isCleared(duck.id) ? 'cleared' : ''}">
+        <img src="${duck.image}" alt="Duck ${duck.id}">
+        ${isCleared(duck.id) ? '<div class="cleared-overlay">✅ CLEARED</div>' : ''}
+      </div>
+      <div style="display:flex; justify-content:space-between; width:100%; margin-top:4px;">
+        <span class="tier-label">${duck.tier}</span>
+        <span class="aura-label">+${duck.aura} aura</span>
+      </div>
+    `;
+
+    const collapse = document.createElement("div");
+    collapse.className = "collapse";
+
+    const inner = document.createElement("div");
+    inner.className = "collapse-inner";
+
+    const lockDiv = document.createElement("div");
+    lockDiv.innerHTML = `
+      <div class="label-small">Password from QR</div>
+      <div class="pw-row">
+        <input type="password" class="pw-input" placeholder="Type the password from your duck">
+        <button class="btn unlock-btn">Unlock</button>
+      </div>
+      <div class="error-msg"></div>
+    `;
+
+    const taskDiv = document.createElement("div");
+    taskDiv.style.display = "none";
+
+    let taskHTML = "";
+    if (task) {
+      taskHTML += `<div class="task-text">${task.text}</div>`;
+      if (task.note) taskHTML += `<div class="task-note">${task.note}</div>`;
+      if (task.gaps && task.gaps.length) {
+        taskHTML += `<ul class="gap-list">${task.gaps.map(g => `<li>${g}</li>`).join("")}</ul>`;
+        taskHTML += `<textarea class="answer-input" placeholder="Write the complete sentences using WOULD."></textarea>`;
+      } else {
+        taskHTML += `<textarea class="answer-input" placeholder="${task.placeholder || "Write your answer here."}"></textarea>`;
+      }
+    } else {
+      taskHTML += `<div class="task-text">No mission yet. Ask your teacher.</div>`;
+    }
+    taskHTML += `<button class="btn approve-btn">Ask teacher to approve ✅</button>`;
+    taskDiv.innerHTML = taskHTML;
+
+    const successDiv = document.createElement("div");
+    successDiv.className = "success-area";
+    successDiv.style.display = "none";
+    successDiv.innerHTML = `
+      <div class="success-main">✅ Approved!</div>
+      <div class="success-sub">🔥 You just farmed +${duck.aura} aura!</div>
+      <div class="success-timer">Locking again in <span class="timer-count">5</span>s…</div>
+    `;
+
+    inner.appendChild(lockDiv);
+    inner.appendChild(taskDiv);
+    inner.appendChild(successDiv);
+    collapse.appendChild(inner);
+    card.appendChild(duckBtn);
+    card.appendChild(collapse);
+
+    duckBtn.addEventListener("click", () => {
+      if (gameEnded) { // If game has ended, prevent opening cards
+        alert("The game has ended. You can view scores but not play.");
+        return;
+      }
+      if (!currentHunter) {
+        alert("Please enter your hunter name first to start playing!");
+        return;
+      }
+      if (!canAccessDuck(duck)) {
+        alert(accessMessage(duck));
+        return;
+      }
+      const open = collapse.classList.contains("open");
+      collapse.classList.toggle("open", !open);
+    });
+
+    const pwInput   = lockDiv.querySelector(".pw-input");
+    const unlockBtn = lockDiv.querySelector(".unlock-btn");
+    const errorMsg  = lockDiv.querySelector(".error-msg");
+
+    function tryUnlock() {
+      if (gameEnded) { return; } // Prevent unlocking if game ended
+      if (!currentHunter) { alert("Please enter your hunter name first!"); return; }
+
+      const val = (pwInput.value || "").trim();
+      if (!val) { errorMsg.textContent = "Type the password from your duck QR."; return; }
+      if (val.toUpperCase() !== duck.password.toUpperCase()) {
+        errorMsg.textContent = "Wrong password. Check your QR code again.";
+        return;
+      }
+      errorMsg.textContent = "";
+      lockDiv.style.display = "none";
+      taskDiv.style.display = "flex";
+      taskDiv.style.flexDirection = "column";
+      taskDiv.style.gap = "8px";
+      const ta = taskDiv.querySelector(".answer-input");
+      if (ta) { ta.value = ""; ta.focus(); }
+    }
+
+    unlockBtn.addEventListener("click", tryUnlock);
+    pwInput.addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
+
+    const approveBtn = taskDiv.querySelector(".approve-btn");
+    if (approveBtn) {
+      approveBtn.addEventListener("click", () => {
+        if (gameEnded) { return; } // Prevent approving if game ended
+        markCleared(duck);
+
+        taskDiv.style.display = "none";
+        successDiv.style.display = "flex";
+        successDiv.style.flexDirection = "column";
+        successDiv.style.gap = "4px";
+
+        const timerSpan = successDiv.querySelector(".timer-count");
+        let t = 5;
+        timerSpan.textContent = t;
+        const iv = setInterval(() => {
+          t--;
+          timerSpan.textContent = t;
+          if (t <= 0) {
+            clearInterval(iv);
+            successDiv.style.display = "none";
+            lockDiv.style.display    = "block";
+            taskDiv.style.display    = "none";
+            pwInput.value = "";
+            collapse.classList.remove("open");
+            renderDucks();
+          }
+        }, 1000);
+      });
+    }
+
+    return card;
+  }
+</script>
+</body>
+</html>
