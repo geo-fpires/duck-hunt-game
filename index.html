@@ -41,8 +41,9 @@
 
     header {
       text-align: center;
-      padding: 50px 16px 20px; /* Padding geral */
-      width: 100%;
+      padding: 16px; /* Padding geral */
+      margin-top: 50px; /* Adiciona um espaço do topo da página */
+      margin-bottom: 20px;
     }
 
     .game-logo {
@@ -61,7 +62,7 @@ Copiar
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Duck Hunt - Game</title>
+  <title>Duck Hunt - Would Aura Farm</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <style>
     @font-face {
@@ -94,14 +95,14 @@ Copiar
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       min-height: 100vh;
       display: flex;
-      flex-direction: grid;
+      flex-direction: column;
       align-items: center; /* Centraliza o conteúdo horizontalmente */
       /* Removido justify-content: center; para que o header fique no topo */
     }
 
     header {
       text-align: center;
-      padding: 50px 16px 20px; /* Padding geral */
+      padding: 50px; /* Padding geral */
       margin-top: 50px; /* Adiciona um espaço do topo da página */
       margin-bottom: 20px; /* Espaço entre o header e o conteúdo abaixo */
     }
@@ -137,12 +138,10 @@ Copiar
     .grid {
       width: 100%;
       max-width: 1240px;
-      padding: 16px 16px 90px;
+      padding: 16px 16px 48px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 18px;
-      flex-grow: 1;
-      justify-items: center;
     }
 
     /* CARD */
@@ -155,8 +154,6 @@ Copiar
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      width: 100%; /* Garante que o card ocupe a largura disponível na coluna */
-      max-width: 350px;
     }
 
     .duck-btn {
@@ -570,6 +567,9 @@ Copiar
 </footer>
 
 <script>
+  // Senha Mestra do Professor para desbloquear qualquer pato
+  const MASTER_TEACHER_PASSWORD = "masterduck"; // Altere "masterduck" para a senha mestra que desejar
+  const TEACHER_PASSWORD = "aura67"; // coloque aqui a senha que você quiser
   const duckConfigs = [
     { id:  1, password: "DUCK-1-GALAXY",  aura: 5, tier: "Easy",   image: "duck_1.png"  },
     { id:  2, password: "DUCK-2-NEON",    aura: 5, tier: "Easy",   image: "duck_2.png"  },
@@ -960,8 +960,9 @@ Copiar
 
       const val = (pwInput.value || "").trim();
       if (!val) { errorMsg.textContent = "Type the password from your duck QR."; return; }
-      if (val.toUpperCase() !== duck.password.toUpperCase()) {
-        errorMsg.textContent = "Wrong password. Check your QR code again.";
+      // NOVO: Verifica se a senha digitada é a senha do pato OU a senha mestra do professor
+      if (val.toUpperCase() !== duck.password.toUpperCase() && val.toUpperCase() !== MASTER_TEACHER_PASSWORD.toUpperCase()) {
+        errorMsg.textContent = "Wrong password. Check your QR code again, or ask your teacher for the master password.";
         return;
       }
       errorMsg.textContent = "";
@@ -980,6 +981,14 @@ Copiar
     if (approveBtn) {
       approveBtn.addEventListener("click", () => {
         if (gameEnded) { return; } // Prevent approving if game ended
+        const teacherInput = prompt("Teacher password:"); // Abre uma caixa para digitar a senha
+        if (teacherInput === null) { // Se o professor clicou em "Cancelar" no prompt
+        return; // Não faz nada e sai da função
+}
+        if (teacherInput !== TEACHER_PASSWORD) { // Se a senha digitada for diferente da senha definida
+        alert("Incorrect teacher password!"); // Mostra um alerta de senha incorreta
+        return; // Não faz nada e sai da função
+}
         markCleared(duck);
 
         taskDiv.style.display = "none";
