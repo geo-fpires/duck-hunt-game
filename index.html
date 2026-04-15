@@ -594,26 +594,81 @@ Copiar
   ];
 
   const tasks = {
-    1:  { type:"speak-write",      text: `Ask your teacher this question: <strong>"What would you do on your perfect day?"</strong> Then write one sentence with the teacher's answer.`, note:"Speak to your teacher first. After they say it's correct, you can press Approve.", placeholder:"Example: My teacher would play games and sleep a lot." },
-    2:  { type:"fill-gap",         text: "Complete the sentences with WOULD.", note:"Write the full sentences using WOULD.", gaps:["1) I ______ listen to music after school.","2) My best friend ______ travel to Japan.","3) We ______ eat pizza every day if we could."] },
-    3:  { type:"would-you-rather", text: `Ask 2 classmates: <strong>"Would you rather be able to fly or be invisible?"</strong> Then write their answers.`, note:"Talk to your classmates, then write. Show your sentences to the teacher before you press Approve.", placeholder:"Example: Ana would rather be invisible. João would rather fly." },
-    4:  { type:"preference",       text: "Write 2 sentences about your preferences using <strong>WOULD RATHER</strong>.", note:"Use your real preferences.", placeholder:"Example: I would rather watch series than do homework." },
-    5:  { type:"polite-request",   text: `Come to your teacher and say: <strong>"Would you help me with my English, please?"</strong> Then write the sentence you said.`, note:"You must say the sentence to your teacher before pressing Approve.", placeholder:"Type the sentence you said to your teacher." },
-    6:  { type:"fill-gap",         text: "Complete the sentences using WOULD.", note:"You can invent the details.", gaps:["1) Yesterday I thought I ______ watch a movie, but I didn't.","2) Last weekend we decided we ______ play football, but it rained."] },
-    7:  { type:"bonus-67",         text: `<strong>🔥 67 AURA DUCK!</strong> Write 3 fun things you would do if you had +100 aura in real life.`, note:"Be creative. Make it fun or totally crazy.", placeholder:"Example: I would buy all the skins. I would travel with my friends..." },
-    8:  { type:"would-you",        text: "Write 3 questions with <strong>WOULD</strong> that you could ask a new friend.", note:"Then choose one and ask it to your teacher or a classmate.", placeholder:"Example: Would you like to visit another country?" },
-    9:  { type:"school-change",    text: "Write 2 things you <strong>would</strong> change about school to make it better.", note:"Use WOULD to talk about your ideas.", placeholder:"Example: I would have a game room. I would start classes later." },
-    10: { type:"polite-offer",     text: `Imagine your friend is tired. Write 2 polite offers using <strong>WOULD</strong>.`, note:`Use "Would you like…?" or "Would you like me to…?"`, placeholder:"Example: Would you like me to help you with your homework?" },
-    11: { type:"teacher-question", text: `Ask your teacher: <strong>"What would you change in this school?"</strong> Then write one sentence with the answer.`, note:"Speak first, then write what your teacher said.", placeholder:"Example: My teacher would change the timetable." },
-    12: { type:"music",            text: "Write 2 sentences about music using <strong>WOULD</strong>.", note:"Think about your music habits or dreams.", placeholder:"Example: I would go to a Taylor Swift concert. I would listen to music all day." },
-    13: { type:"never-would",      text: `Write 3 sentences about things you <strong>would never</strong> do.`, note:`Use "I would never…"`, placeholder:"Example: I would never jump from a plane." },
-    14: { type:"game",             text: "Imagine you are creating a video game. Write 3 things a player <strong>would</strong> be able to do in your game.", note:`Use "The player would…"`, placeholder:"Example: The player would fly. The player would talk to animals." },
-    15: { type:"food",             text: "Write 2 sentences about food using <strong>WOULD RATHER</strong>.", note:"Compare foods you like.", placeholder:"Example: I would rather eat burgers than salad." },
-    16: { type:"schedule",         text: "Write 2 sentences about how you <strong>would</strong> change your daily routine.", note:"Use WOULD to talk about changes.", placeholder:"Example: I would sleep more. I would study English in the afternoon." },
-    17: { type:"trip",             text: "Choose one city or country. Write 3 things you <strong>would</strong> do there.", note:`Use "I would…" for each idea.`, placeholder:"Example: I would visit museums. I would try the food..." },
-    18: { type:"friend",           text: "Describe your best friend in 2 sentences using <strong>WOULD</strong>.", note:"Think about what they would do in different situations.", placeholder:"Example: My best friend would always help me. He would share his food." },
-    19: { type:"class-rule",       text: "Create 2 funny class rules using <strong>WOULD</strong>.", note:"Use your imagination.", placeholder:"Example: Students would get 5 minutes of memes after every exercise." },
-    20: { type:"final-boss",       text: `<strong>🏆 FINAL BOSS DUCK!</strong> Come to your teacher and ask 2 questions with WOULD about their life. Then write 2 sentences with the answers.`, note:"Ask your teacher first. If your questions are correct, they will let you press Approve.", placeholder:"Example: My teacher would live by the sea. My teacher would adopt many pets." },
+    1: {
+      type:"write",
+      text: "Choose 3 of the expressions below:<br><br><em>part-time gravedigger · couples therapist · telemarketing operator · haunted castle · private island</em><br><br>Write 3 sentences with <strong>WOULD</strong> about them.",
+      note:"<strong>note:</strong> your sentences can be positive or negative."},
+    2: {
+      type:"speak",
+      text: "Ask your teacher 4 questions using <strong>WOULD</strong> or <strong>WOULDN'T</strong>.",
+      note:"<strong>note:</strong> you don't need to write the questions here, just ask your teacher out loud.",},
+    3: {
+      type:"fill-gap",
+      text: "Complete the sentences using <strong>WOULD</strong>.<br><em>1. Yesterday I thought I ______ watch a movie, but I didn't.<br>2. Last weekend we decided we ______ play football, but it rained.<br>3. My parents said they ______ visit my grandparents today because they were very busy.</em>"},
+    4: {
+      type:"write",
+      text: "Imagine a person with explosive behavior.<br>Write 3 sentences saying what they <strong>would</strong> do in difficult situations.",},
+    5: {
+      type:"fill-gap",
+      text: "Complete the sentences with <strong>WOULD</strong> or <strong>WOULDN'T</strong>. Create funny class rules.<br><em>1. In my perfect class, students ______ get 5 minutes of memes after every exercise.<br>2. The teacher ______ give aura for bad behavior.<br>3. We ______ have a snack break in the middle of the lesson.</em>"},
+    6: {
+      type:"write",
+      text: "Think about your classmates.<br>Write <em>4 sentences</em> about what students in your class <strong>would</strong> or <strong>wouldn’t</strong> like.",},
+    7: {
+      type:"write",
+      text: "<strong>🔥 67 AURA DUCK!!!</strong><br><strong>If you complete this task you will earn 67 DOLLARS next class.</strong><br>Imagine your school in 5 years.<br>Write 5 sentences to describe the changes (think about technology, rules, subjects and students).",
+      note:"<strong>note:</strong> remember the comparative or superlative adjectives, THERE WILL BE, and BE GOING TO...",},
+    8: {
+      type:"speak",
+      text: "Answer these questions in <strong>full sentences</strong> with <strong>WOULD</strong>:<br><em>1. What would you change in your life now?<br>2. How would you improve your skills (school, sports or hobbies)?<br>3. Would you go to a therapist if you needed? Why or why not?</em>",
+      note:"<strong>note:</strong> you don't need to write the questions here, just ask your teacher out loud.",},
+    9: {
+      type:"speak-write",
+      text: "Talk to your teacher about things you <strong>CAN</strong> do now that you <strong>COULDN'T</strong> do 3 years ago.",
+      note:"<strong>note:</strong> after you speak, write 2 sentences: one with <strong>CAN</strong> and one with <strong>COULDN'T</strong>.",},
+    10: {
+      type:"write",
+      text: "Imagine your life in a fictional universe.<br>Write 5 sentences with <strong>WOULD</strong> about what your life would be like..",
+      note:"<strong>note:</strong> you can talk about your house, your school, your hobbies, and your friends.",},
+    11: {
+      type:"fill-gap",
+      text: "Complete the sentences with <strong>CAN</strong> or <strong>CAN'T</strong>. Think about your school rules.<br><em>1. Students ______ use their phones during the test.<br>2. We ______ talk quietly when we work in pairs.<br>3. You ______ leave the classroom without permission.</em>",
+      note:"<strong>note:</strong> use real or imaginary rules.",},
+    12: {
+      type:"speak",
+      text: "Ask your teacher 3 questions with <strong>WOULD</strong> about his sister, brother or other family members.",
+      note:"<strong>note:</strong> you don't need to write the questions here, just ask your teacher out loud.",},
+    13: {
+      type:"fill-gap",
+      text: "Complete the sentences with <strong>CAN</strong> or <strong>COULD</strong>.<br><em>1. I ______ study in the library after school, or I ______ study at home if I want.<br>2. We ______ play football today, or we ______ play basketball if the field is busy.<br>3. My parents ______ drive me to school, but I ______ also go by bus.</em>",
+      note:"<strong>note:</strong> use CAN for now and COULD for possible situations.",},
+    14: {
+      type:"speak-write",
+      text: "Ask your teacher 2 polite questions.",
+      note:"<strong>note:</strong> after you speak, write the 2 questions you asked.",},
+    15: {
+      type:"fill-gap",
+      text: "Imagine a perfect weekend.<br>Write 4 sentences with <strong>WOULD</strong> about what you would do.",
+      note:"<strong>note:</strong> use your imagination, but keep it realistic or funny.",},
+    16: {
+      type:"fill-gap",
+      text: "Complete the mini story according to the context.<br><br><em>Last weekend, I wanted to watch a movie, but I _________ find the remote. Then, my friend called me and said he __________ love to watch a movie, so he invited me to watch one at his house.</em>",
+      note:"<strong>note:</strong> you will use more than one modal verb (can, can't, could, couldn't, would, wouldn't) in this story.",},
+    17: {
+      type:"fill-gap",
+      text: "Think about your neighborhood now and 5 years ago.<br>Write 4 sentences telling the things that exist now but didn't exist in the past.",
+      note:"<strong>note:</strong> remember to use 'there to be' in the present and past.",},
+    18: {
+      type:"write",
+      text: "Compare two possible futures for yourself: living on the beach and living in a big city.<br>Write a short story comparing your different lives.",
+      note:"<strong>note:</strong> remember the comparative adjectives and WILL or BE GOING TO.",},
+    19: {
+      type:"write",
+      text: "Write 3 sentences with <strong>would never</strong> about things you would NEVER do in front of a girl, and explain why.",},
+    20: {
+      type:"speak",
+      text: "<strong>🏆 FINAL BOSS DUCK!</strong><br>Compare living in a big city and in a cozy hometown.<br>Tell your teacher what would be better or worse for you in each place...",
+      note:"<strong>note:</strong> confirm with your teacher if your sentences are correct; if yes, he will let you press 'Approve'.",},
   };
 
   // --- GAME STATE & TIMER ---
