@@ -874,7 +874,7 @@ Copiar
     duckBtn.innerHTML = `
       <div class="duck-cover ${isCleared(duck.id) ? 'cleared' : ''}">
         <img src="${duck.image}" alt="Duck ${duck.id}">
-        ${isCleared(duck.id) ? '<div class="cleared-overlay">✅ CLEARED</div>' : ''}
+        ${isCleared(duck.id) ? '<div class="cleared-overlay">✅ HUNTED</div>' : ''}
       </div>
       <div style="display:flex; justify-content:space-between; width:100%; margin-top:4px;">
         <span class="tier-label">${duck.tier}</span>
