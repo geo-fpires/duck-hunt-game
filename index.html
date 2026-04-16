@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duck Hunt</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    @font-face {
+      font-family: 'RubberDuck';
+      src: url('rubber-duck.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    :root {
+      --accent: #22c55e;
+      --error: #dc2626;
+      --text: #1f2933;
+      --muted: #4b5563;
+      --border: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: linear-gradient(
+        to bottom,
+        #ffffff 0%,
+        #fef9c3 30%,
+        #fde68a 70%,
+        #facc15 100%
+      );
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      text-align: center;
+      padding: 16px; /* Padding geral */
+      margin-top: 50px; /* Adiciona um espaço do topo da página */
+      margin-bottom: 20px;
+    }
+
+    .game-logo {
+      width: 120px;
+      height: auto;
+      margin-bottom: 15px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+    }
+Copiar
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duck Hunt - Would Aura Farm</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    @font-face {
+      font-family: 'RubberDuck';
+      src: url('rubber-duck.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    :root {
+      --accent: #22c55e;
+      --error: #dc2626;
+      --text: #1f2933;
+      --muted: #4b5563;
+      --border: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      /* Degradê do branco (topo) para o amarelo (base) */
+      background: linear-gradient(
+        to bottom,
+        #ffffff 0%,
+        #fef9c3 30%,
+        #fde68a 70%,
+        #facc15 100%
+      );
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Centraliza o conteúdo horizontalmente */
+      /* Removido justify-content: center; para que o header fique no topo */
+    }
+
+    header {
+      text-align: center;
+      padding: 50px; /* Padding geral */
+      margin-top: 50px; /* Adiciona um espaço do topo da página */
+      margin-bottom: 20px; /* Espaço entre o header e o conteúdo abaixo */
+    }
+
+    .game-logo {
+      width: 150px;
+      height: auto;
+      margin-bottom: 15px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+    }
+
+    .game-title {
+      font-family: 'RubberDuck', regular;
+      font-size: 8.5rem;
+      letter-spacing: 0.08em;
+      color: #3333cc; /* Cor azul sólida */
+      /* Removido -webkit-text-stroke e text-stroke */
+      /* Removido text-shadow */
+      margin-bottom: 10px;
+      white-space: nowrap;
+      text-transform: capitalize; /* Apenas a primeira letra de cada palavra em maiúscula */
+    } 
+
+    .subtitle {
+      font-size: 1rem;
+      color: #374151;
+      margin-top: 8px;
+    }
+
+    .grid {
+      width: 100%;
+      max-width: 1240px;
+      padding: 16px 16px 48px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    /* CARD */
+    .card {
+      background: radial-gradient(circle at top, #fef9c3 0, #fef3c7 50%, #fde68a 100%);
+      border-radius: 20px;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 0 rgba(234,179,8,0.85), 0 12px 28px rgba(180,83,9,0.35);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .duck-btn {
+      width: 100%;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 10px 10px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: transform 0.15s;
+    }
+
+    .duck-btn:hover { transform: translateY(-3px) scale(1.02); }
+    .duck-btn:active { transform: translateY(1px) scale(0.98); }
+    .duck-btn.locked { cursor: not-allowed; opacity: 0.7; } /* Style for locked cards */
+
+
+    .duck-cover {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(120,53,15,0.35);
+      background: #fde68a;
+    }
+
+    .duck-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(1.2) contrast(1.05);
+      transform: scale(1.02);
+    }
+
+    .duck-cover.cleared {
+      filter: grayscale(0.5);
+    }
+
+    .cleared-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(34, 197, 94, 0.7);
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      pointer-events: none;
+      border-radius: 16px;
+    }
+
+    .tier-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #92400e;
+      background: rgba(253,224,71,0.9);
+      border: 1px solid rgba(234,179,8,0.8);
+      padding: 2px 8px;
+      border-radius: 999px;
+      align-self: flex-start;
+      margin-left: 2px;
+    }
+
+    .aura-label {
+      font-size: 0.72rem;
+      color: #166534;
+      font-weight: 600;
+      align-self: flex-end;
+      margin-right: 2px;
+    }
+
+    .collapse {
+      width: 100%;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .collapse.open { max-height: 620px; }
+
+    .collapse-inner {
+      padding: 10px 14px 16px;
+      border-top: 1px solid rgba(234,179,8,0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .label-small {
+      font-size: 0.67rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .pw-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    input[type="password"],
+    textarea {
+      flex: 1;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #facc15;
+      background: rgba(255,251,235,0.97);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      outline: none;
+    }
+
+    textarea {
+      flex: 1;
+      border-radius: 10px;
+      resize: vertical;
+      min-height: 32px;      /* bem menor */
+      padding: 6px 10px;     /* pouco padding vertical */
+      line-height: 1.2;      /* linha compacta */
+      vertical-align: top;
+      text-align: left;
+
+      border: 1px solid #facc15;
+      background: rgba(255,251,235,0.97);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      outline: none;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 6px 14px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      background: linear-gradient(to right, #22c55e, #16a34a);
+      color: #022c22;
+      box-shadow: 0 2px 0 rgba(21,128,61,0.8);
+      white-space: nowrap;
+      transition: filter 0.1s, transform 0.1s;
+    }
+
+    .btn:hover { filter: brightness(1.07); transform: translateY(-1px); }
+    .btn:active { filter: brightness(0.95); transform: translateY(1px); box-shadow: none; }
+
+    .error-msg {
+      font-size: 0.7rem;
+      color: var(--error);
+      min-height: 14px;
+    }
+
+    .task-text {
+      font-size: 0.8rem;
+      line-height: 1.45;
+      color: #1f2933;
+    }
+
+    .task-note {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .gap-list {
+      font-size: 0.75rem;
+      color: #374151;
+      margin-left: 14px;
+    }
+    .gap-list li { margin-bottom: 2px; }
+
+    .success-area {
+      text-align: center;
+      padding: 4px 0 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .success-main { font-size: 1rem; font-weight: 700; color: #166534; }
+    .success-sub  { font-size: 0.82rem; color: #b45309; font-weight: 600; }
+    .success-timer{ font-size: 0.68rem; color: var(--muted); }
+
+    footer {
+      font-size: 0.72rem;
+      color: #4b5563;
+      text-align: center;
+      padding-bottom: 16px;
+    }
+
+    /* Hunter Selection UI */
+    .hunter-selection {
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .current-hunter-info {
+      font-weight: bold;
+      color: var(--text);
+      font-size: 1.1rem;
+      margin-right: 15px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #hunterNameInput {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+      flex-grow: 1;
+      max-width: 250px;
+    }
+
+    #selectHunterBtn, #resetProgressBtn, #endGameBtn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      background-color: var(--accent);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      white-space: nowrap;
+    }
+
+    #selectHunterBtn:hover { background-color: #16a34a; }
+    #resetProgressBtn { background-color: #dc2626; margin-left: 10px; }
+    #resetProgressBtn:hover { background-color: #b91c1c; }
+    #endGameBtn { background-color: #f97316; margin-left: 10px; } /* Orange for End Game */
+    #endGameBtn:hover { background-color: #ea580c; }
+
+
+    /* Game Timer Display */
+    .game-timer {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--text);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .game-timer.critical {
+      color: var(--error);
+    }
+
+    /* Scoreboard */
+    #scoreboard {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      margin-top: 30px;
+      width: 90%;
+      max-width: 800px;
+      text-align: center;
+      display: none; /* Hidden by default */
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    #scoreboard h2 {
+      font-size: 2.5rem;
+      color: #f97316;
+      margin-bottom: 15px;
+      font-family: 'RubberDuck', system-ui;
+      text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+    }
+
+    .podium {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .podium-spot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #fef9c3;
+      border-radius: 10px;
+      padding: 15px 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      min-width: 120px;
+    }
+
+    .podium-spot.first { height: 180px; background-color: #ffd700; } /* Gold */
+    .podium-spot.second { height: 140px; background-color: #c0c0c0; } /* Silver */
+    .podium-spot.third { height: 100px; background-color: #cd7f32; } /* Bronze */
+
+    .podium-rank { font-size: 2.5rem; font-weight: bold; color: #333; margin-bottom: 5px; }
+    .podium-name { font-size: 1.2rem; font-weight: bold; color: var(--text); }
+    .podium-aura { font-size: 1rem; color: #166534; margin-top: 5px; }
+    .podium-bonus { font-size: 0.8rem; color: #f97316; font-weight: bold; margin-top: 5px; }
+
+    .all-scores-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 300px;
+      overflow-y: auto;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+    }
+
+    .all-scores-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed #eee;
+      font-size: 1rem;
+      color: var(--text);
+    }
+    .all-scores-list li:last-child { border-bottom: none; }
+    .all-scores-list li span:first-child { font-weight: bold; }
+    .all-scores-list li span:last-child { color: #166534; font-weight: bold; }
+
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 520px) {
+      .grid { grid-template-columns: repeat(1, 1fr); padding-inline: 10px; }
+      .game-title {
+        font-size: 3.5rem;
+        white-space: normal;
+      }
+      header {
+        padding: 20px;
+        margin-top: 20px;
+      }
+      .hunter-selection {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .current-hunter-info {
+        margin-right: 0;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+      #hunterNameInput {
+        max-width: none;
+      }
+      #resetProgressBtn, #endGameBtn {
+        margin-left: 0;
+        margin-top: 10px;
+      }
+      .podium { flex-direction: column; align-items: center; }
+      .podium-spot { width: 100%; max-width: 200px; }
+      .podium-spot.first { height: auto; }
+      .podium-spot.second { height: auto; }
+      .podium-spot.third { height: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="duck.png" alt="Game Logo Duck" class="game-logo">
+  <h1 class="game-title">Duck Hunt</h1>
+  <div class="subtitle">Click your duck · type the password · unlock the mission · farm aura.</div>
+</header>
+
+<div class="hunter-selection">
+  <div class="current-hunter-info">
+    <span id="hunterNameDisplay">Hunter: None selected</span>
+    <span style="color: #ccc;">|</span>
+    <span id="hunterAuraDisplay">Aura: 0</span>
+  </div>
+  <input type="text" id="hunterNameInput" placeholder="Enter your hunter name to start" />
+  <button id="selectHunterBtn">Go!</button>
+  <button id="endGameBtn">End Game</button> <!-- New button for teacher to end game -->
+  <button id="resetProgressBtn">Reset All Progress</button>
+</div>
+
+<div class="game-timer" id="gameTimer">
+  Time Left: <span id="timerDisplay">15:00</span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div id="scoreboard" style="display: none;">
+  <h2>Game Over! Final Scores</h2>
+  <div class="podium" id="podiumContainer">
+    <!-- Podium spots will be inserted here by JS -->
+  </div>
+  <h3>All Hunters:</h3>
+  <ul class="all-scores-list" id="allScoresList">
+    <!-- All scores will be inserted here by JS -->
+  </ul>
+</div>
+
+<footer>
+  If the mission asks you to talk to your teacher, do it <strong>before</strong> pressing Approve.
+</footer>
+
+<script type="module">
+  // 1. Importar as funções necessárias do Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9/23.0.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, update, get, serverTimestamp } from "https://www.gstatic.com/firebasejs/9/23.0.0/firebase-database.js";
+
+  // 2. Configurações do seu projeto (Pegue isso no console do Firebase)
+  const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    databaseURL: "SUA_URL_DO_BANCO",
+    projectId: "SEU_ID",
+    // ... outras chaves que o Firebase te der
+  };
+
+  // 3. Inicializar
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Senha Mestra do Professor para desbloquear qualquer pato
+  const MASTER_TEACHER_PASSWORD = "masterduck"; // Altere "masterduck" para a senha mestra que desejar
+  const TEACHER_PASSWORD = "aura67"; // coloque aqui a senha que você quiser
+  const duckConfigs = [
+    { id:  1, password: "DUCK-1-GALAXY",  aura: 5, tier: "Easy",   image: "duck_1.png"  },
+    { id:  2, password: "DUCK-2-NEON",    aura: 5, tier: "Easy",   image: "duck_2.png"  },
+    { id:  3, password: "DUCK-3-PIXEL",   aura: 5, tier: "Easy",   image: "duck_3.png"  },
+    { id:  4, password: "DUCK-4-GLITCH",  aura: 5, tier: "Easy",   image: "duck_4.png"  },
+    { id:  5, password: "DUCK-5-VIBES",   aura: 5, tier: "Easy",   image: "duck_5.png"  },
+    { id:  6, password: "DUCK-6-HYPE",    aura: 5, tier: "Easy",   image: "duck_6.png"  },
+    { id:  7, password: "DUCK-7-67AURA",  aura: 20, tier: "Bonus",  image: "duck_7.png"  },
+    { id:  8, password: "DUCK-8-CHAOS",   aura: 10, tier: "Medium", image: "duck_8.png"  },
+    { id:  9, password: "DUCK-9-SHADOW",  aura: 10, tier: "Medium", image: "duck_9.png"  },
+    { id: 10, password: "DUCK-10-STATIC", aura: 10, tier: "Medium", image: "duck_10.png" },
+    { id: 11, password: "DUCK-11-NOVA",   aura: 10, tier: "Medium", image: "duck_11.png" },
+    { id: 12, password: "DUCK-12-BOOST",  aura: 10, tier: "Medium", image: "duck_12.png" },
+    { id: 13, password: "DUCK-13-MATRIX", aura: 10, tier: "Medium", image: "duck_13.png" },
+    { id: 14, password: "DUCK-14-CRYPTO", aura: 10, tier: "Medium", image: "duck_14.png" },
+    { id: 15, password: "DUCK-15-CHAIR",  aura: 10, tier: "Medium", image: "duck_15.png" },
+    { id: 16, password: "DUCK-16-BLIP",   aura: 15, tier: "Hard",   image: "duck_16.png" },
+    { id: 17, password: "DUCK-17-LOFI",   aura: 15, tier: "Hard",   image: "duck_17.png" },
+    { id: 18, password: "DUCK-18-POWER",  aura: 15, tier: "Hard",   image: "duck_18.png" },
+    { id: 19, password: "DUCK-19-SECRET", aura: 15, tier: "Hard",   image: "duck_19.png" },
+    { id: 20, password: "DUCK-20-LEVELUP",aura: 25, tier: "Boss",   image: "duck_20.png" },
+  ];
+
+  const tasks = {
+    1: {
+      type:"write",
+      text: "Choose 3 of the expressions below:<br><br><em>part-time gravedigger · couples therapist · telemarketing operator · haunted castle · private island</em><br><br>Write 3 sentences with <strong>WOULD</strong> about them.",
+      note:"<strong>note:</strong> your sentences can be positive or negative."},
+    2: {
+      type:"speak",
+      text: "Ask your teacher 4 questions using <strong>WOULD</strong> or <strong>WOULDN'T</strong>.",
+      note:"<strong>note:</strong> you don't need to write the questions here, just ask your teacher out loud.",},
+    3: {
+      type:"fill-gap",
+      text: "Complete the sentences using <strong>WOULD</strong>.<br><em>1. Yesterday I thought I ______ watch a movie, but I didn't.<br>2. Last weekend we decided we ______ play football, but it rained.<br>3. My parents said they ______ visit my grandparents today because they were very busy.</em>"},
+    4: {
+      type:"write",
+      text: "Imagine a person with explosive behavior.<br>Write 3 sentences saying what they <strong>would</strong> do in difficult situations.",},
+    5: {
+      type:"fill-gap",
+      text: "Complete the sentences with <strong>WOULD</strong> or <strong>WOULDN'T</strong>. Create funny class rules.<br><em>1. In my perfect class, students ______ get 5 minutes of memes after every exercise.<br>2. The teacher ______ give aura for bad behavior.<br>3. We ______ have a snack break in the middle of the lesson.</em>"},
+    6: {
+      type:"write",
+      text: "Think about your classmates.<br>Write <em>4 sentences</em> about what students in your class <strong>would</strong> or <strong>wouldn’t</strong> like.",},
+    7: {
+      type:"write",
+      text: "<strong>🔥 67 AURA DUCK!!!</strong><br><strong>If you complete this task you will earn 67 DOLLARS next class.</strong><br>Imagine your school in 5 years.<br>Write 5 sentences to describe the changes (think about technology, rules, subjects and students).",
+      note:"<strong>note:</strong> remember the comparative or superlative adjectives, THERE WILL BE, and BE GOING TO...",},
+    8: {
+      type:"speak",
+      text: "Answer these questions in <strong>full sentences</strong> with <strong>WOULD</strong>:<br><em>1. What would you change in your life now?<br>2. How would you improve your skills (school, sports or hobbies)?<br>3. Would you go to a therapist if you needed? Why or why not?</em>",
+      note:"<strong>note:</strong> you don't need to write the questions here, just ask your teacher out loud.",},
+    9: {
+      type:"speak-write",
+      text: "Talk to your teacher about things you <strong>CAN</strong> do now that you <strong>COULDN'T</strong> do 3 years ago.",
+      note:"<strong>note:</strong> after you speak, write 2 sentences: one with <strong>CAN</strong> and one with <strong>COULDN'T</strong>.",},
+    10: {
+      type:"write",
+      text: "Imagine your life in a fictional universe.<br>Write 5 sentences with <strong>WOULD</strong> about what your life would be like..",
+      note:"<strong>note:</strong> you can talk about your house, your school, your hobbies, and your friends.",},
+    11: {
+      type:"fill-gap",
+      text: "Complete the sentences with <strong>CAN</strong> or <strong>CAN'T</strong>. Think about your school rules.<br><em>1. Students ______ use their phones during the test.<br>2. We ______ talk quietly when we work in pairs.<br>3. You ______ leave the classroom without permission.</em>",
+      note:"<strong>note:</strong> use real or imaginary rules.",},
+    12: {
+      type:"speak",
+      text: "Ask your teacher 3 questions with <strong>WOULD</strong> about his sister, brother or other family members.",
+      note:"<strong>note:</strong> you don't need to write the questions here, just ask your teacher out loud.",},
+    13: {
+      type:"fill-gap",
+      text: "Complete the sentences with <strong>CAN</strong> or <strong>COULD</strong>.<br><em>1. I ______ study in the library after school, or I ______ study at home if I want.<br>2. We ______ play football today, or we ______ play basketball if the field is busy.<br>3. My parents ______ drive me to school, but I ______ also go by bus.</em>",
+      note:"<strong>note:</strong> use CAN for now and COULD for possible situations.",},
+    14: {
+      type:"speak-write",
+      text: "Ask your teacher 2 polite questions.",
+      note:"<strong>note:</strong> after you speak, write the 2 questions you asked.",},
+    15: {
+      type:"fill-gap",
+      text: "Imagine a perfect weekend.<br>Write 4 sentences with <strong>WOULD</strong> about what you would do.",
+      note:"<strong>note:</strong> use your imagination, but keep it realistic or funny.",},
+    16: {
+      type:"fill-gap",
+      text: "Complete the mini story according to the context.<br><br><em>Last weekend, I wanted to watch a movie, but I _________ find the remote. Then, my friend called me and said he __________ love to watch a movie, so he invited me to watch one at his house.</em>",
+      note:"<strong>note:</strong> you will use more than one modal verb (can, can't, could, couldn't, would, wouldn't) in this story.",},
+    17: {
+      type:"fill-gap",
+      text: "Think about your neighborhood now and 5 years ago.<br>Write 4 sentences telling the things that exist now but didn't exist in the past.",
+      note:"<strong>note:</strong> remember to use 'there to be' in the present and past.",},
+    18: {
+      type:"write",
+      text: "Compare two possible futures for yourself: living on the beach and living in a big city.<br>Write a short story comparing your different lives.",
+      note:"<strong>note:</strong> remember the comparative adjectives and WILL or BE GOING TO.",},
+    19: {
+      type:"write",
+      text: "Write 3 sentences with <strong>would never</strong> about things you would NEVER do in front of a girl, and explain why.",},
+    20: {
+      type:"speak",
+      text: "<strong>🏆 FINAL BOSS DUCK!</strong><br>Compare living in a big city and in a cozy hometown.<br>Tell your teacher what would be better or worse for you in each place...",
+      note:"<strong>note:</strong> confirm with your teacher if your sentences are correct; if yes, he will let you press 'Approve'.",},
+  };
+
+  // --- GAME STATE & TIMER ---
+  const GAME_DURATION_SECONDS = 25 * 60; // 25 minutes
+  let gameTimerInterval;
+  let timeLeft = GAME_DURATION_SECONDS;
+  let gameEnded = false;
+
+  const timerDisplay = document.getElementById("timerDisplay");
+  const gameTimerElement = document.getElementById("gameTimer");
+  const endGameBtn = document.getElementById("endGameBtn");
+  const scoreboard = document.getElementById("scoreboard");
+  const podiumContainer = document.getElementById("podiumContainer");
+  const allScoresList = document.getElementById("allScoresList");
+  const gridElement = document.getElementById("grid");
+
+
+  // --- HUNTER & PROGRESS MANAGEMENT ---
+
+  const ALL_STUDENTS_KEY = "duck_hunt_all_students_v1";
+  let allStudents = loadAllStudents();
+  let currentHunter = null;
+
+  function loadAllStudents() {
+    try {
+      const raw = localStorage.getItem(ALL_STUDENTS_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (error) {
+      console.error("Error loading hunter data:", error);
+      return {};
+    }
+  }
+
+  function saveAllStudents() {
+    localStorage.setItem(ALL_STUDENTS_KEY, JSON.stringify(allStudents));
+  }
+
+  function setCurrentHunter(hunterName) {
+    if (gameEnded) {
+      alert("The game has ended. You can view scores but not play.");
+      return;
+    }
+    if (!allStudents[hunterName]) {
+      allStudents[hunterName] = { cleared: [], totalAura: 0, hasBonus: false }; // Added hasBonus
+    }
+    currentHunter = allStudents[hunterName];
+    saveAllStudents();
+    updateHunterDisplay();
+    renderDucks();
+  }
+
+function markCleared(duck) {
+    clearedDucks.push(duck.id);
+    playerAura += duck.aura;
+
+    // SINCRONIZAÇÃO COM FIREBASE: Envia os pontos do aluno atual
+    if (currentHunter) {
+      update(ref(db, 'players/' + currentHunter), {
+        name: currentHunter,
+        aura: playerAura,
+        lastUpdate: serverTimestamp()
+      });
+    }
+
+    saveProgress();
+    renderDucks();
+  }
+
+  function canAccessDuck(duck) {
+    if (!currentHunter) return false;
+    if (duck.id === 7 && currentHunter.totalAura < 20) return false;
+    if (duck.id === 20 && currentHunter.totalAura < 40) return false;
+    return true;
+  }
+
+  function accessMessage(duck) {
+    if (!currentHunter) {
+      return "Please enter your hunter name first to start playing!";
+    }
+    if (duck.id === 7) {
+      return `You need at least 20 aura to open the BONUS duck. You currently have ${currentHunter.totalAura} aura.`;
+    }
+    if (duck.id === 20) {
+      return `You need at least 40 aura to open the BOSS duck. You currently have ${currentHunter.totalAura} aura.`;
+    }
+    return "";
+  }
+
+  // --- Hunter Selection UI ---
+
+  const hunterNameInput = document.getElementById("hunterNameInput");
+  const selectHunterBtn = document.getElementById("selectHunterBtn");
+  const resetProgressBtn = document.getElementById("resetProgressBtn");
+  const hunterNameDisplay = document.getElementById("hunterNameDisplay");
+  const hunterAuraDisplay = document.getElementById("hunterAuraDisplay");
+
+  function updateHunterDisplay() {
+    if (currentHunter) {
+      hunterNameDisplay.textContent = `Hunter: ${hunterNameInput.value}`;
+      hunterAuraDisplay.textContent = `Aura: ${currentHunter.totalAura}`;
+    } else {
+      hunterNameDisplay.textContent = "Hunter: None selected";
+      hunterAuraDisplay.textContent = "Aura: 0";
+    }
+  }
+
+  selectHunterBtn.addEventListener("click", () => {
+    const name = hunterNameInput.value.trim();
+    if (name) {
+      setCurrentHunter(name);
+      if (!gameTimerInterval && !gameEnded) { // Start timer only if not already running and game not ended
+        startGameTimer();
+      }
+    } else {
+      alert("Please enter your hunter name!");
+    }
+  });
+
+  resetProgressBtn.addEventListener("click", () => {
+    if (confirm("Are you sure you want to reset ALL hunters' progress? This cannot be undone!")) {
+      localStorage.removeItem(ALL_STUDENTS_KEY);
+      allStudents = {};
+      currentHunter = null;
+      updateHunterDisplay();
+      renderDucks();
+      alert("All progress has been reset.");
+      resetGame(); // Reset game state as well
+    }
+  });
+
+  endGameBtn.addEventListener("click", () => {
+    if (confirm("Are you sure you want to end the game now? All ducks will be locked and scores displayed.")) {
+      endGame();
+    }
+  });
+
+  function renderDucks() {
+    gridElement.innerHTML = '';
+    duckConfigs.forEach(cfg => gridElement.appendChild(buildCard(cfg)));
+  }
+
+// --- Game Timer Functions (SINCRONIZADA) ---
+
+  function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
+
+  async function startGameTimer() {
+    if (gameTimerInterval) clearInterval(gameTimerInterval);
+    gameEnded = false;
+    gameTimerElement.style.display = 'flex';
+
+    // Referência do tempo no Firebase
+    const timerRef = ref(db, 'gameStatus/endTime');
+    
+    // Tenta pegar o tempo que já existe lá
+    const snapshot = await get(timerRef);
+    let endTime = snapshot.val();
+
+    if (!endTime) {
+      // Se não existe (você é o primeiro), define o fim para agora + duração
+      endTime = Date.now() + (GAME_DURATION_SECONDS * 1000);
+      set(timerRef, endTime);
+    }
+
+    gameTimerInterval = setInterval(() => {
+      const now = Date.now();
+      const diff = Math.floor((endTime - now) / 1000);
+      
+      timeLeft = Math.max(0, diff);
+      timerDisplay.textContent = formatTime(timeLeft);
+
+      if (timeLeft <= 60) {
+        gameTimerElement.classList.add("critical");
+      }
+
+      if (timeLeft <= 0) {
+        clearInterval(gameTimerInterval);
+        gameTimerInterval = null;
+        endGame();
+      }
+    }, 1000);
+  }
+
+  function endGame() {
+    gameEnded = true;
+    if (gameTimerInterval) {
+      clearInterval(gameTimerInterval);
+      gameTimerInterval = null;
+    }
+    gameTimerElement.style.display = 'none'; // Hide timer
+    gridElement.style.display = 'none'; // Hide ducks
+    scoreboard.style.display = 'flex'; // Show scoreboard
+
+    displayScores();
+  }
+
+function resetGame() {
+    if(!confirm("Isso apagará o progresso de TODOS os alunos. Continuar?")) return;
+    
+    gameEnded = false;
+    // Limpa o banco de dados para uma nova partida
+    set(ref(db, 'gameStatus'), null);
+    set(ref(db, 'players'), null);
+
+    if (gameTimerInterval) {
+      clearInterval(gameTimerInterval);
+      gameTimerInterval = null;
+    }
+    gameTimerElement.style.display = 'none';
+    scoreboard.style.display = 'none';
+    gridElement.style.display = 'grid';
+    renderDucks();
+    alert("Jogo resetado para todos!");
+  }
+
+// Função para mostrar o pódio sincronizado com todos os alunos
+  function displayScores() {
+    const playersRef = ref(db, 'players');
+
+    // Buscamos todos os jogadores no banco de dados
+    onValue(playersRef, ((snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+
+      // Converte o objeto do banco em uma lista e ordena por Aura
+      const sortedHunters = Object.values(data)
+        .sort((a, b) => b.totalAura - a.totalAura);
+
+      // Limpa os placares anteriores
+      podiumContainer.innerHTML = '';
+      allScoresList.innerHTML = '';
+
+      // Constrói o Pódio (1º, 2º e 3º)
+      const podiumRanks = ["second", "first", "third"];
+      const podiumData = [sortedHunters[1], sortedHunters[0], sortedHunters[2]];
+
+      podiumData.forEach((hunter, index) => {
+        if (hunter) {
+          const spot = document.createElement("div");
+          spot.className = `podium-spot ${podiumRanks[index]}`;
+          spot.innerHTML = `
+            <div class="podium-rank">${index === 1 ? '🥇' : (index === 0 ? '🥈' : '🥉')}</div>
+            <div class="podium-name">${hunter.name}</div>
+            <div class="podium-aura">${hunter.totalAura} Aura</div>
+          `;
+          podiumContainer.appendChild(spot);
+        }
+      });
+
+      // Constrói a lista completa de classificação
+      sortedHunters.forEach(hunter => {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = `
+          <span>${hunter.name}</span>
+          <span>${hunter.totalAura} Aura</span>
+        `;
+        allScoresList.appendChild(listItem);
+      });
+    });
+  }
+
+  // --- Initial Setup ---
+  renderDucks();
+  updateHunterDisplay();
+  gameTimerElement.style.display = 'none'; // Hide timer initially until game starts
+
+  function buildCard(duck) {
+    const task = tasks[duck.id];
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const duckBtn = document.createElement("button");
+    duckBtn.className = "duck-btn";
+    duckBtn.setAttribute("aria-label", `Open Duck ${duck.id}`);
+
+    // Add 'locked' class if game has ended
+    if (gameEnded) {
+      duckBtn.classList.add('locked');
+    }
+
+    duckBtn.innerHTML = `
+      <div class="duck-cover ${isCleared(duck.id) ? 'cleared' : ''}">
+        <img src="${duck.image}" alt="Duck ${duck.id}">
+        ${isCleared(duck.id) ? '<div class="cleared-overlay">✅ HUNTED</div>' : ''}
+      </div>
+      <div style="display:flex; justify-content:space-between; width:100%; margin-top:4px;">
+        <span class="tier-label">${duck.tier}</span>
+        <span class="aura-label">+${duck.aura} aura</span>
+      </div>
+    `;
+
+    const collapse = document.createElement("div");
+    collapse.className = "collapse";
+
+    const inner = document.createElement("div");
+    inner.className = "collapse-inner";
+
+    const lockDiv = document.createElement("div");
+    lockDiv.innerHTML = `
+      <div class="label-small">Password from QR</div>
+      <div class="pw-row">
+        <input type="password" class="pw-input" placeholder="Type the password from your duck">
+        <button class="btn unlock-btn">Unlock</button>
+      </div>
+      <div class="error-msg"></div>
+    `;
+
+    const taskDiv = document.createElement("div");
+    taskDiv.style.display = "none";
+
+    let taskHTML = "";
+    if (task) {
+      taskHTML += `<div class="task-text">${task.text}</div>`;
+      if (task.note) taskHTML += `<div class="task-note">${task.note}</div>`;
+      if (task.gaps && task.gaps.length) {
+        taskHTML += `<ul class="gap-list">${task.gaps.map(g => `<li>${g}</li>`).join("")}</ul>`;
+        taskHTML += `<textarea class="answer-input" placeholder="${task.placeholder || "Write your answer here."}" value=""></textarea>`;
+      } 
+      else {
+        taskHTML += `<textarea class="answer-input" placeholder="Write your answer here." value=""></textarea>`;
+      }
+    } else {
+      taskHTML += `<div class="task-text">No mission yet. Ask your teacher.</div>`;
+    }
+    taskHTML += `<button class="btn approve-btn">Ask teacher to approve ✅</button>`;
+    taskDiv.innerHTML = taskHTML;
+
+    // --- CORREÇÃO DO TEXTAREA: garante placeholder e remove qualquer \n inicial ---
+    const answerTextarea = taskDiv.querySelector(".answer-input");
+    if (answerTextarea) {
+      // Pega o placeholder que foi definido no HTML (se houver)
+      const currentPlaceholder = answerTextarea.getAttribute("placeholder");
+
+      // Limpa TODO e qualquer conteúdo interno (inclusive \n ou texto "value")
+      answerTextarea.textContent = ""; // Garante que não há texto entre <textarea> e </textarea>
+      answerTextarea.value = "";       // Garante que o atributo value está vazio
+
+      // Se não havia placeholder no HTML, define um padrão
+      if (!currentPlaceholder) {
+        answerTextarea.setAttribute("placeholder", "Write your answer here.");
+      }
+      // Se por algum motivo o placeholder veio como textContent, move ele para o atributo
+      else if (answerTextarea.textContent && !answerTextarea.getAttribute("placeholder")) {
+        answerTextarea.setAttribute("placeholder", answerTextarea.textContent.trim());
+        answerTextarea.textContent = ""; // Limpa novamente após mover
+      }
+    }
+
+    const successDiv = document.createElement("div");
+    successDiv.className = "success-area";
+    successDiv.style.display = "none";
+    successDiv.innerHTML = `
+      <div class="success-main">✅ Approved!</div>
+      <div class="success-sub">🔥 You just farmed +${duck.aura} aura!</div>
+      <div class="success-timer">Locking again in <span class="timer-count">5</span>s…</div>
+    `;
+
+    inner.appendChild(lockDiv);
+    inner.appendChild(taskDiv);
+    inner.appendChild(successDiv);
+    collapse.appendChild(inner);
+    card.appendChild(duckBtn);
+    card.appendChild(collapse);
+
+    duckBtn.addEventListener("click", () => {
+      if (gameEnded) { // If game has ended, prevent opening cards
+        alert("The game has ended. You can view scores but not play.");
+        return;
+      }
+      if (!currentHunter) {
+        alert("Please enter your hunter name first to start playing!");
+        return;
+      }
+      if (!canAccessDuck(duck)) {
+        alert(accessMessage(duck));
+        return;
+      }
+      const open = collapse.classList.contains("open");
+      collapse.classList.toggle("open", !open);
+    });
+
+    const pwInput   = lockDiv.querySelector(".pw-input");
+    const unlockBtn = lockDiv.querySelector(".unlock-btn");
+    const errorMsg  = lockDiv.querySelector(".error-msg");
+
+    function tryUnlock() {
+      if (gameEnded) { return; } // Prevent unlocking if game ended
+      if (!currentHunter) { alert("Please enter your hunter name first!"); return; }
+
+      const val = (pwInput.value || "").trim();
+      if (!val) { errorMsg.textContent = "Type the password from your duck QR."; return; }
+      // NOVO: Verifica se a senha digitada é a senha do pato OU a senha mestra do professor
+      if (val.toUpperCase() !== duck.password.toUpperCase() && val.toUpperCase() !== MASTER_TEACHER_PASSWORD.toUpperCase()) {
+        errorMsg.textContent = "Wrong password. Check your QR code again, or ask your teacher for the master password.";
+        return;
+      }
+      errorMsg.textContent = "";
+      lockDiv.style.display = "none";
+      taskDiv.style.display = "flex";
+      taskDiv.style.flexDirection = "column";
+      taskDiv.style.gap = "8px";
+      const ta = taskDiv.querySelector(".answer-input");
+      if (ta) {
+        ta.value = "";      // você pode até remover esta linha se quiser manter qualquer texto antigo
+        ta.focus();
+        ta.setSelectionRange(0,0);
+}
+    }
+
+    unlockBtn.addEventListener("click", tryUnlock);
+    pwInput.addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
+
+    const approveBtn = taskDiv.querySelector(".approve-btn");
+    if (approveBtn) {
+      approveBtn.addEventListener("click", () => {
+        if (gameEnded) { return; } // Prevent approving if game ended
+        const teacherInput = prompt("Teacher password:"); // Abre uma caixa para digitar a senha
+        if (teacherInput === null) { // Se o professor clicou em "Cancelar" no prompt
+        return; // Não faz nada e sai da função
+}
+        if (teacherInput !== TEACHER_PASSWORD) { // Se a senha digitada for diferente da senha definida
+        alert("Incorrect teacher password!"); // Mostra um alerta de senha incorreta
+        return; // Não faz nada e sai da função
+}
+        markCleared(duck);
+
+        taskDiv.style.display = "none";
+        successDiv.style.display = "flex";
+        successDiv.style.flexDirection = "column";
+        successDiv.style.gap = "4px";
+
+        const timerSpan = successDiv.querySelector(".timer-count");
+        let t = 5;
+        timerSpan.textContent = t;
+        const iv = setInterval(() => {
+          t--;
+          timerSpan.textContent = t;
+          if (t <= 0) {
+            clearInterval(iv);
+            successDiv.style.display = "none";
+            lockDiv.style.display    = "block";
+            taskDiv.style.display    = "none";
+            pwInput.value = "";
+            collapse.classList.remove("open");
+            renderDucks();
+          }
+        }, 1000);
+      });
+    }
+
+    return card;
+  }
+</script>
+</body>
+</html>
