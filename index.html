@@ -544,6 +544,10 @@ Copiar
       .podium-spot.third { height: auto; }
     }
   </style>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 </head>
 <body>
 
@@ -586,23 +590,18 @@ Copiar
   If the mission asks you to talk to your teacher, do it <strong>before</strong> pressing Approve.
 </footer>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getDatabase, ref, set, get, onValue, update } 
-    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+<script>
 
   const firebaseConfig = {
-    apiKey: "…",
+    apiKey: "AIzaSyCynlGAnMN0I6VwzRi_dWWDlc0SxDqrav8",
     authDomain: "duck-hunt-game-dd334.firebaseapp.com",
-    databaseURL: "https://duck-hunt-game-dd334-default-rtdb.firebaseio.com",
+    databaseURL: "https://duck-hunt-game-dd334-default-rtdb.firebaseio.com"
     projectId: "duck-hunt-game-dd334",
     storageBucket: "duck-hunt-game-dd334.firebasestorage.app",
     messagingSenderId: "1090069680934",
     appId: "1:1090069680934:web:774ad9ab3a97a2305ee7e7"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const db  = getDatabase(app);
   const app = firebase.initializeApp(firebaseConfig);
   const db  = firebase.database();
 
