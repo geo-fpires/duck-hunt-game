@@ -337,7 +337,7 @@
       max-width: 250px;
     }
 
-    #selectHunterBtn, #resetProgressBtn, #endGameBtn {
+    #selectHunterBtn, #resetProgressBtn, #endGameBtn, #resetFirebaseTimerBtn { /* Adicionado #resetFirebaseTimerBtn */
       padding: 8px 15px;
       border: none;
       border-radius: 5px;
@@ -354,6 +354,8 @@
     #resetProgressBtn:hover { background-color: #b91c1c; }
     #endGameBtn { background-color: #f97316; margin-left: 10px; } /* Orange for End Game */
     #endGameBtn:hover { background-color: #ea580c; }
+    #resetFirebaseTimerBtn { background-color: #6b7280; margin-left: 10px; } /* Gray for Reset Timer */
+    #resetFirebaseTimerBtn:hover { background-color: #4b5563; }
 
 
     /* Game Timer Display */
@@ -474,7 +476,7 @@
       #hunterNameInput {
         max-width: none;
       }
-      #resetProgressBtn, #endGameBtn {
+      #resetProgressBtn, #endGameBtn, #resetFirebaseTimerBtn { /* Adicionado #resetFirebaseTimerBtn */
         margin-left: 0;
         margin-top: 10px;
       }
@@ -485,6 +487,11 @@
       .podium-spot.third { height: auto; }
     }
   </style>
+
+  <!-- SCRIPTS DO FIREBASE AQUI NO HEAD -->
+  <!-- IMPORTANTE: Use a versão -compat para a API global -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 </head>
 <body>
@@ -505,6 +512,7 @@
   <button id="selectHunterBtn">Go!</button>
   <button id="endGameBtn">End Game</button> <!-- New button for teacher to end game -->
   <button id="resetProgressBtn">Reset All Progress</button>
+  <button id="resetFirebaseTimerBtn">Reset Timer</button> <!-- Botão para resetar o timer do Firebase -->
 </div>
 
 <div class="game-timer" id="gameTimer">
@@ -529,188 +537,79 @@
 </footer>
 
 <script>
-  // --- ADICIONE ESTAS DUAS LINHAS AQUI ---
-  // Elas carregam o Firebase e o tornam disponível globalmente como 'firebase'
-  // IMPORTANTE: Use a versão -compat para a API global
-  document.write('<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>');
-  document.write('<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>');
-</script>
-
-<script>
-  // Seu firebaseConfig
+  // --- CONFIGURAÇÃO DO FIREBASE ---
   const firebaseConfig = {
     apiKey: "AIzaSyCynlGAnMN0I6VwzRi_dWWDlc0SxDqrav8",
     authDomain: "duck-hunt-game-dd334.firebaseapp.com",
-    databaseURL: "https://duck-hunt-game-dd334-default-rtdb.firebaseio.com", // <-- databaseURL adicionada
+    databaseURL: "https://duck-hunt-game-dd334-default-rtdb.firebaseio.com", // Adicionado
     projectId: "duck-hunt-game-dd334",
     storageBucket: "duck-hunt-game-dd334.firebasestorage.app",
     messagingSenderId: "1090069680934",
     appId: "1:1090069680934:web:774ad9ab3a97a2305ee7e7"
   };
 
-  // Inicializa Firebase (apenas uma vez, usando a API global)
+  // Inicializa Firebase
   const app = firebase.initializeApp(firebaseConfig);
-  const db  = firebase.database();
+  const db = firebase.database();
   const serverTimestamp = firebase.database.ServerValue.TIMESTAMP; // Para usar o timestamp do servidor
 
-  console.log("SCRIPT DO JOGO CARREGADO");
-  // Senha Mestra do Professor para desbloquear qualquer pato
+  // Referências do Firebase
+  const gameStatusRef = db.ref('gameStatus');
+  const playersRef = db.ref('players');
+
+  console.log("SCRIPT DO JOGO CARREGADO"); // Mensagem de debug
+
+  // --- CONSTANTS ---
+  const ALL_STUDENTS_KEY = "allStudents";
+  const CURRENT_HUNTER_KEY = "currentHunter";
   const MASTER_TEACHER_PASSWORD = "masterduck"; // Altere "masterduck" para a senha mestra que desejar
   const TEACHER_PASSWORD = "aura67"; // coloque aqui a senha que você quiser
+
   const duckConfigs = [
-    { id:  1, password: "DUCK-1-GALAXY",  aura: 5, tier: "Easy",   image: "duck_1.png"  },
-    { id:  2, password: "DUCK-2-NEON",    aura: 5, tier: "Easy",   image: "duck_2.png"  },
-    { id:  3, password: "DUCK-3-PIXEL",   aura: 5, tier: "Easy",   image: "duck_3.png"  },
-    { id:  4, password: "DUCK-4-GLITCH",  aura: 5, tier: "Easy",   image: "duck_4.png"  },
-    { id:  5, password: "DUCK-5-VIBES",   aura: 5, tier: "Easy",   image: "duck_5.png"  },
-    { id:  6, password: "DUCK-6-HYPE",    aura: 5, tier: "Easy",   image: "duck_6.png"  },
-    { id:  7, password: "DUCK-7-67AURA",  aura: 20, tier: "Bonus",  image: "duck_7.png"  },
-    { id:  8, password: "DUCK-8-CHAOS",   aura: 10, tier: "Medium", image: "duck_8.png"  },
-    { id:  9, password: "DUCK-9-SHADOW",  aura: 10, tier: "Medium", image: "duck_9.png"  },
+    { id: 1, password: "DUCK-1-GALAXY", aura: 5, tier: "Easy", image: "duck_1.png" },
+    { id: 2, password: "DUCK-2-MOON", aura: 5, tier: "Easy", image: "duck_2.png" },
+    { id: 3, password: "DUCK-3-PIXEL", aura: 5, tier: "Easy", image: "duck_3.png" },
+    { id: 4, password: "DUCK-4-GLITCH", aura: 5, tier: "Easy", image: "duck_4.png" },
+    { id: 5, password: "DUCK-5-VIRUS", aura: 5, tier: "Easy", image: "duck_5.png" },
+    { id: 6, password: "DUCK-6-HYPE", aura: 5, tier: "Easy", image: "duck_6.png" },
+    { id: 7, password: "DUCK-7-AURAA", aura: 20, tier: "Bonus", image: "duck_7.png" }, // Bonus duck
+    { id: 8, password: "DUCK-8-GHOST", aura: 10, tier: "Medium", image: "duck_8.png" },
+    { id: 9, password: "DUCK-9-SHADOW", aura: 10, tier: "Medium", image: "duck_9.png" },
     { id: 10, password: "DUCK-10-STATIC", aura: 10, tier: "Medium", image: "duck_10.png" },
-    { id: 11, password: "DUCK-11-NOVA",   aura: 10, tier: "Medium", image: "duck_11.png" },
-    { id: 12, password: "DUCK-12-BOOST",  aura: 10, tier: "Medium", image: "duck_12.png" },
-    { id: 13, password: "DUCK-13-MATRIX", aura: 10, tier: "Medium", image: "duck_13.png" },
-    { id: 14, password: "DUCK-14-CRYPTO", aura: 10, tier: "Medium", image: "duck_14.png" },
-    { id: 15, password: "DUCK-15-CHAIR",  aura: 10, tier: "Medium", image: "duck_15.png" },
-    { id: 16, password: "DUCK-16-BLIP",   aura: 15, tier: "Hard",   image: "duck_16.png" },
-    { id: 17, password: "DUCK-17-LOFI",   aura: 15, tier: "Hard",   image: "duck_17.png" },
-    { id: 18, password: "DUCK-18-POWER",  aura: 15, tier: "Hard",   image: "duck_18.png" },
-    { id: 19, password: "DUCK-19-SECRET", aura: 15, tier: "Hard",   image: "duck_19.png" },
-    { id: 20, password: "DUCK-20-LEVELUP",aura: 25, tier: "Boss",   image: "duck_20.png" },
+    { id: 11, password: "DUCK-11-WAVE", aura: 10, tier: "Medium", image: "duck_11.png" },
+    { id: 12, password: "DUCK-12-MATRIX", aura: 10, tier: "Medium", image: "duck_12.png" },
+    { id: 13, password: "DUCK-13-PIXEL", aura: 10, tier: "Medium", image: "duck_13.png" },
+    { id: 14, password: "DUCK-14-CRYPT", aura: 10, tier: "Medium", image: "duck_14.png" },
+    { id: 15, password: "DUCK-15-NEON", aura: 10, tier: "Medium", image: "duck_15.png" },
+    { id: 16, password: "DUCK-16-RETRO", aura: 10, tier: "Medium", image: "duck_16.png" },
+    { id: 17, password: "DUCK-17-CYBER", aura: 10, tier: "Medium", image: "duck_17.png" },
+    { id: 18, password: "DUCK-18-STEAM", aura: 10, tier: "Medium", image: "duck_18.png" },
+    { id: 19, password: "DUCK-19-TECH", aura: 10, tier: "Medium", image: "duck_19.png" },
+    { id: 20, password: "DUCK-20-BOSS", aura: 40, tier: "Boss", image: "duck_20.png" }, // Boss duck
   ];
 
   const tasks = {
-    1: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>part-time gravedigger · couples therapist · human alarm clock · professional cuddler · dog food taster · full-time mermaid · chief of staff · ethical hacker · professional bridesmaid · personal shopper · professional sleeper · chief happiness officer</em><br><br>and explain what each job entails. For example, 'A professional cuddler offers comfort and companionship through non-sexual physical touch.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    2: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to spill the beans · to bite the bullet · to hit the road · to break a leg · to hit the nail on the head · to kick the bucket · to pull someone's leg · to get cold feet · to bark up the wrong tree · to cry over spilled milk · to let the cat out of the bag · to add insult to injury</em><br><br>and explain what each idiom means. For example, 'To spill the beans means to reveal a secret.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    3: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to be on cloud nine · to be over the moon · to be in seventh heaven · to be on top of the world · to be walking on air · to be as happy as a clam · to be as happy as Larry · to be tickled pink · to be thrilled to bits · to be ecstatic · to be jubilant · to be delighted</em><br><br>and explain what each expression means. For example, 'To be on cloud nine means to be extremely happy.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    4: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to be under the weather · to be feeling blue · to be down in the dumps · to be out of sorts · to be off-color · to be under the weather · to be feeling poorly · to be a bit off · to be not oneself · to be run down · to be under the weather · to be feeling poorly</em><br><br>and explain what each expression means. For example, 'To be under the weather means to feel unwell or sick.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    5: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to hit the books · to burn the midnight oil · to pull an all-nighter · to cram for an exam · to ace an exam · to sail through an exam · to scrape by · to get a passing grade · to flunk out · to drop out · to take a gap year · to major in</em><br><br>and explain what each expression means. For example, 'To hit the books means to study hard.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    6: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to be a couch potato · to be a night owl · to be an early bird · to be a busy bee · to be a social butterfly · to be a lone wolf · to be a big fish in a small pond · to be a dark horse · to be a guinea pig · to be a scapegoat · to be a copycat · to be a chatterbox</em><br><br>and explain what each expression means. For example, 'To be a couch potato means to be a lazy person who spends a lot of time watching TV.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    7: {
-      type:"write",
-      text: "This is a BONUS duck! You've earned it! Now, tell your teacher what you've learned so far and what you're most excited to learn next. This is a free-form answer, so be creative!",
-      gaps: [],
-      placeholder: "Write your thoughts here."
-    },
-    8: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to break the ice · to get the ball rolling · to get off on the wrong foot · to see eye to eye · to clear the air · to bury the hatchet · to build bridges · to burn bridges · to cut ties · to keep someone at arm's length · to give someone the cold shoulder · to turn a blind eye</em><br><br>and explain what each expression means. For example, 'To break the ice means to initiate social interaction and make people feel more comfortable.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    9: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to be a piece of cake · to be a walk in the park · to be a breeze · to be child's play · to be easy as pie · to be a no-brainer · to be a cinch · to be a doddle · to be a pushover · to be a walkover · to be a cakewalk · to be a picnic</em><br><br>and explain what each expression means. For example, 'To be a piece of cake means to be very easy.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    10: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to be a tough nut to crack · to be a hard pill to swallow · to be a bitter pill to swallow · to be a tall order · to be a long shot · to be a uphill battle · to be a struggle · to be a challenge · to be a nightmare · to be a pain in the neck · to be a headache · to be a handful</em><br><br>and explain what each expression means. For example, 'To be a tough nut to crack means to be a difficult problem or person to deal with.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    11: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to be on the same page · to be on the same wavelength · to be in sync · to be in agreement · to be in harmony · to be in accord · to be in unison · to be in tune · to be in line · to be in step · to be in concert · to be in cahoots</em><br><br>and explain what each expression means. For example, 'To be on the same page means to have the same understanding or agreement.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    12: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to be a morning person · to be a night owl · to be an early bird · to be a late riser · to be a sleepyhead · to be a heavy sleeper · to be a light sleeper · to be an insomniac · to be a restless sleeper · to be a sound sleeper · to be a deep sleeper · to be a catnapper</em><br><br>and explain what each expression means. For example, 'To be a morning person means to be someone who feels awake and energetic in the morning.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    13: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to be a bookworm · to be a know-it-all · to be a brainiac · to be a nerd · to be a geek · to be a smarty-pants · to be a teacher's pet · to be a class clown · to be a rebel · to be a troublemaker · to be a bully · to be a crybaby</em><br><br>and explain what each expression means. For example, 'To be a bookworm means to be someone who loves to read.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    14: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to be a chatterbox · to be a gossip · to be a busybody · to be a know-it-all · to be a complainer · to be a whiner · to be a grumbler · to be a moaner · to be a nag · to be a critic · to be a fault-finder · to be a nitpicker</em><br><br>and explain what each expression means. For example, 'To be a chatterbox means to be someone who talks a lot.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    15: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to be a daydreamer · to be a dreamer · to be a visionary · to be an idealist · to be a realist · to be a pragmatist · to be a cynic · to be a skeptic · to be a pessimist · to be an optimist · to be a fatalist · to be a stoic</em><br><br>and explain what each expression means. For example, 'To be a daydreamer means to be someone who often thinks about pleasant things rather than paying attention to what is happening.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    16: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to be a big spender · to be a cheapskate · to be a penny-pincher · to be a tightwad · to be a spendthrift · to be a shopaholic · to be a bargain hunter · to be a window shopper · to be a compulsive shopper · to be a impulse buyer · to be a smart shopper · to be a savvy shopper</em><br><br>and explain what each expression means. For example, 'To be a big spender means to be someone who spends a lot of money.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    17: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to be a workaholic · to be a slacker · to be a loafer · to be a shirker · to be a busy bee · to be a go-getter · to be a self-starter · to be a team player · to be a leader · to be a follower · to be a rebel · to be a maverick</em><br><br>and explain what each expression means. For example, 'To be a workaholic means to be someone who works excessively hard and finds it difficult to stop working.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    18: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to be a night owl · to be an early bird · to be a morning person · to be a late riser · to be a sleepyhead · to be a heavy sleeper · to be a light sleeper · to be an insomniac · to be a restless sleeper · to be a sound sleeper · to be a deep sleeper · to be a catnapper</em><br><br>and explain what each expression means. For example, 'To be a night owl means to be someone who tends to stay up late at night.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    19: {
-      type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>to be a social butterfly · to be a lone wolf · to be an extrovert · to be an introvert · to be an ambivert · to be a people person · to be a recluse · to be a hermit · to be a wallflower · to be a socialite · to be a party animal · to be a homebody</em><br><br>and explain what each expression means. For example, 'To be a social butterfly means to be someone who is outgoing and enjoys socializing with many different people.'",
-      gaps: [],
-      placeholder: "Write your answers here."
-    },
-    20: {
-      type:"write",
-      text: "This is the BOSS duck! Congratulations on reaching this far! Now, write a short story (at least 100 words) about a duck hunter who discovers a magical duck that grants wishes. What happens next?",
-      gaps: [],
-      placeholder: "Write your story here."
-    }
+    1: { text: "Find the hidden message in the classroom. What is the first word?", note: "Hint: Look under the teacher's desk.", gaps: ["Hidden", "Message"], placeholder: "Your answer here" },
+    2: { text: "Solve the riddle: I have cities, but no houses; forests, but no trees; and water, but no fish. What am I?", note: "Think about maps.", gaps: ["Map"], placeholder: "Your answer here" },
+    3: { text: "Complete the sequence: 1, 1, 2, 3, 5, 8, ?", note: "Fibonacci sequence.", gaps: ["13"], placeholder: "Your answer here" },
+    4: { text: "What is the capital of Brazil?", note: "Starts with B.", gaps: ["Brasília"], placeholder: "Your answer here" },
+    5: { text: "Translate 'Hello' to Spanish.", note: "It's a common greeting.", gaps: ["Hola"], placeholder: "Your answer here" },
+    6: { text: "Name a planet in our solar system.", note: "Any planet will do.", gaps: ["Mars", "Jupiter", "Earth", "Venus", "Saturn", "Uranus", "Neptune", "Mercury"], placeholder: "Your answer here" },
+    7: { text: "BONUS MISSION: Find the teacher and ask for a special code. What is the code?", note: "Teacher has the answer!", gaps: ["SpecialCode"], placeholder: "Enter the code here" },
+    8: { text: "What is 2 + 2?", note: "Simple math.", gaps: ["4"], placeholder: "Your answer here" },
+    9: { text: "What color is the sky on a clear day?", note: "Think about the daytime.", gaps: ["Blue"], placeholder: "Your answer here" },
+    10: { text: "Which animal lays eggs and can fly?", note: "Think about birds.", gaps: ["Bird"], placeholder: "Your answer here" },
+    11: { text: "What is the opposite of 'hot'?", note: "Temperature.", gaps: ["Cold"], placeholder: "Your answer here" },
+    12: { text: "How many days are in a week?", note: "Count them.", gaps: ["7"], placeholder: "Your answer here" },
+    13: { text: "What do you use to write on a blackboard?", note: "It's white.", gaps: ["Chalk"], placeholder: "Your answer here" },
+    14: { text: "What is the largest ocean on Earth?", note: "Starts with P.", gaps: ["Pacific"], placeholder: "Your answer here" },
+    15: { text: "What is the main ingredient in bread?", note: "It's a grain.", gaps: ["Flour"], placeholder: "Your answer here" },
+    16: { text: "What do bees make?", note: "It's sweet.", gaps: ["Honey"], placeholder: "Your answer here" },
+    17: { text: "Which month comes after January?", note: "Second month.", gaps: ["February"], placeholder: "Your answer here" },
+    18: { text: "What is the sound a cat makes?", note: "Meow.", gaps: ["Meow"], placeholder: "Your answer here" },
+    19: { text: "What is the name of the big star in our solar system?", note: "It gives us light and heat.", gaps: ["Sun"], placeholder: "Your answer here" },
+    20: { text: "BOSS MISSION: Create a short story (3-5 sentences) about a duck's adventure. Your teacher will approve it.", note: "Be creative!", placeholder: "Write your story here" },
   };
-
-  // --- LOCAL STORAGE ---
-  const ALL_STUDENTS_KEY = "duckHuntAllStudents";
-  let allStudents = JSON.parse(localStorage.getItem(ALL_STUDENTS_KEY)) || {};
-  let currentHunter = null;
-
-  function saveAllStudents() {
-    localStorage.setItem(ALL_STUDENTS_KEY, JSON.stringify(allStudents));
-  }
 
   // --- GAME STATE & TIMER ---
   const GAME_DURATION_SECONDS = 25 * 60; // 25 minutes
@@ -718,31 +617,87 @@
   let timeLeft = GAME_DURATION_SECONDS;
   let gameEnded = false;
 
-  // --- Firebase References ---
-  const gameStatusRef = db.ref('gameStatus');
-  const playersRef = db.ref('players');
+  // --- DOM Elements ---
+  const gridElement = document.getElementById("grid");
+  const gameTimerElement = document.getElementById("gameTimer");
+  const timerDisplay = document.getElementById("timerDisplay");
+  const scoreboard = document.getElementById("scoreboard");
+  const podiumContainer = document.getElementById("podiumContainer");
+  const allScoresList = document.getElementById("allScoresList");
 
-  // --- Firebase Listeners ---
-  gameStatusRef.on('value', (snapshot) => {
-    const gameStatus = snapshot.val();
-    if (gameStatus && gameStatus.endTime) {
-      if (!gameTimerInterval && !gameEnded) {
-        setupGameTimerCountdown(gameStatus.endTime);
-      }
-    } else {
-      // Se gameStatus ou endTime for null, significa que o jogo foi resetado
-      if (gameTimerInterval) {
-        clearInterval(gameTimerInterval);
-        gameTimerInterval = null;
-      }
-      if (!gameEnded) { // Se o jogo não terminou, reseta o estado local
-        resetGameLocalState();
-      }
+  // --- Local Storage & Current Hunter ---
+  let allStudents = JSON.parse(localStorage.getItem(ALL_STUDENTS_KEY)) || {};
+  let currentHunter = JSON.parse(localStorage.getItem(CURRENT_HUNTER_KEY));
+
+  function saveAllStudents() {
+    localStorage.setItem(ALL_STUDENTS_KEY, JSON.stringify(allStudents));
+  }
+
+  function saveCurrentHunter() {
+    localStorage.setItem(CURRENT_HUNTER_KEY, JSON.stringify(currentHunter));
+  }
+
+  async function setCurrentHunter(name) {
+    if (currentHunter && currentHunter.name === name) {
+      return; // Already selected
     }
-  });
+
+    // Tenta carregar o hunter do Firebase
+    const snapshot = await playersRef.child(name).once('value');
+    let hunterData = snapshot.val();
+
+    if (!hunterData) {
+      // Se não existe no Firebase, cria um novo
+      hunterData = {
+        name: name,
+        clearedDucks: {},
+        totalAura: 0,
+        lastLogin: serverTimestamp // Usa o timestamp do servidor
+      };
+      await playersRef.child(name).set(hunterData);
+    } else {
+      // Se existe, atualiza o lastLogin
+      await playersRef.child(name).update({ lastLogin: serverTimestamp });
+    }
+
+    currentHunter = hunterData;
+    saveCurrentHunter();
+    updateHunterDisplay();
+    renderDucks(); // Renderiza os patos com o estado do novo hunter
+  }
+
+  function isCleared(duckId) {
+    return currentHunter && currentHunter.clearedDucks && currentHunter.clearedDucks[duckId];
+  }
+
+  async function markCleared(duck) {
+    if (!currentHunter) return;
+
+    // Atualiza no Firebase
+    const updates = {};
+    updates[`players/${currentHunter.name}/clearedDucks/${duck.id}`] = serverTimestamp;
+    updates[`players/${currentHunter.name}/totalAura`] = currentHunter.totalAura + duck.aura;
+    updates[`players/${currentHunter.name}/lastClearedDuck`] = duck.id;
+    updates[`players/${currentHunter.name}/lastClearedTime`] = serverTimestamp;
+
+    await db.ref().update(updates); // Atualiza múltiplos caminhos
+
+    // Atualiza o estado local
+    currentHunter.clearedDucks[duck.id] = true;
+    currentHunter.totalAura += duck.aura;
+    saveCurrentHunter();
+    updateHunterDisplay();
+    renderDucks(); // Re-renderiza para mostrar o pato como "cleared"
+  }
 
   function resetGameLocalState() {
+    currentHunter = null;
+    localStorage.removeItem(CURRENT_HUNTER_KEY);
     gameEnded = false;
+    if (gameTimerInterval) {
+      clearInterval(gameTimerInterval);
+      gameTimerInterval = null;
+    }
     timeLeft = GAME_DURATION_SECONDS;
     timerDisplay.textContent = formatTime(timeLeft);
     gameTimerElement.classList.remove("critical");
@@ -750,80 +705,19 @@
     gridElement.style.display = 'grid';
     scoreboard.style.display = 'none';
     renderDucks();
-  }
-
-  // --- Hunter Logic ---
-  async function setCurrentHunter(hunterName) {
-    let hunterData = allStudents[hunterName];
-
-    // Tenta carregar do Firebase
-    const firebaseHunterSnapshot = await playersRef.child(hunterName).once('value');
-    const firebaseHunterData = firebaseHunterSnapshot.val();
-
-    if (firebaseHunterData) {
-      // Se há dados no Firebase, usa-os, mesclando com o local se necessário
-      if (!hunterData || firebaseHunterData.lastUpdate > (hunterData.lastUpdate || 0)) {
-        hunterData = {
-          name: hunterName,
-          cleared: firebaseHunterData.clearedDucks || [],
-          totalAura: firebaseHunterData.totalAura || 0,
-          hasBonus: firebaseHunterData.hasBonus || false,
-          lastUpdate: firebaseHunterData.lastUpdate // Armazena o timestamp do Firebase
-        };
-      }
-    }
-
-    if (!hunterData) {
-      // Se não encontrou em nenhum lugar, cria um novo
-      hunterData = { name: hunterName, cleared: [], totalAura: 0, hasBonus: false, lastUpdate: 0 };
-    }
-
-    allStudents[hunterName] = hunterData; // Atualiza o objeto global allStudents
-    currentHunter = hunterData; // Define o caçador atual
-
-    saveAllStudents(); // Salva o estado mesclado no localStorage
     updateHunterDisplay();
-    renderDucks();
-  }
-
-  function isCleared(id) {
-    return currentHunter && currentHunter.cleared.includes(id);
-  }
-
-  async function markCleared(duck) {
-    if (!currentHunter || !currentHunter.name) {
-      alert("Error: No hunter selected to mark cleared duck.");
-      return;
-    }
-
-    // Atualiza o estado local do caçador
-    if (!currentHunter.cleared.includes(duck.id)) {
-      currentHunter.cleared.push(duck.id);
-      currentHunter.totalAura += duck.aura;
-      if (duck.id === 7) currentHunter.hasBonus = true; // Marca o bônus
-
-      // Salva o progresso localmente (localStorage)
-      saveAllStudents();
-
-      // SINCRONIZAÇÃO COM FIREBASE: Envia os pontos do aluno atual
-      // O nome do nó no Firebase será o nome do caçador
-      await playersRef.child(currentHunter.name).set({
-        name: currentHunter.name,
-        totalAura: currentHunter.totalAura,
-        clearedDucks: currentHunter.cleared, // Salva os IDs dos patos caçados
-        hasBonus: currentHunter.hasBonus,
-        lastUpdate: serverTimestamp
-      });
-    }
-
-    renderDucks(); // Renderiza os patos novamente para mostrar o status "HUNTED"
-    updateHunterDisplay(); // Atualiza a aura no display
   }
 
   function canAccessDuck(duck) {
     if (!currentHunter) return false;
-    if (duck.id === 7 && currentHunter.totalAura < 20) return false;
-    if (duck.id === 20 && currentHunter.totalAura < 40) return false;
+    if (isCleared(duck.id)) return true; // Já liberado, pode acessar
+
+    if (duck.id === 7) { // Bonus duck
+      return currentHunter.totalAura >= 20;
+    }
+    if (duck.id === 20) { // Boss duck
+      return currentHunter.totalAura >= 40;
+    }
     return true;
   }
 
@@ -845,6 +739,8 @@
   const hunterNameInput = document.getElementById("hunterNameInput");
   const selectHunterBtn = document.getElementById("selectHunterBtn");
   const resetProgressBtn = document.getElementById("resetProgressBtn");
+  const endGameBtn = document.getElementById("endGameBtn"); // Adicionado
+  const resetFirebaseTimerBtn = document.getElementById("resetFirebaseTimerBtn"); // Adicionado
   const hunterNameDisplay = document.getElementById("hunterNameDisplay");
   const hunterAuraDisplay = document.getElementById("hunterAuraDisplay");
 
@@ -861,7 +757,7 @@
   selectHunterBtn.addEventListener("click", async () => {
     const name = hunterNameInput.value.trim();
     if (name) {
-      setCurrentHunter(name);
+      await setCurrentHunter(name); // Use await aqui
       if (!gameTimerInterval && !gameEnded) { // Start timer only if not already running and game not ended
         // Tenta pegar o endTime atual do Firebase
         const snapshot = await gameStatusRef.child('endTime').once('value');
@@ -882,13 +778,14 @@
 
   resetProgressBtn.addEventListener("click", () => {
     if (confirm("Are you sure you want to reset ALL hunters' progress? This cannot be undone!")) {
-      localStorage.removeItem(ALL_STUDENTS_KEY);
-      allStudents = {};
+      // Não precisa limpar localStorage de allStudents, pois o resetGame() do professor já faz isso
+      // e o resetGameLocalState() é chamado para o cliente atual.
       currentHunter = null;
+      saveCurrentHunter(); // Salva null para o hunter atual
       updateHunterDisplay();
       renderDucks();
-      alert("All progress has been reset.");
-      resetGame(); // Reset game state as well
+      // O resetGame() do professor já cuida do Firebase e do alerta
+      alert("All local progress has been reset. If you are the teacher, use the 'Reset All Progress' button for global reset.");
     }
   });
 
@@ -898,11 +795,29 @@
     }
   });
 
-  // NOVO: Listener para o botão de resetar o timer do Firebase
-  const resetFirebaseTimerBtn = document.getElementById("resetFirebaseTimerBtn");
+  // Listener para o botão de resetar o timer do Firebase
   if (resetFirebaseTimerBtn) { // Verifica se o botão existe no HTML
     resetFirebaseTimerBtn.addEventListener("click", resetFirebaseTimerOnly);
   }
+
+  // --- Listener Global para o Timer do Firebase ---
+  gameStatusRef.on('value', (snapshot) => {
+    const gameStatus = snapshot.val();
+    if (gameStatus && gameStatus.endTime) {
+      if (!gameTimerInterval && !gameEnded) {
+        setupGameTimerCountdown(gameStatus.endTime);
+      }
+    } else {
+      // Se gameStatus ou endTime for null, significa que o jogo foi resetado ou não começou
+      if (gameTimerInterval) {
+        clearInterval(gameTimerInterval);
+        gameTimerInterval = null;
+      }
+      if (!gameEnded) { // Se o jogo não terminou oficialmente, reseta o estado local
+        resetGameLocalState();
+      }
+    }
+  });
 
   function renderDucks() {
     gridElement.innerHTML = '';
@@ -1003,20 +918,27 @@
       allScoresList.innerHTML = '';
 
       // Constrói o Pódio (1º, 2º e 3º)
+      // Ajustado para garantir que sempre haja 3 posições, mesmo que vazias
       const podiumRanks = ["second", "first", "third"];
-      const podiumData = [sortedHunters[1], sortedHunters[0], sortedHunters[2]];
+      const podiumData = [sortedHunters[1], sortedHunters[0], sortedHunters[2]]; // Pega os 3 primeiros
 
       podiumData.forEach((hunter, index) => {
+        const spot = document.createElement("div");
+        spot.className = `podium-spot ${podiumRanks[index]}`;
         if (hunter) {
-          const spot = document.createElement("div");
-          spot.className = `podium-spot ${podiumRanks[index]}`;
           spot.innerHTML = `
             <div class="podium-rank">${index === 1 ? '🥇' : (index === 0 ? '🥈' : '🥉')}</div>
             <div class="podium-name">${hunter.name}</div>
             <div class="podium-aura">${hunter.totalAura} Aura</div>
           `;
-          podiumContainer.appendChild(spot);
+        } else {
+          spot.innerHTML = `
+            <div class="podium-rank">${index === 1 ? '🥇' : (index === 0 ? '🥈' : '🥉')}</div>
+            <div class="podium-name">---</div>
+            <div class="podium-aura">0 Aura</div>
+          `;
         }
+        podiumContainer.appendChild(spot);
       });
 
       // Constrói a lista completa de classificação
