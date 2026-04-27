@@ -871,17 +871,21 @@
   }
 
   function endGame() {
-    gameEnded = true;
-    if (gameTimerInterval) {
-      clearInterval(gameTimerInterval);
-      gameTimerInterval = null;
-    }
-    gameTimerElement.style.display = 'none'; // Hide timer
-    gridElement.style.display = 'none'; // Hide ducks
-    scoreboard.style.display = 'flex'; // Show scoreboard
+  // Se o jogo já está marcado como terminado, não faz nada
+  if (gameEnded) return;
 
-    displayScores();
+  gameEnded = true; // Marca o jogo como terminado localmente
+  if (gameTimerInterval) {
+    clearInterval(gameTimerInterval);
+    gameTimerInterval = null;
   }
+  gameTimerElement.style.display = 'none'; // Hide timer
+  gridElement.style.display = 'none'; // Hide ducks
+  scoreboard.style.display = 'flex'; // Show scoreboard
+
+  displayScores();
+  console.log("DEBUG: Jogo finalizado localmente e placar exibido.");
+}
 
   // Função para resetar o jogo COMPLETAMENTE (professor)
   async function resetGame() {
