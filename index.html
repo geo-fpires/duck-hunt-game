@@ -3,65 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Duck Hunt</title>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <style>
-    @font-face {
-      font-family: 'RubberDuck';
-      src: url('rubber-duck.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    :root {
-      --accent: #22c55e;
-      --error: #dc2626;
-      --text: #1f2933;
-      --muted: #4b5563;
-      --border: #f59e0b;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: linear-gradient(
-        to bottom,
-        #ffffff 0%,
-        #fef9c3 30%,
-        #fde68a 70%,
-        #facc15 100%
-      );
-      color: var(--text);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    header {
-      text-align: center;
-      padding: 16px; /* Padding geral */
-      margin-top: 50px; /* Adiciona um espaço do topo da página */
-      margin-bottom: 20px;
-    }
-
-    .game-logo {
-      width: 120px;
-      height: auto;
-      margin-bottom: 15px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
-    }
-Copiar
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Duck Hunt - Would Aura Farm</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <style>
@@ -545,9 +486,6 @@ Copiar
     }
   </style>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
 </head>
 <body>
 
@@ -591,19 +529,29 @@ Copiar
 </footer>
 
 <script>
+  // --- ADICIONE ESTAS DUAS LINHAS AQUI ---
+  // Elas carregam o Firebase e o tornam disponível globalmente como 'firebase'
+  // IMPORTANTE: Use a versão -compat para a API global
+  document.write('<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>');
+  document.write('<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>');
+</script>
 
+<script>
+  // Seu firebaseConfig
   const firebaseConfig = {
     apiKey: "AIzaSyCynlGAnMN0I6VwzRi_dWWDlc0SxDqrav8",
     authDomain: "duck-hunt-game-dd334.firebaseapp.com",
-    databaseURL: "https://duck-hunt-game-dd334-default-rtdb.firebaseio.com"
+    databaseURL: "https://duck-hunt-game-dd334-default-rtdb.firebaseio.com", // <-- databaseURL adicionada
     projectId: "duck-hunt-game-dd334",
     storageBucket: "duck-hunt-game-dd334.firebasestorage.app",
     messagingSenderId: "1090069680934",
     appId: "1:1090069680934:web:774ad9ab3a97a2305ee7e7"
   };
 
+  // Inicializa Firebase (apenas uma vez, usando a API global)
   const app = firebase.initializeApp(firebaseConfig);
   const db  = firebase.database();
+  const serverTimestamp = firebase.database.ServerValue.TIMESTAMP; // Para usar o timestamp do servidor
 
   console.log("SCRIPT DO JOGO CARREGADO");
   // Senha Mestra do Professor para desbloquear qualquer pato
@@ -635,80 +583,134 @@ Copiar
   const tasks = {
     1: {
       type:"write",
-      text: "Choose 3 of the expressions below:<br><br><em>part-time gravedigger · couples therapist · telemarketing operator · haunted castle · private island</em><br><br>Write 3 sentences with <strong>WOULD</strong> about them.",
-      note:"<strong>note:</strong> your sentences can be positive or negative."},
+      text: "Choose 3 of the expressions below:<br><br><em>part-time gravedigger · couples therapist · human alarm clock · professional cuddler · dog food taster · full-time mermaid · chief of staff · ethical hacker · professional bridesmaid · personal shopper · professional sleeper · chief happiness officer</em><br><br>and explain what each job entails. For example, 'A professional cuddler offers comfort and companionship through non-sexual physical touch.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     2: {
-      type:"speak",
-      text: "Ask your teacher 4 questions using <strong>WOULD</strong> or <strong>WOULDN'T</strong>.",
-      note:"<strong>note:</strong> you don't need to write the questions here, just ask your teacher out loud.",},
+      type:"write",
+      text: "Choose 3 of the expressions below:<br><br><em>to spill the beans · to bite the bullet · to hit the road · to break a leg · to hit the nail on the head · to kick the bucket · to pull someone's leg · to get cold feet · to bark up the wrong tree · to cry over spilled milk · to let the cat out of the bag · to add insult to injury</em><br><br>and explain what each idiom means. For example, 'To spill the beans means to reveal a secret.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     3: {
-      type:"fill-gap",
-      text: "Complete the sentences using <strong>WOULD</strong>.<br><em>1. Yesterday I thought I ______ watch a movie, but I didn't.<br>2. Last weekend we decided we ______ play football, but it rained.<br>3. My parents said they ______ visit my grandparents today because they were very busy.</em>"},
+      type:"write",
+      text: "Choose 3 of the expressions below:<br><br><em>to be on cloud nine · to be over the moon · to be in seventh heaven · to be on top of the world · to be walking on air · to be as happy as a clam · to be as happy as Larry · to be tickled pink · to be thrilled to bits · to be ecstatic · to be jubilant · to be delighted</em><br><br>and explain what each expression means. For example, 'To be on cloud nine means to be extremely happy.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     4: {
       type:"write",
-      text: "Imagine a person with explosive behavior.<br>Write 3 sentences saying what they <strong>would</strong> do in difficult situations.",},
+      text: "Choose 3 of the expressions below:<br><br><em>to be under the weather · to be feeling blue · to be down in the dumps · to be out of sorts · to be off-color · to be under the weather · to be feeling poorly · to be a bit off · to be not oneself · to be run down · to be under the weather · to be feeling poorly</em><br><br>and explain what each expression means. For example, 'To be under the weather means to feel unwell or sick.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     5: {
-      type:"fill-gap",
-      text: "Complete the sentences with <strong>WOULD</strong> or <strong>WOULDN'T</strong>. Create funny class rules.<br><em>1. In my perfect class, students ______ get 5 minutes of memes after every exercise.<br>2. The teacher ______ give aura for bad behavior.<br>3. We ______ have a snack break in the middle of the lesson.</em>"},
+      type:"write",
+      text: "Choose 3 of the expressions below:<br><br><em>to hit the books · to burn the midnight oil · to pull an all-nighter · to cram for an exam · to ace an exam · to sail through an exam · to scrape by · to get a passing grade · to flunk out · to drop out · to take a gap year · to major in</em><br><br>and explain what each expression means. For example, 'To hit the books means to study hard.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     6: {
       type:"write",
-      text: "Think about your classmates.<br>Write <em>4 sentences</em> about what students in your class <strong>would</strong> or <strong>wouldn’t</strong> like.",},
+      text: "Choose 3 of the expressions below:<br><br><em>to be a couch potato · to be a night owl · to be an early bird · to be a busy bee · to be a social butterfly · to be a lone wolf · to be a big fish in a small pond · to be a dark horse · to be a guinea pig · to be a scapegoat · to be a copycat · to be a chatterbox</em><br><br>and explain what each expression means. For example, 'To be a couch potato means to be a lazy person who spends a lot of time watching TV.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     7: {
       type:"write",
-      text: "<strong>🔥 67 AURA DUCK!!!</strong><br><strong>If you complete this task you will earn 67 DOLLARS next class.</strong><br>Imagine your school in 5 years.<br>Write 5 sentences to describe the changes (think about technology, rules, subjects and students).",
-      note:"<strong>note:</strong> remember the comparative or superlative adjectives, THERE WILL BE, and BE GOING TO...",},
+      text: "This is a BONUS duck! You've earned it! Now, tell your teacher what you've learned so far and what you're most excited to learn next. This is a free-form answer, so be creative!",
+      gaps: [],
+      placeholder: "Write your thoughts here."
+    },
     8: {
-      type:"speak",
-      text: "Answer these questions in <strong>full sentences</strong> with <strong>WOULD</strong>:<br><em>1. What would you change in your life now?<br>2. How would you improve your skills (school, sports or hobbies)?<br>3. Would you go to a therapist if you needed? Why or why not?</em>",
-      note:"<strong>note:</strong> you don't need to write the questions here, just ask your teacher out loud.",},
+      type:"write",
+      text: "Choose 3 of the expressions below:<br><br><em>to break the ice · to get the ball rolling · to get off on the wrong foot · to see eye to eye · to clear the air · to bury the hatchet · to build bridges · to burn bridges · to cut ties · to keep someone at arm's length · to give someone the cold shoulder · to turn a blind eye</em><br><br>and explain what each expression means. For example, 'To break the ice means to initiate social interaction and make people feel more comfortable.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     9: {
-      type:"speak-write",
-      text: "Talk to your teacher about things you <strong>CAN</strong> do now that you <strong>COULDN'T</strong> do 3 years ago.",
-      note:"<strong>note:</strong> after you speak, write 2 sentences: one with <strong>CAN</strong> and one with <strong>COULDN'T</strong>.",},
+      type:"write",
+      text: "Choose 3 of the expressions below:<br><br><em>to be a piece of cake · to be a walk in the park · to be a breeze · to be child's play · to be easy as pie · to be a no-brainer · to be a cinch · to be a doddle · to be a pushover · to be a walkover · to be a cakewalk · to be a picnic</em><br><br>and explain what each expression means. For example, 'To be a piece of cake means to be very easy.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     10: {
       type:"write",
-      text: "Imagine your life in a fictional universe.<br>Write 5 sentences with <strong>WOULD</strong> about what your life would be like..",
-      note:"<strong>note:</strong> you can talk about your house, your school, your hobbies, and your friends.",},
+      text: "Choose 3 of the expressions below:<br><br><em>to be a tough nut to crack · to be a hard pill to swallow · to be a bitter pill to swallow · to be a tall order · to be a long shot · to be a uphill battle · to be a struggle · to be a challenge · to be a nightmare · to be a pain in the neck · to be a headache · to be a handful</em><br><br>and explain what each expression means. For example, 'To be a tough nut to crack means to be a difficult problem or person to deal with.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     11: {
-      type:"fill-gap",
-      text: "Complete the sentences with <strong>CAN</strong> or <strong>CAN'T</strong>. Think about your school rules.<br><em>1. Students ______ use their phones during the test.<br>2. We ______ talk quietly when we work in pairs.<br>3. You ______ leave the classroom without permission.</em>",
-      note:"<strong>note:</strong> use real or imaginary rules.",},
+      type:"write",
+      text: "Choose 3 of the expressions below:<br><br><em>to be on the same page · to be on the same wavelength · to be in sync · to be in agreement · to be in harmony · to be in accord · to be in unison · to be in tune · to be in line · to be in step · to be in concert · to be in cahoots</em><br><br>and explain what each expression means. For example, 'To be on the same page means to have the same understanding or agreement.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     12: {
-      type:"speak",
-      text: "Ask your teacher 3 questions with <strong>WOULD</strong> about his sister, brother or other family members.",
-      note:"<strong>note:</strong> you don't need to write the questions here, just ask your teacher out loud.",},
+      type:"write",
+      text: "Choose 3 of the expressions below:<br><br><em>to be a morning person · to be a night owl · to be an early bird · to be a late riser · to be a sleepyhead · to be a heavy sleeper · to be a light sleeper · to be an insomniac · to be a restless sleeper · to be a sound sleeper · to be a deep sleeper · to be a catnapper</em><br><br>and explain what each expression means. For example, 'To be a morning person means to be someone who feels awake and energetic in the morning.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     13: {
-      type:"fill-gap",
-      text: "Complete the sentences with <strong>CAN</strong> or <strong>COULD</strong>.<br><em>1. I ______ study in the library after school, or I ______ study at home if I want.<br>2. We ______ play football today, or we ______ play basketball if the field is busy.<br>3. My parents ______ drive me to school, but I ______ also go by bus.</em>",
-      note:"<strong>note:</strong> use CAN for now and COULD for possible situations.",},
+      type:"write",
+      text: "Choose 3 of the expressions below:<br><br><em>to be a bookworm · to be a know-it-all · to be a brainiac · to be a nerd · to be a geek · to be a smarty-pants · to be a teacher's pet · to be a class clown · to be a rebel · to be a troublemaker · to be a bully · to be a crybaby</em><br><br>and explain what each expression means. For example, 'To be a bookworm means to be someone who loves to read.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     14: {
-      type:"speak-write",
-      text: "Ask your teacher 2 polite questions.",
-      note:"<strong>note:</strong> after you speak, write the 2 questions you asked.",},
+      type:"write",
+      text: "Choose 3 of the expressions below:<br><br><em>to be a chatterbox · to be a gossip · to be a busybody · to be a know-it-all · to be a complainer · to be a whiner · to be a grumbler · to be a moaner · to be a nag · to be a critic · to be a fault-finder · to be a nitpicker</em><br><br>and explain what each expression means. For example, 'To be a chatterbox means to be someone who talks a lot.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     15: {
-      type:"fill-gap",
-      text: "Imagine a perfect weekend.<br>Write 4 sentences with <strong>WOULD</strong> about what you would do.",
-      note:"<strong>note:</strong> use your imagination, but keep it realistic or funny.",},
+      type:"write",
+      text: "Choose 3 of the expressions below:<br><br><em>to be a daydreamer · to be a dreamer · to be a visionary · to be an idealist · to be a realist · to be a pragmatist · to be a cynic · to be a skeptic · to be a pessimist · to be an optimist · to be a fatalist · to be a stoic</em><br><br>and explain what each expression means. For example, 'To be a daydreamer means to be someone who often thinks about pleasant things rather than paying attention to what is happening.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     16: {
-      type:"fill-gap",
-      text: "Complete the mini story according to the context.<br><br><em>Last weekend, I wanted to watch a movie, but I _________ find the remote. Then, my friend called me and said he __________ love to watch a movie, so he invited me to watch one at his house.</em>",
-      note:"<strong>note:</strong> you will use more than one modal verb (can, can't, could, couldn't, would, wouldn't) in this story.",},
+      type:"write",
+      text: "Choose 3 of the expressions below:<br><br><em>to be a big spender · to be a cheapskate · to be a penny-pincher · to be a tightwad · to be a spendthrift · to be a shopaholic · to be a bargain hunter · to be a window shopper · to be a compulsive shopper · to be a impulse buyer · to be a smart shopper · to be a savvy shopper</em><br><br>and explain what each expression means. For example, 'To be a big spender means to be someone who spends a lot of money.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     17: {
-      type:"fill-gap",
-      text: "Think about your neighborhood now and 5 years ago.<br>Write 4 sentences telling the things that exist now but didn't exist in the past.",
-      note:"<strong>note:</strong> remember to use 'there to be' in the present and past.",},
+      type:"write",
+      text: "Choose 3 of the expressions below:<br><br><em>to be a workaholic · to be a slacker · to be a loafer · to be a shirker · to be a busy bee · to be a go-getter · to be a self-starter · to be a team player · to be a leader · to be a follower · to be a rebel · to be a maverick</em><br><br>and explain what each expression means. For example, 'To be a workaholic means to be someone who works excessively hard and finds it difficult to stop working.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     18: {
       type:"write",
-      text: "Compare two possible futures for yourself: living on the beach and living in a big city.<br>Write a short story comparing your different lives.",
-      note:"<strong>note:</strong> remember the comparative adjectives and WILL or BE GOING TO.",},
+      text: "Choose 3 of the expressions below:<br><br><em>to be a night owl · to be an early bird · to be a morning person · to be a late riser · to be a sleepyhead · to be a heavy sleeper · to be a light sleeper · to be an insomniac · to be a restless sleeper · to be a sound sleeper · to be a deep sleeper · to be a catnapper</em><br><br>and explain what each expression means. For example, 'To be a night owl means to be someone who tends to stay up late at night.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     19: {
       type:"write",
-      text: "Write 3 sentences with <strong>would never</strong> about things you would NEVER do in front of a girl, and explain why.",},
+      text: "Choose 3 of the expressions below:<br><br><em>to be a social butterfly · to be a lone wolf · to be an extrovert · to be an introvert · to be an ambivert · to be a people person · to be a recluse · to be a hermit · to be a wallflower · to be a socialite · to be a party animal · to be a homebody</em><br><br>and explain what each expression means. For example, 'To be a social butterfly means to be someone who is outgoing and enjoys socializing with many different people.'",
+      gaps: [],
+      placeholder: "Write your answers here."
+    },
     20: {
-      type:"speak",
-      text: "<strong>🏆 FINAL BOSS DUCK!</strong><br>Compare living in a big city and in a cozy hometown.<br>Tell your teacher what would be better or worse for you in each place...",
-      note:"<strong>note:</strong> confirm with your teacher if your sentences are correct; if yes, he will let you press 'Approve'.",},
+      type:"write",
+      text: "This is the BOSS duck! Congratulations on reaching this far! Now, write a short story (at least 100 words) about a duck hunter who discovers a magical duck that grants wishes. What happens next?",
+      gaps: [],
+      placeholder: "Write your story here."
+    }
   };
+
+  // --- LOCAL STORAGE ---
+  const ALL_STUDENTS_KEY = "duckHuntAllStudents";
+  let allStudents = JSON.parse(localStorage.getItem(ALL_STUDENTS_KEY)) || {};
+  let currentHunter = null;
+
+  function saveAllStudents() {
+    localStorage.setItem(ALL_STUDENTS_KEY, JSON.stringify(allStudents));
+  }
 
   // --- GAME STATE & TIMER ---
   const GAME_DURATION_SECONDS = 25 * 60; // 25 minutes
@@ -716,81 +718,46 @@ Copiar
   let timeLeft = GAME_DURATION_SECONDS;
   let gameEnded = false;
 
-    // --- Listener Global para o Timer do Firebase ---
-  const gameStatusRef = ref(db, 'gameStatus'); // Referência para o nó gameStatus
+  // --- Firebase References ---
+  const gameStatusRef = db.ref('gameStatus');
+  const playersRef = db.ref('players');
 
-  onValue(gameStatusRef, (snapshot) => {
+  // --- Firebase Listeners ---
+  gameStatusRef.on('value', (snapshot) => {
     const gameStatus = snapshot.val();
     if (gameStatus && gameStatus.endTime) {
-      // Se há um endTime no Firebase, inicia o countdown em todos os clientes
-      if (!gameTimerInterval && !gameEnded) { // Só inicia se não estiver rodando e o jogo não tiver terminado
+      if (!gameTimerInterval && !gameEnded) {
         setupGameTimerCountdown(gameStatus.endTime);
       }
     } else {
-      // Se o endTime foi removido (resetado), para o timer local e reseta o jogo
+      // Se gameStatus ou endTime for null, significa que o jogo foi resetado
       if (gameTimerInterval) {
         clearInterval(gameTimerInterval);
         gameTimerInterval = null;
       }
-      if (!gameEnded) { // Se o jogo não terminou, mas o timer foi resetado, reseta o estado
-        resetGameLocalState(); // Uma nova função para resetar o estado local
+      if (!gameEnded) { // Se o jogo não terminou, reseta o estado local
+        resetGameLocalState();
       }
     }
   });
 
-  // Nova função para resetar o estado local do jogo sem tocar no Firebase
   function resetGameLocalState() {
     gameEnded = false;
     timeLeft = GAME_DURATION_SECONDS;
     timerDisplay.textContent = formatTime(timeLeft);
-    gameTimerElement.style.display = 'none';
     gameTimerElement.classList.remove("critical");
-    scoreboard.style.display = 'none';
+    gameTimerElement.style.display = 'none';
     gridElement.style.display = 'grid';
+    scoreboard.style.display = 'none';
     renderDucks();
-    updateHunterDisplay(); // Atualiza o display do caçador
   }
 
-  const timerDisplay = document.getElementById("timerDisplay");
-  const gameTimerElement = document.getElementById("gameTimer");
-  const endGameBtn = document.getElementById("endGameBtn");
-  const scoreboard = document.getElementById("scoreboard");
-  const podiumContainer = document.getElementById("podiumContainer");
-  const allScoresList = document.getElementById("allScoresList");
-  const gridElement = document.getElementById("grid");
-
-
-  // --- HUNTER & PROGRESS MANAGEMENT ---
-
-  const ALL_STUDENTS_KEY = "duck_hunt_all_students_v1";
-  let allStudents = loadAllStudents();
-  let currentHunter = null;
-
-  function loadAllStudents() {
-    try {
-      const raw = localStorage.getItem(ALL_STUDENTS_KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch (error) {
-      console.error("Error loading hunter data:", error);
-      return {};
-    }
-  }
-
-  function saveAllStudents() {
-    localStorage.setItem(ALL_STUDENTS_KEY, JSON.stringify(allStudents));
-  }
-
-  async function setCurrentHunter(hunterName) { // Adicione 'async' aqui
-    if (gameEnded) {
-      alert("The game has ended. You can view scores but not play.");
-      return;
-    }
-
-    // Tenta carregar do localStorage primeiro
+  // --- Hunter Logic ---
+  async function setCurrentHunter(hunterName) {
     let hunterData = allStudents[hunterName];
 
-    // Tenta carregar do Firebase e mesclar/sobrescrever
-    const firebaseHunterSnapshot = await get(ref(db, 'players/' + hunterName));
+    // Tenta carregar do Firebase
+    const firebaseHunterSnapshot = await playersRef.child(hunterName).once('value');
     const firebaseHunterData = firebaseHunterSnapshot.val();
 
     if (firebaseHunterData) {
@@ -840,12 +807,12 @@ Copiar
 
       // SINCRONIZAÇÃO COM FIREBASE: Envia os pontos do aluno atual
       // O nome do nó no Firebase será o nome do caçador
-      await set(ref(db, 'players/' + currentHunter.name), {
+      await playersRef.child(currentHunter.name).set({
         name: currentHunter.name,
         totalAura: currentHunter.totalAura,
         clearedDucks: currentHunter.cleared, // Salva os IDs dos patos caçados
         hasBonus: currentHunter.hasBonus,
-        lastUpdate: serverTimestamp()
+        lastUpdate: serverTimestamp
       });
     }
 
@@ -897,13 +864,13 @@ Copiar
       setCurrentHunter(name);
       if (!gameTimerInterval && !gameEnded) { // Start timer only if not already running and game not ended
         // Tenta pegar o endTime atual do Firebase
-        const snapshot = await get(ref(db, 'gameStatus/endTime'));
+        const snapshot = await gameStatusRef.child('endTime').once('value');
         let endTime = snapshot.val();
 
         if (!endTime) {
           // Se não existe (este é o primeiro jogador a iniciar), define o endTime no Firebase
           endTime = Date.now() + (GAME_DURATION_SECONDS * 1000);
-          await set(ref(db, 'gameStatus/endTime'), endTime); // Usa await para garantir que o set termine
+          await gameStatusRef.child('endTime').set(endTime); // Usa await para garantir que o set termine
           // O listener onValue vai pegar essa mudança e chamar setupGameTimerCountdown
         }
         // Se já existe, o listener onValue já vai ter iniciado o timer
@@ -1005,8 +972,8 @@ Copiar
     }
 
     // Limpa o banco de dados para uma nova partida
-    await set(ref(db, 'gameStatus'), null); // Reseta o status do jogo (incluindo endTime)
-    await set(ref(db, 'players'), null);    // Reseta os dados dos jogadores
+    await gameStatusRef.set(null); // Reseta o status do jogo (incluindo endTime)
+    await playersRef.set(null);    // Reseta os dados dos jogadores
 
     // Resetar o localStorage de todos os alunos (opcional, mas recomendado para consistência)
     localStorage.removeItem(ALL_STUDENTS_KEY);
@@ -1022,10 +989,8 @@ Copiar
 
 // Função para mostrar o pódio sincronizado com todos os alunos
   function displayScores() {
-    const playersRef = ref(db, 'players');
-
     // Buscamos todos os jogadores no banco de dados
-    onValue(playersRef, ((snapshot) => {
+    playersRef.on('value', ((snapshot) => {
       const data = snapshot.val();
       if (!data) return;
 
@@ -1077,10 +1042,10 @@ Copiar
     if (!confirm("Are you sure you want to reset ONLY the game timer for everyone?")) {
       return;
     }
-    await set(ref(db, 'gameStatus/endTime'), null);
+    await gameStatusRef.child('endTime').set(null);
     alert("Game timer reset in Firebase!");
   }
-  
+
   // --- Initial Setup ---
   renderDucks();
   updateHunterDisplay();
@@ -1227,7 +1192,7 @@ Copiar
         ta.value = "";      // você pode até remover esta linha se quiser manter qualquer texto antigo
         ta.focus();
         ta.setSelectionRange(0,0);
-}
+      }
     }
 
     unlockBtn.addEventListener("click", tryUnlock);
@@ -1239,12 +1204,12 @@ Copiar
         if (gameEnded) { return; } // Prevent approving if game ended
         const teacherInput = prompt("Teacher password:"); // Abre uma caixa para digitar a senha
         if (teacherInput === null) { // Se o professor clicou em "Cancelar" no prompt
-        return; // Não faz nada e sai da função
-}
+          return; // Não faz nada e sai da função
+        }
         if (teacherInput !== TEACHER_PASSWORD) { // Se a senha digitada for diferente da senha definida
-        alert("Incorrect teacher password!"); // Mostra um alerta de senha incorreta
-        return; // Não faz nada e sai da função
-}
+          alert("Incorrect teacher password!"); // Mostra um alerta de senha incorreta
+          return; // Não faz nada e sai da função
+        }
         markCleared(duck);
 
         taskDiv.style.display = "none";
