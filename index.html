@@ -789,6 +789,8 @@
     }
   });
 
+const endGameBtn = document.getElementById('endGameBtn');
+if (endGameBtn) {
   endGameBtn.addEventListener('click', async () => { // Adicionado 'async' aqui
     // Se o jogo já terminou globalmente (via Firebase), apenas exibe o placar localmente
     if (gameEnded) {
