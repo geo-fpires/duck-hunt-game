@@ -546,6 +546,28 @@ Copiar
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "firebase/app";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCynlGAnMN0I6VwzRi_dWWDlc0SxDqrav8",
+    authDomain: "duck-hunt-game-dd334.firebaseapp.com",
+    projectId: "duck-hunt-game-dd334",
+    storageBucket: "duck-hunt-game-dd334.firebasestorage.app",
+    messagingSenderId: "1090069680934",
+    appId: "1:1090069680934:web:774ad9ab3a97a2305ee7e7"
+  };
+    
+  // Inicializa Firebase
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+  const gameRef = database.ref('game'); // nó principal do jogo
+  </script>
+  
 </head>
 <body>
 
@@ -589,7 +611,26 @@ Copiar
 </footer>
 
 <script type="module">
-  alert("CARREGOU O SCRIPT DO JOGO!");
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getDatabase, ref, set, get, onValue, update } 
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "…",
+    authDomain: "duck-hunt-game-dd334.firebaseapp.com",
+    databaseURL: "https://duck-hunt-game-dd334-default-rtdb.firebaseio.com",
+    projectId: "duck-hunt-game-dd334",
+    storageBucket: "duck-hunt-game-dd334.firebasestorage.app",
+    messagingSenderId: "1090069680934",
+    appId: "1:1090069680934:web:774ad9ab3a97a2305ee7e7"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+  const app = firebase.initializeApp(firebaseConfig);
+  const db  = firebase.database();
+
+  console.log("SCRIPT DO JOGO CARREGADO");
   // Senha Mestra do Professor para desbloquear qualquer pato
   const MASTER_TEACHER_PASSWORD = "masterduck"; // Altere "masterduck" para a senha mestra que desejar
   const TEACHER_PASSWORD = "aura67"; // coloque aqui a senha que você quiser
@@ -700,6 +741,41 @@ Copiar
   let timeLeft = GAME_DURATION_SECONDS;
   let gameEnded = false;
 
+    // --- Listener Global para o Timer do Firebase ---
+  const gameStatusRef = ref(db, 'gameStatus'); // Referência para o nó gameStatus
+
+  onValue(gameStatusRef, (snapshot) => {
+    const gameStatus = snapshot.val();
+    if (gameStatus && gameStatus.endTime) {
+      // Se há um endTime no Firebase, inicia o countdown em todos os clientes
+      if (!gameTimerInterval && !gameEnded) { // Só inicia se não estiver rodando e o jogo não tiver terminado
+        setupGameTimerCountdown(gameStatus.endTime);
+      }
+    } else {
+      // Se o endTime foi removido (resetado), para o timer local e reseta o jogo
+      if (gameTimerInterval) {
+        clearInterval(gameTimerInterval);
+        gameTimerInterval = null;
+      }
+      if (!gameEnded) { // Se o jogo não terminou, mas o timer foi resetado, reseta o estado
+        resetGameLocalState(); // Uma nova função para resetar o estado local
+      }
+    }
+  });
+
+  // Nova função para resetar o estado local do jogo sem tocar no Firebase
+  function resetGameLocalState() {
+    gameEnded = false;
+    timeLeft = GAME_DURATION_SECONDS;
+    timerDisplay.textContent = formatTime(timeLeft);
+    gameTimerElement.style.display = 'none';
+    gameTimerElement.classList.remove("critical");
+    scoreboard.style.display = 'none';
+    gridElement.style.display = 'grid';
+    renderDucks();
+    updateHunterDisplay(); // Atualiza o display do caçador
+  }
+
   const timerDisplay = document.getElementById("timerDisplay");
   const gameTimerElement = document.getElementById("gameTimer");
   const endGameBtn = document.getElementById("endGameBtn");
@@ -729,16 +805,41 @@ Copiar
     localStorage.setItem(ALL_STUDENTS_KEY, JSON.stringify(allStudents));
   }
 
-  function setCurrentHunter(hunterName) {
+  async function setCurrentHunter(hunterName) { // Adicione 'async' aqui
     if (gameEnded) {
       alert("The game has ended. You can view scores but not play.");
       return;
     }
-    if (!allStudents[hunterName]) {
-      allStudents[hunterName] = { cleared: [], totalAura: 0, hasBonus: false }; // Added hasBonus
+
+    // Tenta carregar do localStorage primeiro
+    let hunterData = allStudents[hunterName];
+
+    // Tenta carregar do Firebase e mesclar/sobrescrever
+    const firebaseHunterSnapshot = await get(ref(db, 'players/' + hunterName));
+    const firebaseHunterData = firebaseHunterSnapshot.val();
+
+    if (firebaseHunterData) {
+      // Se há dados no Firebase, usa-os, mesclando com o local se necessário
+      if (!hunterData || firebaseHunterData.lastUpdate > (hunterData.lastUpdate || 0)) {
+        hunterData = {
+          name: hunterName,
+          cleared: firebaseHunterData.clearedDucks || [],
+          totalAura: firebaseHunterData.totalAura || 0,
+          hasBonus: firebaseHunterData.hasBonus || false,
+          lastUpdate: firebaseHunterData.lastUpdate // Armazena o timestamp do Firebase
+        };
+      }
     }
-    currentHunter = allStudents[hunterName];
-    saveAllStudents();
+
+    if (!hunterData) {
+      // Se não encontrou em nenhum lugar, cria um novo
+      hunterData = { name: hunterName, cleared: [], totalAura: 0, hasBonus: false, lastUpdate: 0 };
+    }
+
+    allStudents[hunterName] = hunterData; // Atualiza o objeto global allStudents
+    currentHunter = hunterData; // Define o caçador atual
+
+    saveAllStudents(); // Salva o estado mesclado no localStorage
     updateHunterDisplay();
     renderDucks();
   }
@@ -747,17 +848,34 @@ Copiar
     return currentHunter && currentHunter.cleared.includes(id);
   }
 
-  function markCleared(duck) {
-    if (currentHunter && !isCleared(duck.id)) {
+  async function markCleared(duck) {
+    if (!currentHunter || !currentHunter.name) {
+      alert("Error: No hunter selected to mark cleared duck.");
+      return;
+    }
+
+    // Atualiza o estado local do caçador
+    if (!currentHunter.cleared.includes(duck.id)) {
       currentHunter.cleared.push(duck.id);
       currentHunter.totalAura += duck.aura;
-      // Check for bonus: if all ducks are cleared
-      if (currentHunter.cleared.length === duckConfigs.length) {
-        currentHunter.hasBonus = true;
-      }
+      if (duck.id === 7) currentHunter.hasBonus = true; // Marca o bônus
+
+      // Salva o progresso localmente (localStorage)
       saveAllStudents();
-      updateHunterDisplay();
+
+      // SINCRONIZAÇÃO COM FIREBASE: Envia os pontos do aluno atual
+      // O nome do nó no Firebase será o nome do caçador
+      await set(ref(db, 'players/' + currentHunter.name), {
+        name: currentHunter.name,
+        totalAura: currentHunter.totalAura,
+        clearedDucks: currentHunter.cleared, // Salva os IDs dos patos caçados
+        hasBonus: currentHunter.hasBonus,
+        lastUpdate: serverTimestamp()
+      });
     }
+
+    renderDucks(); // Renderiza os patos novamente para mostrar o status "HUNTED"
+    updateHunterDisplay(); // Atualiza a aura no display
   }
 
   function canAccessDuck(duck) {
@@ -790,7 +908,7 @@ Copiar
 
   function updateHunterDisplay() {
     if (currentHunter) {
-      hunterNameDisplay.textContent = `Hunter: ${hunterNameInput.value}`;
+      hunterNameDisplay.textContent = `Hunter: ${currentHunter.name}`;
       hunterAuraDisplay.textContent = `Aura: ${currentHunter.totalAura}`;
     } else {
       hunterNameDisplay.textContent = "Hunter: None selected";
@@ -798,12 +916,22 @@ Copiar
     }
   }
 
-  selectHunterBtn.addEventListener("click", () => {
+  selectHunterBtn.addEventListener("click", async () => {
     const name = hunterNameInput.value.trim();
     if (name) {
       setCurrentHunter(name);
       if (!gameTimerInterval && !gameEnded) { // Start timer only if not already running and game not ended
-        startGameTimer();
+        // Tenta pegar o endTime atual do Firebase
+        const snapshot = await get(ref(db, 'gameStatus/endTime'));
+        let endTime = snapshot.val();
+
+        if (!endTime) {
+          // Se não existe (este é o primeiro jogador a iniciar), define o endTime no Firebase
+          endTime = Date.now() + (GAME_DURATION_SECONDS * 1000);
+          await set(ref(db, 'gameStatus/endTime'), endTime); // Usa await para garantir que o set termine
+          // O listener onValue vai pegar essa mudança e chamar setupGameTimerCountdown
+        }
+        // Se já existe, o listener onValue já vai ter iniciado o timer
       }
     } else {
       alert("Please enter your hunter name!");
@@ -828,6 +956,12 @@ Copiar
     }
   });
 
+  // NOVO: Listener para o botão de resetar o timer do Firebase
+  const resetFirebaseTimerBtn = document.getElementById("resetFirebaseTimerBtn");
+  if (resetFirebaseTimerBtn) { // Verifica se o botão existe no HTML
+    resetFirebaseTimerBtn.addEventListener("click", resetFirebaseTimerOnly);
+  }
+
   function renderDucks() {
     gridElement.innerHTML = '';
     duckConfigs.forEach(cfg => gridElement.appendChild(buildCard(cfg)));
@@ -841,20 +975,24 @@ Copiar
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   }
 
-  function startGameTimer() {
-    if (gameTimerInterval) clearInterval(gameTimerInterval); // Clear any existing timer
+  // Esta função agora APENAS configura o setInterval para contar a partir de um endTime
+  // Ela NÃO define o endTime no Firebase. Isso será feito pelo primeiro jogador.
+  function setupGameTimerCountdown(endTime) {
+    if (gameTimerInterval) clearInterval(gameTimerInterval); // Limpa qualquer timer anterior
     gameEnded = false;
-    timeLeft = GAME_DURATION_SECONDS;
-    gameTimerElement.classList.remove("critical");
-    timerDisplay.textContent = formatTime(timeLeft);
-    gameTimerElement.style.display = 'flex'; // Show timer
+    gameTimerElement.style.display = 'flex';
 
     gameTimerInterval = setInterval(() => {
-      timeLeft--;
+      const now = Date.now();
+      const diff = Math.floor((endTime - now) / 1000);
+
+      timeLeft = Math.max(0, diff);
       timerDisplay.textContent = formatTime(timeLeft);
 
-      if (timeLeft <= 60) { // Less than 1 minute left
+      if (timeLeft <= 60) {
         gameTimerElement.classList.add("critical");
+      } else {
+        gameTimerElement.classList.remove("critical"); // Remove se o tempo não for crítico
       }
 
       if (timeLeft <= 0) {
@@ -878,57 +1016,96 @@ Copiar
     displayScores();
   }
 
-  function resetGame() {
-    gameEnded = false;
-    timeLeft = GAME_DURATION_SECONDS;
-    if (gameTimerInterval) {
-      clearInterval(gameTimerInterval);
-      gameTimerInterval = null;
+  // Função para resetar o jogo COMPLETAMENTE (professor)
+  async function resetGame() {
+    const teacherInput = prompt("Teacher password to reset ALL game progress:");
+    if (teacherInput === null) return;
+    if (teacherInput !== TEACHER_PASSWORD) {
+      alert("Incorrect teacher password!");
+      return;
     }
-    gameTimerElement.style.display = 'none'; // Hide timer initially
-    scoreboard.style.display = 'none'; // Hide scoreboard
-    gridElement.style.display = 'grid'; // Show ducks
-    renderDucks(); // Re-render ducks to ensure they are clickable again
+
+    if (!confirm("Are you sure you want to reset ALL game progress and scores? This cannot be undone!")) {
+      return;
+    }
+
+    // Limpa o banco de dados para uma nova partida
+    await set(ref(db, 'gameStatus'), null); // Reseta o status do jogo (incluindo endTime)
+    await set(ref(db, 'players'), null);    // Reseta os dados dos jogadores
+
+    // Resetar o localStorage de todos os alunos (opcional, mas recomendado para consistência)
+    localStorage.removeItem(ALL_STUDENTS_KEY);
+    allStudents = {}; // Limpa o objeto local
+    currentHunter = null; // Limpa o caçador atual
+
+    // O listener onValue vai detectar o `gameStatus` como null e chamar `resetGameLocalState()` em todos os clientes.
+    // Apenas para garantir que o cliente que iniciou o reset também se atualize:
+    resetGameLocalState();
+    updateHunterDisplay(); // Garante que o display do caçador seja atualizado
+    alert("Game reset for everyone!");
   }
 
+// Função para mostrar o pódio sincronizado com todos os alunos
   function displayScores() {
-    const sortedHunters = Object.entries(allStudents)
-      .map(([name, data]) => ({ name, ...data }))
-      .sort((a, b) => b.totalAura - a.totalAura); // Sort by aura descending
+    const playersRef = ref(db, 'players');
 
-    // Clear previous scores
-    podiumContainer.innerHTML = '';
-    allScoresList.innerHTML = '';
+    // Buscamos todos os jogadores no banco de dados
+    onValue(playersRef, ((snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
 
-    // Build Podium
-    const podiumRanks = ["second", "first", "third"]; // Order for display: 2nd, 1st, 3rd
-    const podiumData = [sortedHunters[1], sortedHunters[0], sortedHunters[2]]; // Get top 3
+      // Converte o objeto do banco em uma lista e ordena por Aura
+      const sortedHunters = Object.values(data)
+        .sort((a, b) => b.totalAura - a.totalAura);
 
-    podiumData.forEach((hunter, index) => {
-      if (hunter) {
-        const spot = document.createElement("div");
-        spot.className = `podium-spot ${podiumRanks[index]}`;
-        spot.innerHTML = `
-          <div class="podium-rank">${index === 1 ? '🥇' : (index === 0 ? '🥈' : '🥉')}</div>
-          <div class="podium-name">${hunter.name}</div>
-          <div class="podium-aura">${hunter.totalAura} Aura</div>
-          ${hunter.hasBonus ? '<div class="podium-bonus">Bonus: Ask Teacher!</div>' : ''}
+      // Limpa os placares anteriores
+      podiumContainer.innerHTML = '';
+      allScoresList.innerHTML = '';
+
+      // Constrói o Pódio (1º, 2º e 3º)
+      const podiumRanks = ["second", "first", "third"];
+      const podiumData = [sortedHunters[1], sortedHunters[0], sortedHunters[2]];
+
+      podiumData.forEach((hunter, index) => {
+        if (hunter) {
+          const spot = document.createElement("div");
+          spot.className = `podium-spot ${podiumRanks[index]}`;
+          spot.innerHTML = `
+            <div class="podium-rank">${index === 1 ? '🥇' : (index === 0 ? '🥈' : '🥉')}</div>
+            <div class="podium-name">${hunter.name}</div>
+            <div class="podium-aura">${hunter.totalAura} Aura</div>
+          `;
+          podiumContainer.appendChild(spot);
+        }
+      });
+
+      // Constrói a lista completa de classificação
+      sortedHunters.forEach(hunter => {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = `
+          <span>${hunter.name}</span>
+          <span>${hunter.totalAura} Aura</span>
         `;
-        podiumContainer.appendChild(spot);
-      }
-    });
-
-    // Build All Scores List
-    sortedHunters.forEach(hunter => {
-      const listItem = document.createElement("li");
-      listItem.innerHTML = `
-        <span>${hunter.name}</span>
-        <span>${hunter.totalAura} Aura ${hunter.hasBonus ? '(Bonus!)' : ''}</span>
-      `;
-      allScoresList.appendChild(listItem);
-    });
+        allScoresList.appendChild(listItem);
+      });
+    }));
   }
 
+  // NOVO: Função para resetar APENAS o timer no Firebase (professor)
+  async function resetFirebaseTimerOnly() {
+    const teacherInput = prompt("Teacher password to reset the game timer:");
+    if (teacherInput === null) return;
+    if (teacherInput !== TEACHER_PASSWORD) {
+      alert("Incorrect teacher password!");
+      return;
+    }
+    if (!confirm("Are you sure you want to reset ONLY the game timer for everyone?")) {
+      return;
+    }
+    await set(ref(db, 'gameStatus/endTime'), null);
+    alert("Game timer reset in Firebase!");
+  }
+  
   // --- Initial Setup ---
   renderDucks();
   updateHunterDisplay();
