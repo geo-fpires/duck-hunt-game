@@ -544,6 +544,8 @@ Copiar
       .podium-spot.third { height: auto; }
     }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -586,7 +588,7 @@ Copiar
   If the mission asks you to talk to your teacher, do it <strong>before</strong> pressing Approve.
 </footer>
 
-<script>
+<script type="module">
   // Senha Mestra do Professor para desbloquear qualquer pato
   const MASTER_TEACHER_PASSWORD = "masterduck"; // Altere "masterduck" para a senha mestra que desejar
   const TEACHER_PASSWORD = "aura67"; // coloque aqui a senha que você quiser
