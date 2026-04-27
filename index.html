@@ -817,6 +817,16 @@
         resetGameLocalState();
       }
     }
+    // NOVO: Verifica se o jogo foi marcado como terminado globalmente
+    if (gameStatus && gameStatus.isGameEnded) {
+      console.log("DEBUG: isGameEnded é true no Firebase. Chamando endGame().");
+      endGame(); // Chama endGame para todos os clientes
+    } else if (gameEnded && (!gameStatus || !gameStatus.isGameEnded)) {
+      // Se gameEnded é true localmente, mas não no Firebase, significa que o jogo foi resetado
+      // ou o estado de "terminado" foi removido.
+      console.log("DEBUG: isGameEnded é false ou null no Firebase. Resetando estado local.");
+      resetGameLocalState();
+    }
   });
 
   function renderDucks() {
