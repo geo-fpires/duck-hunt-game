@@ -789,11 +789,43 @@
     }
   });
 
-  endGameBtn.addEventListener("click", () => {
-    if (confirm("Are you sure you want to end the game now? All ducks will be locked and scores displayed.")) {
-      endGame();
+  endGameBtn.addEventListener('click', async () => { // Adicionado 'async' aqui
+    // Se o jogo já terminou globalmente (via Firebase), apenas exibe o placar localmente
+    if (gameEnded) {
+      scoreboard.style.display = 'flex';
+      gridElement.style.display = 'none';
+      displayScores();
+      return;
+    }
+
+    // Pergunta se é o professor
+    const isTeacher = confirm("Are you a teacher trying to end the game for everyone?");
+
+    if (isTeacher) {
+      const teacherInput = prompt("Teacher password to end the game for everyone:");
+      if (teacherInput === null) return; // Professor cancelou
+      if (teacherInput !== TEACHER_PASSWORD) {
+        alert("Incorrect teacher password!");
+        return;
+      }
+      // Se a senha estiver correta, o professor quer encerrar o jogo globalmente
+      if (!confirm("Are you sure you want to end the game for everyone? This will show the scoreboard to all players.")) {
+        return;
+      }
+      // Define isGameEnded como true no Firebase, o que vai disparar endGame() em todos os clientes
+      await gameStatusRef.update({ isGameEnded: true });
+      alert("Game ended for everyone!");
+    } else {
+      // Se não é professor, é um jogador querendo ver o placar localmente
+      const confirmLocalEnd = confirm("Are you sure you want to view the scoreboard? The game will continue for other players until the teacher ends it or the timer runs out.");
+      if (confirmLocalEnd) {
+        scoreboard.style.display = 'flex';
+        gridElement.style.display = 'none';
+        displayScores();
+      }
     }
   });
+}
 
   // Listener para o botão de resetar o timer do Firebase
   if (resetFirebaseTimerBtn) { // Verifica se o botão existe no HTML
