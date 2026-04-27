@@ -871,7 +871,10 @@
   }
 
   function endGame() {
-    gameEnded = true;
+    // Se o jogo já está marcado como terminado, não faz nada
+    if (gameEnded) return;
+
+    gameEnded = true; // Marca o jogo como terminado localmente
     if (gameTimerInterval) {
       clearInterval(gameTimerInterval);
       gameTimerInterval = null;
@@ -881,6 +884,7 @@
     scoreboard.style.display = 'flex'; // Show scoreboard
 
     displayScores();
+    console.log("DEBUG: Jogo finalizado localmente e placar exibido.");
   }
 
   // Função para resetar o jogo COMPLETAMENTE (professor)
