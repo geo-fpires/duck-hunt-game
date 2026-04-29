@@ -789,11 +789,11 @@
     }
   });
 
-Copiar
-
+  endGameBtn.addEventListener("click", () => {
+    if (confirm("Are you sure you want to end the game now? All ducks will be locked and scores displayed.")) {
+      endGame();
 endGameBtn.addEventListener("click", async () => {
   // Se o jogo já terminou globalmente, só mostra o placar localmente
-  // Se já terminou globalmente, só mostra o placar localmente
   if (gameEnded) {
     scoreboard.style.display = 'flex';
     gridElement.style.display = 'none';
@@ -805,11 +805,7 @@ endGameBtn.addEventListener("click", async () => {
   const isTeacher = confirm(
     "Are you the teacher and want to end the game for EVERYONE now?\n\n" +
     "OK = Yes, I'm the teacher\nCancel = No, I'm a student"
-  const confirmEnd = confirm(
-    "Are you sure you want to END THE GAME for EVERYONE now?\n\n" +
-    "All ducks will be locked and the scoreboard will be shown on all devices."
   );
-  if (!confirmEnd) return;
 
   if (isTeacher) {
     const teacherInput = prompt("Teacher password to END the game for everyone:");
@@ -818,6 +814,7 @@ endGameBtn.addEventListener("click", async () => {
       alert("Incorrect teacher password!");
       return;
     }
+  });
 
     if (!confirm("Are you sure you want to END the game for ALL players now?")) {
       return;
@@ -827,10 +824,6 @@ endGameBtn.addEventListener("click", async () => {
     await gameStatusRef.update({ isGameEnded: true });
     alert("Game ended for everyone!");
     // o listener de gameStatusRef.on('value') vai chamar endGame() em todos os dispositivos
-  const teacherInput = prompt("Teacher password to END the game for everyone:");
-  if (teacherInput === null) return;
-  if (teacherInput !== TEACHER_PASSWORD) {
-    alert("Incorrect teacher password!");
     return;
   }
 
@@ -845,10 +838,6 @@ endGameBtn.addEventListener("click", async () => {
     gridElement.style.display = 'none';
     displayScores();
   }
-  // AQUI é o ponto crítico: marcar no Firebase
-  await gameStatusRef.update({ isGameEnded: true });
-  // o resto é só feedback local; o efeito real vem do listener gameStatusRef.on(...)
-  alert("Game ended for everyone!");
 });
 
   // Listener para o botão de resetar o timer do Firebase
