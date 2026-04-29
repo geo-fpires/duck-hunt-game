@@ -789,11 +789,51 @@
     }
   });
 
-  endGameBtn.addEventListener("click", () => {
-    if (confirm("Are you sure you want to end the game now? All ducks will be locked and scores displayed.")) {
-      endGame();
+endGameBtn.addEventListener("click", async () => {
+  // Se o jogo já terminou globalmente (sinalizado pelo Firebase),
+  // apenas mostra o placar localmente e sai.
+  if (gameEnded) {
+    scoreboard.style.display = 'flex';
+    gridElement.style.display = 'none';
+    displayScores();
+    return;
+  }
+
+  // Pergunta se é o professor
+  const teacherInput = prompt("To end the game for everyone, enter the teacher password. Otherwise, click Cancel to just view your local scoreboard.");
+
+  if (teacherInput === null) { // Se o usuário clicou em "Cancelar"
+    // Comportamento para jogador: apenas mostra o placar localmente
+    const confirmLocalEnd = confirm("You chose not to end the game for everyone. Do you want to view the scoreboard locally? The game will continue for other players until the teacher ends it or the timer runs out.");
+    if (confirmLocalEnd) {
+      scoreboard.style.display = 'flex';
+      gridElement.style.display = 'none';
+      displayScores();
     }
-  });
+    return; // Sai da função
+  }
+
+  // Se o usuário digitou algo, verifica se é a senha do professor
+  if (teacherInput !== TEACHER_PASSWORD) {
+    alert("Incorrect teacher password! The game will not be ended for everyone.");
+    // Comportamento para jogador: apenas mostra o placar localmente
+    const confirmLocalEnd = confirm("Incorrect password. Do you want to view the scoreboard locally? The game will continue for other players.");
+    if (confirmLocalEnd) {
+      scoreboard.style.display = 'flex';
+      gridElement.style.display = 'none';
+      displayScores();
+    }
+    return; // Sai da função
+  }
+
+  // Se a senha do professor estiver correta
+  if (confirm("Teacher, are you sure you want to end the game for ALL players? This will lock all ducks and display the final scores for everyone.")) {
+    // Atualiza o Firebase para sinalizar que o jogo terminou para todos
+    await gameStatusRef.update({ isGameEnded: true });
+    // A função endGame() será chamada automaticamente pelo listener do Firebase em todos os clientes.
+    alert("Game ended for all players!");
+  }
+});
 
   // Listener para o botão de resetar o timer do Firebase
   if (resetFirebaseTimerBtn) { // Verifica se o botão existe no HTML
