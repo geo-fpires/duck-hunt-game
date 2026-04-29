@@ -840,24 +840,40 @@ endGameBtn.addEventListener("click", async () => {
     resetFirebaseTimerBtn.addEventListener("click", resetFirebaseTimerOnly);
   }
 
-  // --- Listener Global para o Timer do Firebase ---
-  gameStatusRef.on('value', (snapshot) => {
-    const gameStatus = snapshot.val();
-    if (gameStatus && gameStatus.endTime) {
-      if (!gameTimerInterval && !gameEnded) {
-        setupGameTimerCountdown(gameStatus.endTime);
-      }
-    } else {
-      // Se gameStatus ou endTime for null, significa que o jogo foi resetado ou não começou
-      if (gameTimerInterval) {
-        clearInterval(gameTimerInterval);
-        gameTimerInterval = null;
-      }
-      if (!gameEnded) { // Se o jogo não terminou oficialmente, reseta o estado local
-        resetGameLocalState();
-      }
+// --- Listener Global para o Status do Jogo no Firebase ---
+gameStatusRef.on('value', (snapshot) => {
+  const gameStatus = snapshot.val();
+
+  // Lógica para o TIMER
+  if (gameStatus && gameStatus.endTime) {
+    if (!gameTimerInterval && !gameEnded) { // Só inicia o timer se não estiver rodando e o jogo não tiver terminado
+      setupGameTimerCountdown(gameStatus.endTime);
     }
-  });
+  } else {
+    // Se gameStatus ou endTime for null, significa que o timer foi resetado ou não começou
+    if (gameTimerInterval) {
+      clearInterval(gameTimerInterval);
+      gameTimerInterval = null;
+    }
+    // Se o jogo não terminou oficialmente (via isGameEnded), reseta o estado local do timer
+    if (!gameEnded && (!gameStatus || !gameStatus.isGameEnded)) {
+        resetGameLocalState();
+    }
+  }
+
+  // Lógica para o FIM DO JOGO (isGameEnded)
+  if (gameStatus && gameStatus.isGameEnded) {
+    console.log("DEBUG: isGameEnded é true no Firebase. Chamando endGame().");
+    if (!gameEnded) { // Evita chamar endGame() múltiplas vezes se já terminou localmente
+        endGame(); // Chama endGame para todos os clientes
+    }
+  } else if (gameEnded && (!gameStatus || !gameStatus.isGameEnded)) {
+    // Se gameEnded é true localmente, mas não no Firebase, significa que o jogo foi resetado
+    // ou o estado de "terminado" foi removido pelo professor.
+    console.log("DEBUG: isGameEnded é falso ou null no Firebase, mas gameEnded é true localmente. Resetando estado local.");
+    resetGameLocalState(); // Reseta o estado local para permitir que o jogo recomece
+  }
+});
 
   function renderDucks() {
     gridElement.innerHTML = '';
