@@ -1136,9 +1136,9 @@ function displayScores() {
       taskDiv.style.gap = "8px";
       const ta = taskDiv.querySelector(".answer-input");
       if (ta) {
-        ta.value = "";      // você pode até remover esta linha se quiser manter qualquer texto antigo
+        ta.value = ""; 
+        ta.textContent = "";
         ta.focus();
-        ta.setSelectionRange(0,0);
       }
     }
 
