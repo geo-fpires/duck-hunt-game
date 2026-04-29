@@ -777,16 +777,8 @@
   });
 
   resetProgressBtn.addEventListener("click", () => {
-    if (confirm("Are you sure you want to reset ALL hunters' progress? This cannot be undone!")) {
-      // Não precisa limpar localStorage de allStudents, pois o resetGame() do professor já faz isso
-      // e o resetGameLocalState() é chamado para o cliente atual.
-      currentHunter = null;
-      saveCurrentHunter(); // Salva null para o hunter atual
-      updateHunterDisplay();
-      renderDucks();
-      // O resetGame() do professor já cuida do Firebase e do alerta
-      alert("All local progress has been reset. If you are the teacher, use the 'Reset All Progress' button for global reset.");
-    }
+    // Chama diretamente a função do professor que reseta o Firebase
+    resetGame();
   });
 
   endGameBtn.addEventListener("click", async () => {
@@ -908,19 +900,20 @@
   }
 
 // Função para mostrar o pódio sincronizado com todos os alunos
-  function displayScores() {
-    // Buscamos todos os jogadores no banco de dados
-    playersRef.on('value', ((snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
+function displayScores() {
+  // Buscamos todos os jogadores no banco de dados
+  playersRef.on('value', ((snapshot) => {
+    const data = snapshot.val();
 
-      // Converte o objeto do banco em uma lista e ordena por Aura
-      const sortedHunters = Object.values(data)
-        .sort((a, b) => b.totalAura - a.totalAura);
+    // Limpa os placares anteriores SEMPRE (mesmo se o banco estiver vazio)
+    podiumContainer.innerHTML = '';
+    allScoresList.innerHTML = '';
 
-      // Limpa os placares anteriores
-      podiumContainer.innerHTML = '';
-      allScoresList.innerHTML = '';
+    if (!data) return; // Se não houver dados (foi resetado), para aqui com a tela limpa
+
+    // Converte o objeto do banco em uma lista e ordena por Aura
+    const sortedHunters = Object.values(data)
+      .sort((a, b) => b.totalAura - a.totalAura);
 
       // Constrói o Pódio (1º, 2º e 3º)
       // Ajustado para garantir que sempre haja 3 posições, mesmo que vazias
