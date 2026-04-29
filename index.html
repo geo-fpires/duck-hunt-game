@@ -337,7 +337,7 @@
       max-width: 250px;
     }
 
-    #selectHunterBtn, #resetProgressBtn, #endGameBtn, #resetFirebaseTimerBtn { /* Adicionado #resetFirebaseTimerBtn */
+    #selectHunterBtn, #resetProgressBtn, #endGameBtn { /* Removido #resetFirebaseTimerBtn */
       padding: 8px 15px;
       border: none;
       border-radius: 5px;
@@ -354,8 +354,6 @@
     #resetProgressBtn:hover { background-color: #b91c1c; }
     #endGameBtn { background-color: #f97316; margin-left: 10px; } /* Orange for End Game */
     #endGameBtn:hover { background-color: #ea580c; }
-    #resetFirebaseTimerBtn { background-color: #6b7280; margin-left: 10px; } /* Gray for Reset Timer */
-    #resetFirebaseTimerBtn:hover { background-color: #4b5563; }
 
 
     /* Game Timer Display */
@@ -476,746 +474,668 @@
       #hunterNameInput {
         max-width: none;
       }
-      #resetProgressBtn, #endGameBtn, #resetFirebaseTimerBtn { /* Adicionado #resetFirebaseTimerBtn */
-        margin-left: 0;
-        margin-top: 10px;
-      }
-      .podium { flex-direction: column; align-items: center; }
-      .podium-spot { width: 100%; max-width: 200px; }
-      .podium-spot.first { height: auto; }
-      .podium-spot.second { height: auto; }
-      .podium-spot.third { height: auto; }
     }
   </style>
 
-  <!-- SCRIPTS DO FIREBASE AQUI NO HEAD -->
-  <!-- IMPORTANTE: Use a versão -compat para a API global -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
 </head>
 <body>
+  <header>
+    <img src="duck.png" alt="Duck Hunt Logo" class="game-logo">
+    <h1 class="game-title">Duck Hunt</h1>
+    <p class="subtitle">Click your duck - type the password - unlock the mission - farm aura.</p>
+  </header>
 
-<header>
-  <img src="duck.png" alt="Game Logo Duck" class="game-logo">
-  <h1 class="game-title">Duck Hunt</h1>
-  <div class="subtitle">Click your duck · type the password · unlock the mission · farm aura.</div>
-</header>
-
-<div class="hunter-selection">
-  <div class="current-hunter-info">
-    <span id="hunterNameDisplay">Hunter: None selected</span>
-    <span style="color: #ccc;">|</span>
-    <span id="hunterAuraDisplay">Aura: 0</span>
+  <div class="hunter-selection">
+    <div class="current-hunter-info">
+      Hunter: <span id="currentHunterDisplay">None selected</span> | Aura: <span id="currentHunterAura">0</span>
+    </div>
+    <input type="text" id="hunterNameInput" placeholder="Enter your hunter name">
+    <button id="selectHunterBtn">Go!</button>
+    <button id="endGameBtn">End Game</button>
+    <button id="resetProgressBtn">Reset All Progress</button>
   </div>
-  <input type="text" id="hunterNameInput" placeholder="Enter your hunter name to start" />
-  <button id="selectHunterBtn">Go!</button>
-  <button id="endGameBtn">End Game</button> <!-- New button for teacher to end game -->
-  <button id="resetProgressBtn">Reset All Progress</button>
-  <button id="resetFirebaseTimerBtn">Reset Timer</button> <!-- Botão para resetar o timer do Firebase -->
-</div>
 
-<div class="game-timer" id="gameTimer">
-  Time Left: <span id="timerDisplay">15:00</span>
-</div>
-
-<div class="grid" id="grid"></div>
-
-<div id="scoreboard" style="display: none;">
-  <h2>Game Over! Final Scores</h2>
-  <div class="podium" id="podiumContainer">
-    <!-- Podium spots will be inserted here by JS -->
+  <div class="game-timer" id="gameTimerElement">
+    Time Left: <span id="timerDisplay">--:--</span>
   </div>
-  <h3>All Hunters:</h3>
-  <ul class="all-scores-list" id="allScoresList">
-    <!-- All scores will be inserted here by JS -->
-  </ul>
-</div>
 
-<footer>
-  If the mission asks you to talk to your teacher, do it <strong>before</strong> pressing Approve.
-</footer>
+  <main class="grid" id="gridElement"></main>
 
-<script>
-  // --- CONFIGURAÇÃO DO FIREBASE ---
-  const firebaseConfig = {
-    apiKey: "AIzaSyCynlGAnMN0I6VwzRi_dWWDlc0SxDqrav8",
-    authDomain: "duck-hunt-game-dd334.firebaseapp.com",
-    databaseURL: "https://duck-hunt-game-dd334-default-rtdb.firebaseio.com", // Adicionado
-    projectId: "duck-hunt-game-dd334",
-    storageBucket: "duck-hunt-game-dd334.firebasestorage.app",
-    messagingSenderId: "1090069680934",
-    appId: "1:1090069680934:web:774ad9ab3a97a2305ee7e7"
-  };
+  <section id="scoreboard">
+    <h2>Final Scores</h2>
+    <div class="podium" id="podiumContainer">
+      <!-- Podium spots will be injected here by JavaScript -->
+    </div>
+    <h3>All Hunters</h3>
+    <ul class="all-scores-list" id="allScoresList">
+      <!-- All scores will be injected here by JavaScript -->
+    </ul>
+  </section>
 
-  // Inicializa Firebase
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-  const serverTimestamp = firebase.database.ServerValue.TIMESTAMP; // Para usar o timestamp do servidor
+  <footer>
+    <p>If the mission asks you to talk to your teacher, do it <strong>before</strong> pressing Approve.</p>
+  </footer>
 
-  // Referências do Firebase
-  const gameStatusRef = db.ref('gameStatus');
-  const playersRef = db.ref('players');
+  <script>
+    // --- CONFIGURAÇÃO DO FIREBASE ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyCynGlaNM0TeWzrRi_diWDL0cSxQyrav8",
+      authDomain: "duck-hunt-game-dd334.firebaseapp.com",
+      databaseURL: "https://duck-hunt-game-dd334-default-rtdb.firebaseio.com",
+      projectId: "duck-hunt-game-dd334",
+      storageBucket: "duck-hunt-game-dd334.firebasestorage.app",
+      messagingSenderId: "1090069680934",
+      appId: "1:1090069680934:web:774ab9ab3a97a2305e7e7"
+    };
 
-  console.log("SCRIPT DO JOGO CARREGADO"); // Mensagem de debug
+    // Inicializa Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const serverTimestamp = firebase.database.ServerValue.TIMESTAMP; // Para usar o timestamp do servidor
 
-  // --- CONSTANTS ---
-  const ALL_STUDENTS_KEY = "allStudents";
-  const CURRENT_HUNTER_KEY = "currentHunter";
-  const MASTER_TEACHER_PASSWORD = "masterduck"; // Altere "masterduck" para a senha mestra que desejar
-  const TEACHER_PASSWORD = "aura67"; // coloque aqui a senha que você quiser
+    // Referências do Firebase
+    const gameStatusRef = db.ref('gameStatus');
+    const playersRef = db.ref('players');
 
-  const duckConfigs = [
-    { id: 1, password: "DUCK-1-GALAXY", aura: 5, tier: "Easy", image: "duck_1.png" },
-    { id: 2, password: "DUCK-2-MOON", aura: 5, tier: "Easy", image: "duck_2.png" },
-    { id: 3, password: "DUCK-3-PIXEL", aura: 5, tier: "Easy", image: "duck_3.png" },
-    { id: 4, password: "DUCK-4-GLITCH", aura: 5, tier: "Easy", image: "duck_4.png" },
-    { id: 5, password: "DUCK-5-VIRUS", aura: 5, tier: "Easy", image: "duck_5.png" },
-    { id: 6, password: "DUCK-6-HYPE", aura: 5, tier: "Easy", image: "duck_6.png" },
-    { id: 7, password: "DUCK-7-AURAA", aura: 20, tier: "Bonus", image: "duck_7.png" }, // Bonus duck
-    { id: 8, password: "DUCK-8-GHOST", aura: 10, tier: "Medium", image: "duck_8.png" },
-    { id: 9, password: "DUCK-9-SHADOW", aura: 10, tier: "Medium", image: "duck_9.png" },
-    { id: 10, password: "DUCK-10-STATIC", aura: 10, tier: "Medium", image: "duck_10.png" },
-    { id: 11, password: "DUCK-11-WAVE", aura: 10, tier: "Medium", image: "duck_11.png" },
-    { id: 12, password: "DUCK-12-MATRIX", aura: 10, tier: "Medium", image: "duck_12.png" },
-    { id: 13, password: "DUCK-13-PIXEL", aura: 10, tier: "Medium", image: "duck_13.png" },
-    { id: 14, password: "DUCK-14-CRYPT", aura: 10, tier: "Medium", image: "duck_14.png" },
-    { id: 15, password: "DUCK-15-NEON", aura: 10, tier: "Medium", image: "duck_15.png" },
-    { id: 16, password: "DUCK-16-RETRO", aura: 10, tier: "Medium", image: "duck_16.png" },
-    { id: 17, password: "DUCK-17-CYBER", aura: 10, tier: "Medium", image: "duck_17.png" },
-    { id: 18, password: "DUCK-18-STEAM", aura: 10, tier: "Medium", image: "duck_18.png" },
-    { id: 19, password: "DUCK-19-TECH", aura: 10, tier: "Medium", image: "duck_19.png" },
-    { id: 20, password: "DUCK-20-BOSS", aura: 40, tier: "Boss", image: "duck_20.png" }, // Boss duck
-  ];
+    console.log("SCRIPT DO JOGO CARREGADO!"); // Mensagem de debug
 
-  const tasks = {
-    1: { text: "Find the hidden message in the classroom. What is the first word?", note: "Hint: Look under the teacher's desk.", gaps: ["Hidden", "Message"], placeholder: "Your answer here" },
-    2: { text: "Solve the riddle: I have cities, but no houses; forests, but no trees; and water, but no fish. What am I?", note: "Think about maps.", gaps: ["Map"], placeholder: "Your answer here" },
-    3: { text: "Complete the sequence: 1, 1, 2, 3, 5, 8, ?", note: "Fibonacci sequence.", gaps: ["13"], placeholder: "Your answer here" },
-    4: { text: "What is the capital of Brazil?", note: "Starts with B.", gaps: ["Brasília"], placeholder: "Your answer here" },
-    5: { text: "Translate 'Hello' to Spanish.", note: "It's a common greeting.", gaps: ["Hola"], placeholder: "Your answer here" },
-    6: { text: "Name a planet in our solar system.", note: "Any planet will do.", gaps: ["Mars", "Jupiter", "Earth", "Venus", "Saturn", "Uranus", "Neptune", "Mercury"], placeholder: "Your answer here" },
-    7: { text: "BONUS MISSION: Find the teacher and ask for a special code. What is the code?", note: "Teacher has the answer!", gaps: ["SpecialCode"], placeholder: "Enter the code here" },
-    8: { text: "What is 2 + 2?", note: "Simple math.", gaps: ["4"], placeholder: "Your answer here" },
-    9: { text: "What color is the sky on a clear day?", note: "Think about the daytime.", gaps: ["Blue"], placeholder: "Your answer here" },
-    10: { text: "Which animal lays eggs and can fly?", note: "Think about birds.", gaps: ["Bird"], placeholder: "Your answer here" },
-    11: { text: "What is the opposite of 'hot'?", note: "Temperature.", gaps: ["Cold"], placeholder: "Your answer here" },
-    12: { text: "How many days are in a week?", note: "Count them.", gaps: ["7"], placeholder: "Your answer here" },
-    13: { text: "What do you use to write on a blackboard?", note: "It's white.", gaps: ["Chalk"], placeholder: "Your answer here" },
-    14: { text: "What is the largest ocean on Earth?", note: "Starts with P.", gaps: ["Pacific"], placeholder: "Your answer here" },
-    15: { text: "What is the main ingredient in bread?", note: "It's a grain.", gaps: ["Flour"], placeholder: "Your answer here" },
-    16: { text: "What do bees make?", note: "It's sweet.", gaps: ["Honey"], placeholder: "Your answer here" },
-    17: { text: "Which month comes after January?", note: "Second month.", gaps: ["February"], placeholder: "Your answer here" },
-    18: { text: "What is the sound a cat makes?", note: "Meow.", gaps: ["Meow"], placeholder: "Your answer here" },
-    19: { text: "What is the name of the big star in our solar system?", note: "It gives us light and heat.", gaps: ["Sun"], placeholder: "Your answer here" },
-    20: { text: "BOSS MISSION: Create a short story (3-5 sentences) about a duck's adventure. Your teacher will approve it.", note: "Be creative!", placeholder: "Write your story here" },
-  };
+    // --- CONSTANTES ---
+    const ALL_STUDENTS_KEY = "allStudents";
+    const CURRENT_HUNTER_KEY = "currentHunter";
 
-  // --- GAME STATE & TIMER ---
-  const GAME_DURATION_SECONDS = 25 * 60; // 25 minutes
-  let gameTimerInterval;
-  let timeLeft = GAME_DURATION_SECONDS;
-  let gameEnded = false;
+    const MASTER_TEACHER_PASSWORD = "masterduck"; // Altere "masterduck" para a senha mestra que desejar
+    const TEACHER_PASSWORD = "aura67"; // Coloque aqui a senha que você quiser
 
-  // --- DOM Elements ---
-  const gridElement = document.getElementById("grid");
-  const gameTimerElement = document.getElementById("gameTimer");
-  const timerDisplay = document.getElementById("timerDisplay");
-  const scoreboard = document.getElementById("scoreboard");
-  const podiumContainer = document.getElementById("podiumContainer");
-  const allScoresList = document.getElementById("allScoresList");
+    // --- VARIÁVEIS DE ESTADO DO JOGO ---
+    let allStudents = JSON.parse(localStorage.getItem(ALL_STUDENTS_KEY)) || {};
+    let currentHunter = localStorage.getItem(CURRENT_HUNTER_KEY);
+    let gameTimerInterval = null;
+    let gameEnded = false; // Estado local para controlar se o jogo terminou
 
-  // --- Local Storage & Current Hunter ---
-  let allStudents = JSON.parse(localStorage.getItem(ALL_STUDENTS_KEY)) || {};
-  let currentHunter = JSON.parse(localStorage.getItem(CURRENT_HUNTER_KEY));
+    // --- ELEMENTOS DO DOM ---
+    const hunterNameInput = document.getElementById("hunterNameInput");
+    const selectHunterBtn = document.getElementById("selectHunterBtn");
+    const currentHunterDisplay = document.getElementById("currentHunterDisplay");
+    const currentHunterAura = document.getElementById("currentHunterAura");
+    const gridElement = document.getElementById("gridElement");
+    const scoreboard = document.getElementById("scoreboard");
+    const podiumContainer = document.getElementById("podiumContainer");
+    const allScoresList = document.getElementById("allScoresList");
+    const resetProgressBtn = document.getElementById("resetProgressBtn");
+    const endGameBtn = document.getElementById("endGameBtn");
+    const gameTimerElement = document.getElementById("gameTimerElement");
+    const timerDisplay = document.getElementById("timerDisplay");
 
-  function saveAllStudents() {
-    localStorage.setItem(ALL_STUDENTS_KEY, JSON.stringify(allStudents));
-  }
+    // --- DADOS DOS PATOS E MISSÕES ---
+    const ducks = [
+      { id: "duck1", image: "duck1.png", password: "duck1", tier: "Common", aura: 10 },
+      { id: "duck2", image: "duck2.png", password: "duck2", tier: "Common", aura: 10 },
+      { id: "duck3", image: "duck3.png", password: "duck3", tier: "Common", aura: 10 },
+      { id: "duck4", image: "duck4.png", password: "duck4", tier: "Common", aura: 10 },
+      { id: "duck5", image: "duck5.png", password: "duck5", tier: "Common", aura: 10 },
+      { id: "duck6", image: "duck6.png", password: "duck6", tier: "Common", aura: 10 },
+      { id: "duck7", image: "duck7.png", password: "duck7", tier: "Common", aura: 10 },
+      { id: "duck8", image: "duck8.png", password: "duck8", tier: "Common", aura: 10 },
+      { id: "duck9", image: "duck9.png", password: "duck9", tier: "Common", aura: 10 },
+      { id: "duck10", image: "duck10.png", password: "duck10", tier: "Rare", aura: 20 },
+      { id: "duck11", image: "duck11.png", password: "duck11", tier: "Rare", aura: 20 },
+      { id: "duck12", image: "duck12.png", password: "duck12", tier: "Rare", aura: 20 },
+      { id: "duck13", image: "duck13.png", password: "duck13", tier: "Rare", aura: 20 },
+      { id: "duck14", image: "duck14.png", password: "duck14", tier: "Rare", aura: 20 },
+      { id: "duck15", image: "duck15.png", password: "duck15", tier: "Epic", aura: 30 },
+      { id: "duck16", image: "duck16.png", password: "duck16", tier: "Epic", aura: 30 },
+      { id: "duck17", image: "duck17.png", password: "duck17", tier: "Epic", aura: 30 },
+      { id: "duck18", image: "duck18.png", password: "duck18", tier: "Legendary", aura: 50 },
+      { id: "duck19", image: "duck19.png", password: "duck19", tier: "Legendary", aura: 50 },
+      { id: "duck20", image: "duck20.png", password: "duck20", tier: "Mythic", aura: 100 },
+    ];
 
-  function saveCurrentHunter() {
-    localStorage.setItem(CURRENT_HUNTER_KEY, JSON.stringify(currentHunter));
-  }
+    const tasks = {
+      "duck1": { text: "What is the capital of France?", gaps: ["Paris"], placeholder: "Type 'Paris'" },
+      "duck2": { text: "What is 2 + 2?", gaps: ["4"], placeholder: "Type '4'" },
+      "duck3": { text: "Which planet is known as the Red Planet?", gaps: ["Mars"], placeholder: "Type 'Mars'" },
+      "duck4": { text: "What is the largest ocean on Earth?", gaps: ["Pacific Ocean"], placeholder: "Type 'Pacific Ocean'" },
+      "duck5": { text: "Who painted the Mona Lisa?", gaps: ["Leonardo da Vinci"], placeholder: "Type 'Leonardo da Vinci'" },
+      "duck6": { text: "What is the chemical symbol for water?", gaps: ["H2O"], placeholder: "Type 'H2O'" },
+      "duck7": { text: "How many continents are there?", gaps: ["7"], placeholder: "Type '7'" },
+      "duck8": { text: "What is the fastest land animal?", gaps: ["Cheetah"], placeholder: "Type 'Cheetah'" },
+      "duck9": { text: "What is the main ingredient in guacamole?", gaps: ["Avocado"], placeholder: "Type 'Avocado'" },
+      "duck10": { text: "What is the highest mountain in the world?", gaps: ["Mount Everest"], placeholder: "Type 'Mount Everest'" },
+      "duck11": { text: "What is the currency of Japan?", gaps: ["Yen"], placeholder: "Type 'Yen'" },
+      "duck12": { text: "What is the process by which plants make their own food?", gaps: ["Photosynthesis"], placeholder: "Type 'Photosynthesis'" },
+      "duck13": { text: "Who wrote 'Romeo and Juliet'?", gaps: ["William Shakespeare"], placeholder: "Type 'William Shakespeare'" },
+      "duck14": { text: "What is the largest desert in the world?", gaps: ["Sahara Desert"], placeholder: "Type 'Sahara Desert'" },
+      "duck15": { text: "What is the capital of Brazil?", gaps: ["Brasília"], placeholder: "Type 'Brasília'" },
+      "duck16": { text: "What is the smallest country in the world?", gaps: ["Vatican City"], placeholder: "Type 'Vatican City'" },
+      "duck17": { text: "What is the longest river in the world?", gaps: ["Nile River"], placeholder: "Type 'Nile River'" },
+      "duck18": { text: "What is the chemical symbol for gold?", gaps: ["Au"], placeholder: "Type 'Au'" },
+      "duck19": { text: "What is the name of the galaxy our solar system is in?", gaps: ["Milky Way"], placeholder: "Type 'Milky Way'" },
+      "duck20": { text: "What is the hardest natural substance on Earth?", gaps: ["Diamond"], placeholder: "Type 'Diamond'" },
+    };
 
-  async function setCurrentHunter(name) {
-    if (currentHunter && currentHunter.name === name) {
-      return; // Already selected
+    // --- FUNÇÕES DE UTILIDADE ---
+    function saveStudents() {
+      localStorage.setItem(ALL_STUDENTS_KEY, JSON.stringify(allStudents));
     }
 
-    // Tenta carregar o hunter do Firebase
-    const snapshot = await playersRef.child(name).once('value');
-    let hunterData = snapshot.val();
-
-    if (!hunterData) {
-      // Se não existe no Firebase, cria um novo
-      hunterData = {
-        name: name,
-        clearedDucks: {},
-        totalAura: 0,
-        lastLogin: serverTimestamp // Usa o timestamp do servidor
-      };
-      await playersRef.child(name).set(hunterData);
-    } else {
-      // Se existe, atualiza o lastLogin
-      await playersRef.child(name).update({ lastLogin: serverTimestamp });
+    function saveCurrentHunter() {
+      localStorage.setItem(CURRENT_HUNTER_KEY, currentHunter);
     }
 
-    currentHunter = hunterData;
-    saveCurrentHunter();
-    updateHunterDisplay();
-    renderDucks(); // Renderiza os patos com o estado do novo hunter
-  }
-
-  function isCleared(duckId) {
-    return currentHunter && currentHunter.clearedDucks && currentHunter.clearedDucks[duckId];
-  }
-
-  async function markCleared(duck) {
-    if (!currentHunter) return;
-
-    // Atualiza no Firebase
-    const updates = {};
-    updates[`players/${currentHunter.name}/clearedDucks/${duck.id}`] = serverTimestamp;
-    updates[`players/${currentHunter.name}/totalAura`] = currentHunter.totalAura + duck.aura;
-    updates[`players/${currentHunter.name}/lastClearedDuck`] = duck.id;
-    updates[`players/${currentHunter.name}/lastClearedTime`] = serverTimestamp;
-
-    await db.ref().update(updates); // Atualiza múltiplos caminhos
-
-    // Atualiza o estado local
-    currentHunter.clearedDucks[duck.id] = true;
-    currentHunter.totalAura += duck.aura;
-    saveCurrentHunter();
-    updateHunterDisplay();
-    renderDucks(); // Re-renderiza para mostrar o pato como "cleared"
-  }
-
-  function resetGameLocalState() {
-    currentHunter = null;
-    localStorage.removeItem(CURRENT_HUNTER_KEY);
-    gameEnded = false;
-    if (gameTimerInterval) {
-      clearInterval(gameTimerInterval);
-      gameTimerInterval = null;
-    }
-    timeLeft = GAME_DURATION_SECONDS;
-    timerDisplay.textContent = formatTime(timeLeft);
-    gameTimerElement.classList.remove("critical");
-    gameTimerElement.style.display = 'none';
-    gridElement.style.display = 'grid';
-    scoreboard.style.display = 'none';
-    renderDucks();
-    updateHunterDisplay();
-  }
-
-  function canAccessDuck(duck) {
-    if (!currentHunter) return false;
-    if (isCleared(duck.id)) return true; // Já liberado, pode acessar
-
-    if (duck.id === 7) { // Bonus duck
-      return currentHunter.totalAura >= 20;
-    }
-    if (duck.id === 20) { // Boss duck
-      return currentHunter.totalAura >= 40;
-    }
-    return true;
-  }
-
-  function accessMessage(duck) {
-    if (!currentHunter) {
-      return "Please enter your hunter name first to start playing!";
-    }
-    if (duck.id === 7) {
-      return `You need at least 20 aura to open the BONUS duck. You currently have ${currentHunter.totalAura} aura.`;
-    }
-    if (duck.id === 20) {
-      return `You need at least 40 aura to open the BOSS duck. You currently have ${currentHunter.totalAura} aura.`;
-    }
-    return "";
-  }
-
-  // --- Hunter Selection UI ---
-
-  const hunterNameInput = document.getElementById("hunterNameInput");
-  const selectHunterBtn = document.getElementById("selectHunterBtn");
-  const resetProgressBtn = document.getElementById("resetProgressBtn");
-  const endGameBtn = document.getElementById("endGameBtn"); // Adicionado
-  const resetFirebaseTimerBtn = document.getElementById("resetFirebaseTimerBtn"); // Adicionado
-  const hunterNameDisplay = document.getElementById("hunterNameDisplay");
-  const hunterAuraDisplay = document.getElementById("hunterAuraDisplay");
-
-  function updateHunterDisplay() {
-    if (currentHunter) {
-      hunterNameDisplay.textContent = `Hunter: ${currentHunter.name}`;
-      hunterAuraDisplay.textContent = `Aura: ${currentHunter.totalAura}`;
-    } else {
-      hunterNameDisplay.textContent = "Hunter: None selected";
-      hunterAuraDisplay.textContent = "Aura: 0";
-    }
-  }
-
-  selectHunterBtn.addEventListener("click", async () => {
-    const name = hunterNameInput.value.trim();
-    if (name) {
-      await setCurrentHunter(name); // Use await aqui
-      if (!gameTimerInterval && !gameEnded) { // Start timer only if not already running and game not ended
-        // Tenta pegar o endTime atual do Firebase
-        const snapshot = await gameStatusRef.child('endTime').once('value');
-        let endTime = snapshot.val();
-
-        if (!endTime) {
-          // Se não existe (este é o primeiro jogador a iniciar), define o endTime no Firebase
-          endTime = Date.now() + (GAME_DURATION_SECONDS * 1000);
-          await gameStatusRef.child('endTime').set(endTime); // Usa await para garantir que o set termine
-          // O listener onValue vai pegar essa mudança e chamar setupGameTimerCountdown
-        }
-        // Se já existe, o listener onValue já vai ter iniciado o timer
-      }
-    } else {
-      alert("Please enter your hunter name!");
-    }
-  });
-
-  resetProgressBtn.addEventListener("click", () => {
-    if (confirm("Are you sure you want to reset ALL hunters' progress? This cannot be undone!")) {
-      // Não precisa limpar localStorage de allStudents, pois o resetGame() do professor já faz isso
-      // e o resetGameLocalState() é chamado para o cliente atual.
-      currentHunter = null;
-      saveCurrentHunter(); // Salva null para o hunter atual
-      updateHunterDisplay();
-      renderDucks();
-      // O resetGame() do professor já cuida do Firebase e do alerta
-      alert("All local progress has been reset. If you are the teacher, use the 'Reset All Progress' button for global reset.");
-    }
-  });
-
-endGameBtn.addEventListener("click", async () => {
-  // Se o jogo já terminou globalmente (sinalizado pelo Firebase),
-  // apenas mostra o placar localmente e sai.
-  if (gameEnded) {
-    scoreboard.style.display = 'flex';
-    gridElement.style.display = 'none';
-    displayScores();
-    return;
-  }
-
-  // Pergunta se é o professor
-  const teacherInput = prompt("To end the game for everyone, enter the teacher password. Otherwise, click Cancel to just view your local scoreboard.");
-
-  if (teacherInput === null) { // Se o usuário clicou em "Cancelar"
-    // Comportamento para jogador: apenas mostra o placar localmente
-    const confirmLocalEnd = confirm("You chose not to end the game for everyone. Do you want to view the scoreboard locally? The game will continue for other players until the teacher ends it or the timer runs out.");
-    if (confirmLocalEnd) {
-      scoreboard.style.display = 'flex';
-      gridElement.style.display = 'none';
-      displayScores();
-    }
-    return; // Sai da função
-  }
-
-  // Se o usuário digitou algo, verifica se é a senha do professor
-  if (teacherInput !== TEACHER_PASSWORD) {
-    alert("Incorrect teacher password! The game will not be ended for everyone.");
-    // Comportamento para jogador: apenas mostra o placar localmente
-    const confirmLocalEnd = confirm("Incorrect password. Do you want to view the scoreboard locally? The game will continue for other players.");
-    if (confirmLocalEnd) {
-      scoreboard.style.display = 'flex';
-      gridElement.style.display = 'none';
-      displayScores();
-    }
-    return; // Sai da função
-  }
-
-  // Se a senha do professor estiver correta
-  if (confirm("Teacher, are you sure you want to end the game for ALL players? This will lock all ducks and display the final scores for everyone.")) {
-    // Atualiza o Firebase para sinalizar que o jogo terminou para todos
-    await gameStatusRef.update({ isGameEnded: true });
-    // A função endGame() será chamada automaticamente pelo listener do Firebase em todos os clientes.
-    alert("Game ended for all players!");
-  }
-});
-
-  // Listener para o botão de resetar o timer do Firebase
-  if (resetFirebaseTimerBtn) { // Verifica se o botão existe no HTML
-    resetFirebaseTimerBtn.addEventListener("click", resetFirebaseTimerOnly);
-  }
-
-// --- Listener Global para o Status do Jogo no Firebase ---
-gameStatusRef.on('value', (snapshot) => {
-  const gameStatus = snapshot.val();
-
-  // Lógica para o TIMER
-  if (gameStatus && gameStatus.endTime) {
-    if (!gameTimerInterval && !gameEnded) { // Só inicia o timer se não estiver rodando e o jogo não tiver terminado
-      setupGameTimerCountdown(gameStatus.endTime);
-    }
-  } else {
-    // Se gameStatus ou endTime for null, significa que o timer foi resetado ou não começou
-    if (gameTimerInterval) {
-      clearInterval(gameTimerInterval);
-      gameTimerInterval = null;
-    }
-    // Se o jogo não terminou oficialmente (via isGameEnded), reseta o estado local do timer
-    if (!gameEnded && (!gameStatus || !gameStatus.isGameEnded)) {
-        resetGameLocalState();
-    }
-  }
-
-  // Lógica para o FIM DO JOGO (isGameEnded)
-  if (gameStatus && gameStatus.isGameEnded) {
-    console.log("DEBUG: isGameEnded é true no Firebase. Chamando endGame().");
-    if (!gameEnded) { // Evita chamar endGame() múltiplas vezes se já terminou localmente
-        endGame(); // Chama endGame para todos os clientes
-    }
-  } else if (gameEnded && (!gameStatus || !gameStatus.isGameEnded)) {
-    // Se gameEnded é true localmente, mas não no Firebase, significa que o jogo foi resetado
-    // ou o estado de "terminado" foi removido pelo professor.
-    console.log("DEBUG: isGameEnded é falso ou null no Firebase, mas gameEnded é true localmente. Resetando estado local.");
-    resetGameLocalState(); // Reseta o estado local para permitir que o jogo recomece
-  }
-});
-
-  function renderDucks() {
-    gridElement.innerHTML = '';
-    duckConfigs.forEach(cfg => gridElement.appendChild(buildCard(cfg)));
-  }
-
-  // --- Game Timer Functions ---
-
-  function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-  }
-
-  // Esta função agora APENAS configura o setInterval para contar a partir de um endTime
-  // Ela NÃO define o endTime no Firebase. Isso será feito pelo primeiro jogador.
-  function setupGameTimerCountdown(endTime) {
-    if (gameTimerInterval) clearInterval(gameTimerInterval); // Limpa qualquer timer anterior
-    gameEnded = false;
-    gameTimerElement.style.display = 'flex';
-
-    gameTimerInterval = setInterval(() => {
-      const now = Date.now();
-      const diff = Math.floor((endTime - now) / 1000);
-
-      timeLeft = Math.max(0, diff);
-      timerDisplay.textContent = formatTime(timeLeft);
-
-      if (timeLeft <= 60) {
-        gameTimerElement.classList.add("critical");
+    function updateHunterDisplay() {
+      if (currentHunter) {
+        currentHunterDisplay.textContent = currentHunter;
+        currentHunterAura.textContent = allStudents[currentHunter]?.totalAura || 0;
+        hunterNameInput.value = ""; // Limpa o input após selecionar
       } else {
-        gameTimerElement.classList.remove("critical"); // Remove se o tempo não for crítico
+        currentHunterDisplay.textContent = "None selected";
+        currentHunterAura.textContent = "0";
+      }
+    }
+
+    function isCleared(duckId) {
+      return allStudents[currentHunter]?.clearedDucks.includes(duckId);
+    }
+
+    function canAccessDuck(duck) {
+      // Regras de acesso baseadas no tier
+      const hunterAura = allStudents[currentHunter]?.totalAura || 0;
+      switch (duck.tier) {
+        case "Common": return true;
+        case "Rare": return hunterAura >= 50;
+        case "Epic": return hunterAura >= 100;
+        case "Legendary": return hunterAura >= 200;
+        case "Mythic": return hunterAura >= 300;
+        default: return false;
+      }
+    }
+
+    function accessMessage(duck) {
+      const hunterAura = allStudents[currentHunter]?.totalAura || 0;
+      switch (duck.tier) {
+        case "Rare": return `You need at least 50 Aura to hunt Rare ducks. You have ${hunterAura}.`;
+        case "Epic": return `You need at least 100 Aura to hunt Epic ducks. You have ${hunterAura}.`;
+        case "Legendary": return `You need at least 200 Aura to hunt Legendary ducks. You have ${hunterAura}.`;
+        case "Mythic": return `You need at least 300 Aura to hunt Mythic ducks. You have ${hunterAura}.`;
+        default: return "You cannot access this duck yet.";
+      }
+    }
+
+    async function markCleared(duck) {
+      if (!currentHunter) return;
+
+      if (!allStudents[currentHunter]) {
+        allStudents[currentHunter] = { name: currentHunter, totalAura: 0, clearedDucks: [] };
       }
 
-      if (timeLeft <= 0) {
+      if (!allStudents[currentHunter].clearedDucks.includes(duck.id)) {
+        allStudents[currentHunter].clearedDucks.push(duck.id);
+        allStudents[currentHunter].totalAura += duck.aura;
+        saveStudents();
+        updateHunterDisplay();
+
+        // Atualiza o Firebase com o score do jogador
+        await playersRef.child(currentHunter).set(allStudents[currentHunter]);
+      }
+    }
+
+    function renderDucks() {
+      gridElement.innerHTML = ""; // Limpa o grid antes de renderizar
+      ducks.forEach(duck => gridElement.appendChild(buildCard(duck)));
+    }
+
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+
+    function setupGameTimerCountdown(endTime) {
+      if (gameTimerInterval) {
+        clearInterval(gameTimerInterval);
+      }
+
+      gameTimerElement.style.display = 'flex'; // Mostra o timer
+
+      gameTimerInterval = setInterval(() => {
+        const now = Date.now();
+        const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
+
+        timerDisplay.textContent = formatTime(timeLeft);
+
+        if (timeLeft <= 60) {
+          gameTimerElement.classList.add("critical");
+        } else {
+          gameTimerElement.classList.remove("critical"); // Remove se o tempo não for crítico
+        }
+
+        if (timeLeft <= 0) {
+          clearInterval(gameTimerInterval);
+          gameTimerInterval = null;
+          endGame(); // Chama endGame quando o timer zera
+        }
+      }, 1000);
+    }
+
+    function endGame() {
+      gameEnded = true; // Define o estado local como terminado
+      if (gameTimerInterval) {
         clearInterval(gameTimerInterval);
         gameTimerInterval = null;
-        endGame();
       }
-    }, 1000);
-  }
+      gameTimerElement.style.display = 'none'; // Esconde o timer
+      gridElement.style.display = 'none'; // Esconde os patos
+      scoreboard.style.display = 'flex'; // Mostra o placar
 
-  function endGame() {
-    gameEnded = true;
-    if (gameTimerInterval) {
-      clearInterval(gameTimerInterval);
-      gameTimerInterval = null;
-    }
-    gameTimerElement.style.display = 'none'; // Hide timer
-    gridElement.style.display = 'none'; // Hide ducks
-    scoreboard.style.display = 'flex'; // Show scoreboard
-
-    displayScores();
-  }
-
-  // Função para resetar o jogo COMPLETAMENTE (professor)
-  async function resetGame() {
-    const teacherInput = prompt("Teacher password to reset ALL game progress:");
-    if (teacherInput === null) return;
-    if (teacherInput !== TEACHER_PASSWORD) {
-      alert("Incorrect teacher password!");
-      return;
+      displayScores(); // Exibe os scores
     }
 
-    if (!confirm("Are you sure you want to reset ALL game progress and scores? This cannot be undone!")) {
-      return;
+    function resetGameLocalState() {
+      gameEnded = false; // Reseta o estado local do jogo
+      if (gameTimerInterval) {
+        clearInterval(gameTimerInterval);
+        gameTimerInterval = null;
+      }
+      gameTimerElement.style.display = 'none'; // Esconde o timer
+      gridElement.style.display = 'grid'; // Mostra os patos novamente
+      scoreboard.style.display = 'none'; // Esconde o placar
+      renderDucks(); // Renderiza os patos para atualizar o estado visual
     }
 
-    // Limpa o banco de dados para uma nova partida
-    await gameStatusRef.set({ endTime: null, isGameEnded: false }); // Reseta o status do jogo (incluindo endTime e isGameEnded)
-    await playersRef.set(null);    // Reseta os dados dos jogadores
+    // Função para mostrar o pódio sincronizado com todos os alunos
+    function displayScores() {
+      // Buscamos todos os jogadores no banco de dados
+      playersRef.on('value', ((snapshot) => {
+        const data = snapshot.val();
+        if (!data) return;
 
-    // Resetar o localStorage de todos os alunos (opcional, mas recomendado para consistência)
-    localStorage.removeItem(ALL_STUDENTS_KEY);
-    allStudents = {}; // Limpa o objeto local
-    currentHunter = null; // Limpa o caçador atual
+        // Converte o objeto do banco em uma lista e ordena por Aura
+        const sortedHunters = Object.values(data)
+          .sort((a, b) => b.totalAura - a.totalAura);
 
-    // O listener onValue vai detectar o `gameStatus` como null e chamar `resetGameLocalState()` em todos os clientes.
-    // Apenas para garantir que o cliente que iniciou o reset também se atualize:
-    resetGameLocalState();
-    updateHunterDisplay(); // Garante que o display do caçador seja atualizado
-    alert("Game reset for everyone!");
-  }
+        // Limpa os placares anteriores
+        podiumContainer.innerHTML = '';
+        allScoresList.innerHTML = '';
 
-// Função para mostrar o pódio sincronizado com todos os alunos
-  function displayScores() {
-    // Buscamos todos os jogadores no banco de dados
-    playersRef.on('value', ((snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
+        // Constrói o Pódio (1º, 2º e 3º)
+        // Ajustado para garantir que sempre haja 3 posições, mesmo que vazias
+        const podiumRanks = ["second", "first", "third"];
+        const podiumData = [sortedHunters[1], sortedHunters[0], sortedHunters[2]]; // Pega os 3 primeiros
 
-      // Converte o objeto do banco em uma lista e ordena por Aura
-      const sortedHunters = Object.values(data)
-        .sort((a, b) => b.totalAura - a.totalAura);
+        podiumData.forEach((hunter, index) => {
+          const spot = document.createElement("div");
+          spot.className = `podium-spot ${podiumRanks[index]}`;
+          if (hunter) {
+            spot.innerHTML = `
+              <div class="podium-rank">${index === 1 ? '🥇' : (index === 0 ? '🥈' : '🥉')}</div>
+              <div class="podium-name">${hunter.name}</div>
+              <div class="podium-aura">${hunter.totalAura} Aura</div>
+            `;
+          } else {
+            spot.innerHTML = `
+              <div class="podium-rank">${index === 1 ? '🥇' : (index === 0 ? '🥈' : '🥉')}</div>
+              <div class="podium-name">---</div>
+              <div class="podium-aura">0 Aura</div>
+            `;
+          }
+          podiumContainer.appendChild(spot);
+        });
 
-      // Limpa os placares anteriores
-      podiumContainer.innerHTML = '';
-      allScoresList.innerHTML = '';
-
-      // Constrói o Pódio (1º, 2º e 3º)
-      // Ajustado para garantir que sempre haja 3 posições, mesmo que vazias
-      const podiumRanks = ["second", "first", "third"];
-      const podiumData = [sortedHunters[1], sortedHunters[0], sortedHunters[2]]; // Pega os 3 primeiros
-
-      podiumData.forEach((hunter, index) => {
-        const spot = document.createElement("div");
-        spot.className = `podium-spot ${podiumRanks[index]}`;
-        if (hunter) {
-          spot.innerHTML = `
-            <div class="podium-rank">${index === 1 ? '🥇' : (index === 0 ? '🥈' : '🥉')}</div>
-            <div class="podium-name">${hunter.name}</div>
-            <div class="podium-aura">${hunter.totalAura} Aura</div>
+        // Constrói a lista completa de classificação
+        sortedHunters.forEach(hunter => {
+          const listItem = document.createElement("li");
+          listItem.innerHTML = `
+            <span>${hunter.name}</span>
+            <span>${hunter.totalAura} Aura</span>
           `;
-        } else {
-          spot.innerHTML = `
-            <div class="podium-rank">${index === 1 ? '🥇' : (index === 0 ? '🥈' : '🥉')}</div>
-            <div class="podium-name">---</div>
-            <div class="podium-aura">0 Aura</div>
-          `;
+          allScoresList.appendChild(listItem);
+        });
+      }));
+    }
+
+    // --- LISTENERS DE EVENTOS ---
+    selectHunterBtn.addEventListener("click", async () => {
+      const hunterName = hunterNameInput.value.trim();
+      if (hunterName) {
+        currentHunter = hunterName;
+        saveCurrentHunter();
+
+        if (!allStudents[currentHunter]) {
+          allStudents[currentHunter] = { name: currentHunter, totalAura: 0, clearedDucks: [] };
+          saveStudents();
         }
-        podiumContainer.appendChild(spot);
-      });
+        updateHunterDisplay();
 
-      // Constrói a lista completa de classificação
-      sortedHunters.forEach(hunter => {
-        const listItem = document.createElement("li");
-        listItem.innerHTML = `
-          <span>${hunter.name}</span>
-          <span>${hunter.totalAura} Aura</span>
-        `;
-        allScoresList.appendChild(listItem);
-      });
-    }));
-  }
+        // Verifica se o jogo já terminou globalmente
+        const snapshot = await gameStatusRef.once('value');
+        const gameStatus = snapshot.val();
+        if (gameStatus && gameStatus.isGameEnded) {
+          endGame(); // Se o jogo já terminou, mostra o placar
+        } else {
+          // Se o jogo não terminou, garante que o estado local esteja correto
+          resetGameLocalState();
+        }
 
-  // NOVO: Função para resetar APENAS o timer no Firebase (professor)
-  async function resetFirebaseTimerOnly() {
-    const teacherInput = prompt("Teacher password to reset the game timer:");
-    if (teacherInput === null) return;
-    if (teacherInput !== TEACHER_PASSWORD) {
-      alert("Incorrect teacher password!");
-      return;
-    }
-    if (!confirm("Are you sure you want to reset ONLY the game timer for everyone?")) {
-      return;
-    }
-    await gameStatusRef.child('endTime').set(null);
-    alert("Game timer reset in Firebase!");
-  }
-
-  // --- Initial Setup ---
-  renderDucks();
-  updateHunterDisplay();
-  gameTimerElement.style.display = 'none'; // Hide timer initially until game starts
-
-  function buildCard(duck) {
-    const task = tasks[duck.id];
-
-    const card = document.createElement("div");
-    card.className = "card";
-
-    const duckBtn = document.createElement("button");
-    duckBtn.className = "duck-btn";
-    duckBtn.setAttribute("aria-label", `Open Duck ${duck.id}`);
-
-    // Add 'locked' class if game has ended
-    if (gameEnded) {
-      duckBtn.classList.add('locked');
-    }
-
-    duckBtn.innerHTML = `
-      <div class="duck-cover ${isCleared(duck.id) ? 'cleared' : ''}">
-        <img src="${duck.image}" alt="Duck ${duck.id}">
-        ${isCleared(duck.id) ? '<div class="cleared-overlay">✅ HUNTED</div>' : ''}
-      </div>
-      <div style="display:flex; justify-content:space-between; width:100%; margin-top:4px;">
-        <span class="tier-label">${duck.tier}</span>
-        <span class="aura-label">+${duck.aura} aura</span>
-      </div>
-    `;
-
-    const collapse = document.createElement("div");
-    collapse.className = "collapse";
-
-    const inner = document.createElement("div");
-    inner.className = "collapse-inner";
-
-    const lockDiv = document.createElement("div");
-    lockDiv.innerHTML = `
-      <div class="label-small">Password from QR</div>
-      <div class="pw-row">
-        <input type="password" class="pw-input" placeholder="Type the password from your duck">
-        <button class="btn unlock-btn">Unlock</button>
-      </div>
-      <div class="error-msg"></div>
-    `;
-
-    const taskDiv = document.createElement("div");
-    taskDiv.style.display = "none";
-
-    let taskHTML = "";
-    if (task) {
-      taskHTML += `<div class="task-text">${task.text}</div>`;
-      if (task.note) taskHTML += `<div class="task-note">${task.note}</div>`;
-      if (task.gaps && task.gaps.length) {
-        taskHTML += `<ul class="gap-list">${task.gaps.map(g => `<li>${g}</li>`).join("")}</ul>`;
-        taskHTML += `<textarea class="answer-input" placeholder="${task.placeholder || "Write your answer here."}" value=""></textarea>`;
-      } 
-      else {
-        taskHTML += `<textarea class="answer-input" placeholder="Write your answer here." value=""></textarea>`;
+        // Inicia o timer se ainda não estiver ativo e não houver endTime no Firebase
+        if (!gameTimerInterval) {
+          const gameStatusSnapshot = await gameStatusRef.once('value');
+          const currentStatus = gameStatusSnapshot.val();
+          if (!currentStatus || !currentStatus.endTime) {
+            const duration = 15 * 60 * 1000; // 15 minutos em milissegundos
+            const endTime = Date.now() + duration;
+            await gameStatusRef.update({ endTime: endTime, isGameEnded: false }); // Inicia o timer e marca como não terminado
+          }
+        }
+      } else {
+        alert("Please enter your hunter name.");
       }
-    } else {
-      taskHTML += `<div class="task-text">No mission yet. Ask your teacher.</div>`;
-    }
-    taskHTML += `<button class="btn approve-btn">Ask teacher to approve ✅</button>`;
-    taskDiv.innerHTML = taskHTML;
-
-    // --- CORREÇÃO DO TEXTAREA: garante placeholder e remove qualquer \n inicial ---
-    const answerTextarea = taskDiv.querySelector(".answer-input");
-    if (answerTextarea) {
-      // Pega o placeholder que foi definido no HTML (se houver)
-      const currentPlaceholder = answerTextarea.getAttribute("placeholder");
-
-      // Limpa TODO e qualquer conteúdo interno (inclusive \n ou texto "value")
-      answerTextarea.textContent = ""; // Garante que não há texto entre <textarea> e </textarea>
-      answerTextarea.value = "";       // Garante que o atributo value está vazio
-
-      // Se não havia placeholder no HTML, define um padrão
-      if (!currentPlaceholder) {
-        answerTextarea.setAttribute("placeholder", "Write your answer here.");
-      }
-      // Se por algum motivo o placeholder veio como textContent, move ele para o atributo
-      else if (answerTextarea.textContent && !answerTextarea.getAttribute("placeholder")) {
-        answerTextarea.setAttribute("placeholder", answerTextarea.textContent.trim());
-        answerTextarea.textContent = ""; // Limpa novamente após mover
-      }
-    }
-
-    const successDiv = document.createElement("div");
-    successDiv.className = "success-area";
-    successDiv.style.display = "none";
-    successDiv.innerHTML = `
-      <div class="success-main">✅ Approved!</div>
-      <div class="success-sub">🔥 You just farmed +${duck.aura} aura!</div>
-      <div class="success-timer">Locking again in <span class="timer-count">5</span>s…</div>
-    `;
-
-    inner.appendChild(lockDiv);
-    inner.appendChild(taskDiv);
-    inner.appendChild(successDiv);
-    collapse.appendChild(inner);
-    card.appendChild(duckBtn);
-    card.appendChild(collapse);
-
-    duckBtn.addEventListener("click", () => {
-      if (gameEnded) { // If game has ended, prevent opening cards
-        alert("The game has ended. You can view scores but not play.");
-        return;
-      }
-      if (!currentHunter) {
-        alert("Please enter your hunter name first to start playing!");
-        return;
-      }
-      if (!canAccessDuck(duck)) {
-        alert(accessMessage(duck));
-        return;
-      }
-      const open = collapse.classList.contains("open");
-      collapse.classList.toggle("open", !open);
     });
 
-    const pwInput   = lockDiv.querySelector(".pw-input");
-    const unlockBtn = lockDiv.querySelector(".unlock-btn");
-    const errorMsg  = lockDiv.querySelector(".error-msg");
-
-    function tryUnlock() {
-      if (gameEnded) { return; } // Prevent unlocking if game ended
-      if (!currentHunter) { alert("Please enter your hunter name first!"); return; }
-
-      const val = (pwInput.value || "").trim();
-      if (!val) { errorMsg.textContent = "Type the password from your duck QR."; return; }
-      // NOVO: Verifica se a senha digitada é a senha do pato OU a senha mestra do professor
-      if (val.toUpperCase() !== duck.password.toUpperCase() && val.toUpperCase() !== MASTER_TEACHER_PASSWORD.toUpperCase()) {
-        errorMsg.textContent = "Wrong password. Check your QR code again, or ask your teacher for the master password.";
+    resetProgressBtn.addEventListener("click", async () => {
+      const teacherInput = prompt("Teacher password to reset ALL game progress:");
+      if (teacherInput === null) return;
+      if (teacherInput !== TEACHER_PASSWORD) {
+        alert("Incorrect teacher password!");
         return;
       }
-      errorMsg.textContent = "";
-      lockDiv.style.display = "none";
-      taskDiv.style.display = "flex";
-      taskDiv.style.flexDirection = "column";
-      taskDiv.style.gap = "8px";
-      const ta = taskDiv.querySelector(".answer-input");
-      if (ta) {
-        ta.value = "";      // você pode até remover esta linha se quiser manter qualquer texto antigo
-        ta.focus();
-        ta.setSelectionRange(0,0);
+
+      if (!confirm("Are you sure you want to reset ALL game progress and scores? This cannot be undone!")) {
+        return;
       }
-    }
 
-    unlockBtn.addEventListener("click", tryUnlock);
-    pwInput.addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
+      // Limpa o banco de dados para uma nova partida
+      await gameStatusRef.set({ endTime: null, isGameEnded: false }); // Reseta o status do jogo (incluindo endTime e isGameEnded)
+      await playersRef.set(null);    // Reseta os dados dos jogadores
 
-    const approveBtn = taskDiv.querySelector(".approve-btn");
-    if (approveBtn) {
-      approveBtn.addEventListener("click", () => {
-        if (gameEnded) { return; } // Prevent approving if game ended
-        const teacherInput = prompt("Teacher password:"); // Abre uma caixa para digitar a senha
-        if (teacherInput === null) { // Se o professor clicou em "Cancelar" no prompt
-          return; // Não faz nada e sai da função
+      // Resetar o localStorage de todos os alunos (opcional, mas recomendado para consistência)
+      localStorage.removeItem(ALL_STUDENTS_KEY);
+      allStudents = {}; // Limpa o objeto local
+      currentHunter = null; // Limpa o caçador atual
+
+      // O listener onValue vai detectar o `gameStatus` como null e chamar `resetGameLocalState()` em todos os clientes.
+      // Apenas para garantir que o cliente que iniciou o reset também se atualize:
+      resetGameLocalState();
+      updateHunterDisplay(); // Garante que o display do caçador seja atualizado
+      alert("Game reset for everyone!");
+    });
+
+    endGameBtn.addEventListener("click", async () => {
+      // Se o jogo já terminou globalmente (sinalizado pelo Firebase),
+      // apenas mostra o placar localmente e sai.
+      if (gameEnded) {
+        scoreboard.style.display = 'flex';
+        gridElement.style.display = 'none';
+        displayScores();
+        return;
+      }
+
+      // Pergunta se é o professor
+      const teacherInput = prompt("To end the game for everyone, enter the teacher password. Otherwise, click Cancel to just view your local scoreboard.");
+
+      if (teacherInput === null) { // Se o usuário clicou em "Cancelar"
+        // Comportamento para jogador: apenas mostra o placar localmente
+        const confirmLocalEnd = confirm("You chose not to end the game for everyone. Do you want to view the scoreboard locally? The game will continue for other players until the teacher ends it or the timer runs out.");
+        if (confirmLocalEnd) {
+          scoreboard.style.display = 'flex';
+          gridElement.style.display = 'none';
+          displayScores();
         }
-        if (teacherInput !== TEACHER_PASSWORD) { // Se a senha digitada for diferente da senha definida
-          alert("Incorrect teacher password!"); // Mostra um alerta de senha incorreta
-          return; // Não faz nada e sai da função
+        return; // Sai da função
+      }
+
+      // Se o usuário digitou algo, verifica se é a senha do professor
+      if (teacherInput !== TEACHER_PASSWORD) {
+        alert("Incorrect teacher password! The game will not be ended for everyone.");
+        // Comportamento para jogador: apenas mostra o placar localmente
+        const confirmLocalEnd = confirm("Incorrect password. Do you want to view the scoreboard locally? The game will continue for other players until the teacher ends it or the timer runs out.");
+        if (confirmLocalEnd) {
+          scoreboard.style.display = 'flex';
+          gridElement.style.display = 'none';
+          displayScores();
         }
-        markCleared(duck);
+        return; // Sai da função
+      }
 
-        taskDiv.style.display = "none";
-        successDiv.style.display = "flex";
-        successDiv.style.flexDirection = "column";
-        successDiv.style.gap = "4px";
+      // Se a senha do professor estiver correta, pergunta se quer encerrar o jogo globalmente
+      const confirmGlobalEnd = confirm("Teacher password correct. Are you sure you want to end the game for ALL players? All ducks will be locked and scores displayed for everyone.");
+      if (confirmGlobalEnd) {
+        await gameStatusRef.update({ isGameEnded: true }); // Sinaliza no Firebase que o jogo terminou
+        // A função endGame() será chamada pelo listener do Firebase em todos os clientes.
+      }
+    });
 
-        const timerSpan = successDiv.querySelector(".timer-count");
-        let t = 5;
-        timerSpan.textContent = t;
-        const iv = setInterval(() => {
-          t--;
-          timerSpan.textContent = t;
-          if (t <= 0) {
-            clearInterval(iv);
-            successDiv.style.display = "none";
-            lockDiv.style.display    = "block";
-            taskDiv.style.display    = "none";
-            pwInput.value = "";
-            collapse.classList.remove("open");
-            renderDucks();
-          }
-        }, 1000);
+    // --- Listener Global para o Timer e Estado do Jogo no Firebase ---
+    gameStatusRef.on('value', (snapshot) => {
+      const gameStatus = snapshot.val();
+
+      // Lógica para o timer
+      if (gameStatus && gameStatus.endTime) {
+        // Se o jogo não terminou e o timer não está ativo, configura o timer
+        if (!gameTimerInterval && !gameEnded) {
+          setupGameTimerCountdown(gameStatus.endTime);
+        }
+      } else {
+        // Se gameStatus ou endTime for null, significa que o jogo foi resetado ou não começou
+        if (gameTimerInterval) {
+          clearInterval(gameTimerInterval);
+          gameTimerInterval = null;
+        }
+        // Se o jogo não terminou oficialmente, reseta o estado local
+        if (!gameEnded) {
+          resetGameLocalState();
+        }
+      }
+
+      // Lógica para o estado de "jogo terminado"
+      if (gameStatus && gameStatus.isGameEnded) {
+        console.log("DEBUG: isGameEnded é true no Firebase. Chamando endGame().");
+        // Garante que endGame só seja chamado se o jogo ainda não terminou localmente
+        if (!gameEnded) {
+          endGame(); // Chama endGame para todos os clientes
+        }
+      } else if (gameEnded && (!gameStatus || !gameStatus.isGameEnded)) {
+        // Se gameEnded é true localmente, mas não no Firebase, significa que o jogo foi resetado
+        // ou o estado de "terminado" foi removido pelo professor.
+        console.log("DEBUG: isGameEnded é falso ou null no Firebase, mas gameEnded é true localmente. Resetando estado local.");
+        resetGameLocalState(); // Reseta o estado local para permitir que o jogo recomece
+      }
+    });
+
+    // --- Initial Setup ---
+    renderDucks();
+    updateHunterDisplay();
+    gameTimerElement.style.display = 'none'; // Hide timer initially until game starts
+
+    function buildCard(duck) {
+      const task = tasks[duck.id];
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const duckBtn = document.createElement("button");
+      duckBtn.className = "duck-btn";
+      duckBtn.setAttribute("aria-label", `Open Duck ${duck.id}`);
+
+      // Add 'locked' class if game has ended
+      if (gameEnded) {
+        duckBtn.classList.add('locked');
+      }
+
+      duckBtn.innerHTML = `
+        <div class="duck-cover ${isCleared(duck.id) ? 'cleared' : ''}">
+          <img src="${duck.image}" alt="Duck ${duck.id}">
+          ${isCleared(duck.id) ? '<div class="cleared-overlay">✅ HUNTED</div>' : ''}
+        </div>
+        <div style="display:flex; justify-content:space-between; width:100%; margin-top:4px;">
+          <span class="tier-label">${duck.tier}</span>
+          <span class="aura-label">+${duck.aura} aura</span>
+        </div>
+      `;
+
+      const collapse = document.createElement("div");
+      collapse.className = "collapse";
+
+      const inner = document.createElement("div");
+      inner.className = "collapse-inner";
+
+      const lockDiv = document.createElement("div");
+      lockDiv.innerHTML = `
+        <div class="label-small">Password from QR</div>
+        <div class="pw-row">
+          <input type="password" class="pw-input" placeholder="Type the password from your duck">
+          <button class="btn unlock-btn">Unlock</button>
+        </div>
+        <div class="error-msg"></div>
+      `;
+
+      const taskDiv = document.createElement("div");
+      taskDiv.style.display = "none";
+
+      let taskHTML = "";
+      if (task) {
+        taskHTML += `<div class="task-text">${task.text}</div>`;
+        if (task.note) taskHTML += `<div class="task-note">${task.note}</div>`;
+        if (task.gaps && task.gaps.length) {
+          taskHTML += `<ul class="gap-list">${task.gaps.map(g => `<li>${g}</li>`).join("")}</ul>`;
+          taskHTML += `<textarea class="answer-input" placeholder="${task.placeholder || "Write your answer here."}" value=""></textarea>`;
+        } 
+        else {
+          taskHTML += `<textarea class="answer-input" placeholder="Write your answer here." value=""></textarea>`;
+        }
+      } else {
+        taskHTML += `<div class="task-text">No mission yet. Ask your teacher.</div>`;
+      }
+      taskHTML += `<button class="btn approve-btn">Ask teacher to approve ✅</button>`;
+      taskDiv.innerHTML = taskHTML;
+
+      // --- CORREÇÃO DO TEXTAREA: garante placeholder e remove qualquer \n inicial ---
+      const answerTextarea = taskDiv.querySelector(".answer-input");
+      if (answerTextarea) {
+        // Pega o placeholder que foi definido no HTML (se houver)
+        const currentPlaceholder = answerTextarea.getAttribute("placeholder");
+
+        // Limpa TODO e qualquer conteúdo interno (inclusive \n ou texto "value")
+        answerTextarea.textContent = ""; // Garante que não há texto entre <textarea> e </textarea>
+        answerTextarea.value = "";       // Garante que o atributo value está vazio
+
+        // Se não havia placeholder no HTML, define um padrão
+        if (!currentPlaceholder) {
+          answerTextarea.setAttribute("placeholder", "Write your answer here.");
+        }
+        // Se por algum motivo o placeholder veio como textContent, move ele para o atributo
+        else if (answerTextarea.textContent && !answerTextarea.getAttribute("placeholder")) {
+          answerTextarea.setAttribute("placeholder", answerTextarea.textContent.trim());
+          answerTextarea.textContent = ""; // Limpa novamente após mover
+        }
+      }
+
+      const successDiv = document.createElement("div");
+      successDiv.className = "success-area";
+      successDiv.style.display = "none";
+      successDiv.innerHTML = `
+        <div class="success-main">✅ Approved!</div>
+        <div class="success-sub">🔥 You just farmed +${duck.aura} aura!</div>
+        <div class="success-timer">Locking again in <span class="timer-count">5</span>s…</div>
+      `;
+
+      inner.appendChild(lockDiv);
+      inner.appendChild(taskDiv);
+      inner.appendChild(successDiv);
+      collapse.appendChild(inner);
+      card.appendChild(duckBtn);
+      card.appendChild(collapse);
+
+      duckBtn.addEventListener("click", () => {
+        if (gameEnded) { // If game has ended, prevent opening cards
+          alert("The game has ended. You can view scores but not play.");
+          return;
+        }
+        if (!currentHunter) {
+          alert("Please enter your hunter name first to start playing!");
+          return;
+        }
+        if (!canAccessDuck(duck)) {
+          alert(accessMessage(duck));
+          return;
+        }
+        const open = collapse.classList.contains("open");
+        collapse.classList.toggle("open", !open);
       });
-    }
 
-    return card;
-  }
-</script>
+      const pwInput   = lockDiv.querySelector(".pw-input");
+      const unlockBtn = lockDiv.querySelector(".unlock-btn");
+      const errorMsg  = lockDiv.querySelector(".error-msg");
+
+      function tryUnlock() {
+        if (gameEnded) { return; } // Prevent unlocking if game ended
+        if (!currentHunter) { alert("Please enter your hunter name first!"); return; }
+
+        const val = (pwInput.value || "").trim();
+        if (!val) { errorMsg.textContent = "Type the password from your duck QR."; return; }
+        // NOVO: Verifica se a senha digitada é a senha do pato OU a senha mestra do professor
+        if (val.toUpperCase() !== duck.password.toUpperCase() && val.toUpperCase() !== MASTER_TEACHER_PASSWORD.toUpperCase()) {
+          errorMsg.textContent = "Wrong password. Check your QR code again, or ask your teacher for the master password.";
+          return;
+        }
+        errorMsg.textContent = "";
+        lockDiv.style.display = "none";
+        taskDiv.style.display = "flex";
+        taskDiv.style.flexDirection = "column";
+        taskDiv.style.gap = "8px";
+        const ta = taskDiv.querySelector(".answer-input");
+        if (ta) {
+          ta.value = "";      // você pode até remover esta linha se quiser manter qualquer texto antigo
+          ta.focus();
+          ta.setSelectionRange(0,0);
+        }
+      }
+
+      unlockBtn.addEventListener("click", tryUnlock);
+      pwInput.addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
+
+      const approveBtn = taskDiv.querySelector(".approve-btn");
+      if (approveBtn) {
+        approveBtn.addEventListener("click", async () => { // Adicionado 'async' aqui
+          if (gameEnded) { return; } // Prevent approving if game ended
+          const teacherInput = prompt("Teacher password:"); // Abre uma caixa para digitar a senha
+          if (teacherInput === null) { // Se o professor clicou em "Cancelar" no prompt
+            return; // Não faz nada e sai da função
+          }
+          if (teacherInput !== TEACHER_PASSWORD) { // Se a senha digitada for diferente da senha definida
+            alert("Incorrect teacher password!"); // Mostra um alerta de senha incorreta
+            return; // Não faz nada e sai da função
+          }
+          await markCleared(duck); // Usar await aqui para garantir que o Firebase seja atualizado antes de renderizar
+
+          taskDiv.style.display = "none";
+          successDiv.style.display = "flex";
+          successDiv.style.flexDirection = "column";
+          successDiv.style.gap = "4px";
+
+          const timerSpan = successDiv.querySelector(".timer-count");
+          let t = 5;
+          timerSpan.textContent = t;
+          const iv = setInterval(() => {
+            t--;
+            timerSpan.textContent = t;
+            if (t <= 0) {
+              clearInterval(iv);
+              successDiv.style.display = "none";
+              lockDiv.style.display    = "block";
+              taskDiv.style.display    = "none";
+              pwInput.value = "";
+              collapse.classList.remove("open");
+              renderDucks();
+            }
+          }, 1000);
+        });
+      }
+
+      return card;
+    }
+  </script>
 </body>
 </html>
