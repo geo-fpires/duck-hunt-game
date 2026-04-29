@@ -789,45 +789,11 @@
     }
   });
 
-const endGameBtn = document.getElementById('endGameBtn');
-if (endGameBtn) {
-  endGameBtn.addEventListener('click', async () => { // Adicionado 'async' aqui
-    // Se o jogo já terminou globalmente (via Firebase), apenas exibe o placar localmente
-    if (gameEnded) {
-      scoreboard.style.display = 'flex';
-      gridElement.style.display = 'none';
-      displayScores();
-      return;
-    }
-
-    // Pergunta se é o professor
-    const isTeacher = confirm("Are you a teacher trying to end the game for everyone?");
-
-    if (isTeacher) {
-      const teacherInput = prompt("Teacher password to end the game for everyone:");
-      if (teacherInput === null) return; // Professor cancelou
-      if (teacherInput !== TEACHER_PASSWORD) {
-        alert("Incorrect teacher password!");
-        return;
-      }
-      // Se a senha estiver correta, o professor quer encerrar o jogo globalmente
-      if (!confirm("Are you sure you want to end the game for everyone? This will show the scoreboard to all players.")) {
-        return;
-      }
-      // Define isGameEnded como true no Firebase, o que vai disparar endGame() em todos os clientes
-      await gameStatusRef.update({ isGameEnded: true });
-      alert("Game ended for everyone!");
-    } else {
-      // Se não é professor, é um jogador querendo ver o placar localmente
-      const confirmLocalEnd = confirm("Are you sure you want to view the scoreboard? The game will continue for other players until the teacher ends it or the timer runs out.");
-      if (confirmLocalEnd) {
-        scoreboard.style.display = 'flex';
-        gridElement.style.display = 'none';
-        displayScores();
-      }
+  endGameBtn.addEventListener("click", () => {
+    if (confirm("Are you sure you want to end the game now? All ducks will be locked and scores displayed.")) {
+      endGame();
     }
   });
-}
 
   // Listener para o botão de resetar o timer do Firebase
   if (resetFirebaseTimerBtn) { // Verifica se o botão existe no HTML
@@ -850,16 +816,6 @@ if (endGameBtn) {
       if (!gameEnded) { // Se o jogo não terminou oficialmente, reseta o estado local
         resetGameLocalState();
       }
-    }
-    // NOVO: Verifica se o jogo foi marcado como terminado globalmente
-    if (gameStatus && gameStatus.isGameEnded) {
-      console.log("DEBUG: isGameEnded é true no Firebase. Chamando endGame().");
-      endGame(); // Chama endGame para todos os clientes
-    } else if (gameEnded && (!gameStatus || !gameStatus.isGameEnded)) {
-      // Se gameEnded é true localmente, mas não no Firebase, significa que o jogo foi resetado
-      // ou o estado de "terminado" foi removido.
-      console.log("DEBUG: isGameEnded é false ou null no Firebase. Resetando estado local.");
-      resetGameLocalState();
     }
   });
 
@@ -905,10 +861,7 @@ if (endGameBtn) {
   }
 
   function endGame() {
-    // Se o jogo já está marcado como terminado, não faz nada
-    if (gameEnded) return;
-
-    gameEnded = true; // Marca o jogo como terminado localmente
+    gameEnded = true;
     if (gameTimerInterval) {
       clearInterval(gameTimerInterval);
       gameTimerInterval = null;
@@ -918,7 +871,6 @@ if (endGameBtn) {
     scoreboard.style.display = 'flex'; // Show scoreboard
 
     displayScores();
-    console.log("DEBUG: Jogo finalizado localmente e placar exibido.");
   }
 
   // Função para resetar o jogo COMPLETAMENTE (professor)
