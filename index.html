@@ -220,220 +220,189 @@
     textarea {
       flex: 1;
       border-radius: 10px;
+      min-height: 80px;
       resize: vertical;
-      min-height: 32px;      /* bem menor */
-      padding: 6px 10px;     /* pouco padding vertical */
-      line-height: 1.2;      /* linha compacta */
-      vertical-align: top;
-      text-align: left;
-
-      border: 1px solid #facc15;
-      background: rgba(255,251,235,0.97);
-      color: var(--text);
-      font-size: 0.8rem;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      outline: none;
-    }
-
-    input:focus, textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
+      padding: 10px;
     }
 
     .btn {
-      border-radius: 999px;
+      background: var(--accent);
+      color: white;
       border: none;
-      padding: 6px 14px;
-      font-size: 0.74rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 0.8rem;
+      font-weight: 600;
       cursor: pointer;
-      background: linear-gradient(to right, #22c55e, #16a34a);
-      color: #022c22;
-      box-shadow: 0 2px 0 rgba(21,128,61,0.8);
-      white-space: nowrap;
-      transition: filter 0.1s, transform 0.1s;
+      transition: background 0.2s;
     }
-
-    .btn:hover { filter: brightness(1.07); transform: translateY(-1px); }
-    .btn:active { filter: brightness(0.95); transform: translateY(1px); box-shadow: none; }
+    .btn:hover { background: #16a34a; }
+    .btn:active { background: #15803d; }
 
     .error-msg {
-      font-size: 0.7rem;
       color: var(--error);
-      min-height: 14px;
+      font-size: 0.75rem;
+      margin-top: 4px;
     }
 
     .task-text {
-      font-size: 0.8rem;
-      line-height: 1.45;
-      color: #1f2933;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: var(--text);
     }
 
     .task-note {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: var(--muted);
       font-style: italic;
     }
 
     .gap-list {
-      font-size: 0.75rem;
-      color: #374151;
-      margin-left: 14px;
+      list-style: none;
+      padding-left: 0;
+      margin-top: 4px;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      color: var(--text);
     }
-    .gap-list li { margin-bottom: 2px; }
+    .gap-list li {
+      margin-bottom: 4px;
+      padding-left: 16px;
+      position: relative;
+    }
+    .gap-list li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
 
     .success-area {
-      text-align: center;
-      padding: 4px 0 6px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
-    }
-
-    .success-main { font-size: 1rem; font-weight: 700; color: #166534; }
-    .success-sub  { font-size: 0.82rem; color: #b45309; font-weight: 600; }
-    .success-timer{ font-size: 0.68rem; color: var(--muted); }
-
-    footer {
-      font-size: 0.72rem;
-      color: #4b5563;
-      text-align: center;
-      padding-bottom: 16px;
-    }
-
-    /* Hunter Selection UI */
-    .hunter-selection {
-      background-color: rgba(255, 255, 255, 0.8);
-      padding: 15px 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .current-hunter-info {
-      font-weight: bold;
-      color: var(--text);
-      font-size: 1.1rem;
-      margin-right: 15px;
-      white-space: nowrap;
-      display: flex;
       align-items: center;
       gap: 8px;
+      padding: 16px;
+      background: #ecfdf5;
+      border: 1px solid #34d399;
+      border-radius: 10px;
+      margin-top: 10px;
     }
-
-    #hunterNameInput {
-      padding: 8px 12px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 1rem;
-      flex-grow: 1;
-      max-width: 250px;
-    }
-
-    #selectHunterBtn, #resetProgressBtn, #endGameBtn, #resetFirebaseTimerBtn { /* Adicionado #resetFirebaseTimerBtn */
-      padding: 8px 15px;
-      border: none;
-      border-radius: 5px;
-      background-color: var(--accent);
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      white-space: nowrap;
-    }
-
-    #selectHunterBtn:hover { background-color: #16a34a; }
-    #resetProgressBtn { background-color: #dc2626; margin-left: 10px; }
-    #resetProgressBtn:hover { background-color: #b91c1c; }
-    #endGameBtn { background-color: #f97316; margin-left: 10px; } /* Orange for End Game */
-    #endGameBtn:hover { background-color: #ea580c; }
-    #resetFirebaseTimerBtn { background-color: #6b7280; margin-left: 10px; } /* Gray for Reset Timer */
-    #resetFirebaseTimerBtn:hover { background-color: #4b5563; }
-
-
-    /* Game Timer Display */
-    .game-timer {
-      background-color: rgba(255, 255, 255, 0.9);
-      padding: 10px 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+    .success-main {
       font-size: 1.2rem;
       font-weight: bold;
-      color: var(--text);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      color: #059669;
     }
-    .game-timer.critical {
-      color: var(--error);
+    .success-sub {
+      font-size: 0.9rem;
+      color: #047857;
+    }
+    .success-timer {
+      font-size: 0.8rem;
+      color: #065f46;
     }
 
     /* Scoreboard */
-    #scoreboard {
-      background-color: rgba(255, 255, 255, 0.95);
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      margin-top: 30px;
-      width: 90%;
-      max-width: 800px;
-      text-align: center;
-      display: none; /* Hidden by default */
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    #scoreboard h2 {
-      font-size: 2.5rem;
-      color: #f97316;
-      margin-bottom: 15px;
-      font-family: 'RubberDuck', system-ui;
-      text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
-    }
-
-    .podium {
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .podium-spot {
+    .scoreboard-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
       display: flex;
       flex-direction: column;
       align-items: center;
-      background-color: #fef9c3;
-      border-radius: 10px;
-      padding: 15px 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      min-width: 120px;
+      justify-content: center;
+      z-index: 1000;
+      color: white;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
     }
 
-    .podium-spot.first { height: 180px; background-color: #ffd700; } /* Gold */
-    .podium-spot.second { height: 140px; background-color: #c0c0c0; } /* Silver */
-    .podium-spot.third { height: 100px; background-color: #cd7f32; } /* Bronze */
+    .scoreboard-content {
+      background: linear-gradient(to bottom, #fef9c3 0%, #fde68a 100%);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 900px;
+      width: 100%;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+      color: var(--text);
+      text-align: center;
+    }
 
-    .podium-rank { font-size: 2.5rem; font-weight: bold; color: #333; margin-bottom: 5px; }
-    .podium-name { font-size: 1.2rem; font-weight: bold; color: var(--text); }
-    .podium-aura { font-size: 1rem; color: #166534; margin-top: 5px; }
-    .podium-bonus { font-size: 0.8rem; color: #f97316; font-weight: bold; margin-top: 5px; }
+    .scoreboard-title {
+      font-family: 'RubberDuck', regular;
+      font-size: 4rem;
+      color: #3333cc;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .podium-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      margin-bottom: 40px;
+      gap: 20px;
+      height: 250px; /* Altura fixa para o pódio */
+    }
+
+    .podium-spot {
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px 10px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end; /* Alinha o conteúdo na parte inferior */
+      position: relative;
+      width: 120px;
+      min-height: 150px; /* Altura mínima para os spots */
+    }
+
+    .podium-spot.first {
+      height: 220px;
+      background: linear-gradient(to top, #ffd700, #ffec8b); /* Ouro */
+      border: 2px solid #daa520;
+      transform: translateY(-10px);
+    }
+    .podium-spot.second {
+      height: 180px;
+      background: linear-gradient(to top, #c0c0c0, #e0e0e0); /* Prata */
+      border: 2px solid #a9a9a9;
+    }
+    .podium-spot.third {
+      height: 150px;
+      background: linear-gradient(to top, #cd7f32, #e6b88c); /* Bronze */
+      border: 2px solid #8b4513;
+    }
+
+    .podium-rank {
+      font-size: 2.5rem;
+      margin-bottom: 5px;
+    }
+    .podium-name {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+      word-break: break-word; /* Quebra palavras longas */
+    }
+    .podium-aura {
+      font-size: 1rem;
+      color: #555;
+    }
 
     .all-scores-list {
       list-style: none;
       padding: 0;
-      margin: 0;
+      margin-top: 30px;
       max-height: 300px;
       overflow-y: auto;
-      border-top: 1px solid #eee;
+      border-top: 1px solid #facc15;
       padding-top: 20px;
     }
 
@@ -441,730 +410,632 @@
       display: flex;
       justify-content: space-between;
       padding: 8px 0;
-      border-bottom: 1px dashed #eee;
+      border-bottom: 1px dashed #fde68a;
       font-size: 1rem;
+      color: #4b5563;
+    }
+    .all-scores-list li:last-child {
+      border-bottom: none;
+    }
+
+    .close-scoreboard-btn {
+      margin-top: 30px;
+      background: #dc2626;
+    }
+    .close-scoreboard-btn:hover { background: #b91c1c; }
+
+    /* Game Controls */
+    .game-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .game-timer {
+      font-size: 1.2rem;
+      font-weight: bold;
       color: var(--text);
+      background: #fef3c7;
+      padding: 8px 15px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .all-scores-list li:last-child { border-bottom: none; }
-    .all-scores-list li span:first-child { font-weight: bold; }
-    .all-scores-list li span:last-child { color: #166534; font-weight: bold; }
 
-
-    @media (max-width: 900px) {
-      .grid { grid-template-columns: repeat(2, 1fr); }
+    .game-timer.ended {
+      color: var(--error);
+      border-color: var(--error);
     }
 
-    @media (max-width: 520px) {
-      .grid { grid-template-columns: repeat(1, 1fr); padding-inline: 10px; }
+    .hunter-display {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      background: #e0f2fe;
+      padding: 8px 15px;
+      border-radius: 999px;
+      border: 1px solid #93c5fd;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hunter-input-area {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .hunter-input-area input {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid #facc15;
+      outline: none;
+      font-size: 0.9rem;
+    }
+
+    .hunter-input-area .btn {
+      background: #3b82f6;
+    }
+    .hunter-input-area .btn:hover { background: #2563eb; }
+
+    /* Media Queries for Responsiveness */
+    @media (max-width: 768px) {
       .game-title {
-        font-size: 3.5rem;
-        white-space: normal;
+        font-size: 5rem;
       }
-      header {
-        padding: 20px;
-        margin-top: 20px;
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 10px;
       }
-      .hunter-selection {
+      .podium-container {
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+      }
+      .podium-spot {
+        width: 100px;
+        min-height: 100px;
+        margin-bottom: 10px;
+      }
+      .podium-spot.first { height: 150px; }
+      .podium-spot.second { height: 120px; }
+      .podium-spot.third { height: 100px; }
+      .podium-rank { font-size: 2rem; }
+      .scoreboard-title { font-size: 3rem; }
+      .game-controls, .hunter-input-area {
         flex-direction: column;
         align-items: stretch;
       }
-      .current-hunter-info {
-        margin-right: 0;
-        margin-bottom: 10px;
-        text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      .game-title {
+        font-size: 3rem;
       }
-      #hunterNameInput {
-        max-width: none;
+      .grid {
+        grid-template-columns: 1fr;
       }
-      #resetProgressBtn, #endGameBtn, #resetFirebaseTimerBtn { /* Adicionado #resetFirebaseTimerBtn */
-        margin-left: 0;
-        margin-top: 10px;
+      .podium-spot {
+        width: 80%;
       }
-      .podium { flex-direction: column; align-items: center; }
-      .podium-spot { width: 100%; max-width: 200px; }
-      .podium-spot.first { height: auto; }
-      .podium-spot.second { height: auto; }
-      .podium-spot.third { height: auto; }
+      .scoreboard-title { font-size: 2rem; }
     }
   </style>
 
-  <!-- SCRIPTS DO FIREBASE AQUI NO HEAD -->
-  <!-- IMPORTANTE: Use a versão -compat para a API global -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
 </head>
 <body>
+  <header>
+    <img src="duck-hunt-logo.png" alt="Duck Hunt Logo" class="game-logo">
+    <h1 class="game-title">Duck Hunt</h1>
+    <p class="subtitle">Would Aura Farm</p>
+  </header>
 
-<header>
-  <img src="duck.png" alt="Game Logo Duck" class="game-logo">
-  <h1 class="game-title">Duck Hunt</h1>
-  <div class="subtitle">Click your duck · type the password · unlock the mission · farm aura.</div>
-</header>
-
-<div class="hunter-selection">
-  <div class="current-hunter-info">
-    <span id="hunterNameDisplay">Hunter: None selected</span>
-    <span style="color: #ccc;">|</span>
-    <span id="hunterAuraDisplay">Aura: 0</span>
+  <div class="hunter-input-area">
+    <input type="text" id="hunterNameInput" placeholder="Enter your hunter name">
+    <button class="btn" id="setHunterNameBtn">Start Hunting</button>
   </div>
-  <input type="text" id="hunterNameInput" placeholder="Enter your hunter name to start" />
-  <button id="selectHunterBtn">Go!</button>
-  <button id="endGameBtn">End Game</button> <!-- New button for teacher to end game -->
-  <button id="resetProgressBtn">Reset All Progress</button>
-  <button id="resetFirebaseTimerBtn">Reset Timer</button> <!-- Botão para resetar o timer do Firebase -->
-</div>
 
-<div class="game-timer" id="gameTimer">
-  Time Left: <span id="timerDisplay">15:00</span>
-</div>
-
-<div class="grid" id="grid"></div>
-
-<div id="scoreboard" style="display: none;">
-  <h2>Game Over! Final Scores</h2>
-  <div class="podium" id="podiumContainer">
-    <!-- Podium spots will be inserted here by JS -->
+  <div class="game-controls">
+    <div class="hunter-display" id="hunterDisplay">Hunter: N/A | Aura: 0</div>
+    <div class="game-timer" id="gameTimer">Time: --:--</div>
+    <button class="btn" id="endGameBtn">End Game</button>
+    <button class="btn" id="resetGameBtn">Reset Game</button>
   </div>
-  <h3>All Hunters:</h3>
-  <ul class="all-scores-list" id="allScoresList">
-    <!-- All scores will be inserted here by JS -->
-  </ul>
-</div>
 
-<footer>
-  If the mission asks you to talk to your teacher, do it <strong>before</strong> pressing Approve.
-</footer>
+  <main class="grid" id="ducksGrid"></main>
 
-<script>
-  // --- CONFIGURAÇÃO DO FIREBASE ---
-  const firebaseConfig = {
-    apiKey: "AIzaSyCynlGAnMN0I6VwzRi_dWWDlc0SxDqrav8",
-    authDomain: "duck-hunt-game-dd334.firebaseapp.com",
-    databaseURL: "https://duck-hunt-game-dd334-default-rtdb.firebaseio.com", // Adicionado
-    projectId: "duck-hunt-game-dd334",
-    storageBucket: "duck-hunt-game-dd334.firebasestorage.app",
-    messagingSenderId: "1090069680934",
-    appId: "1:1090069680934:web:774ad9ab3a97a2305ee7e7"
-  };
+  <div class="scoreboard-overlay" id="scoreboardOverlay" style="display: none;">
+    <div class="scoreboard-content">
+      <h2 class="scoreboard-title">Final Scoreboard</h2>
+      <div class="podium-container" id="podiumContainer">
+        <!-- Podium spots will be inserted here by JavaScript -->
+      </div>
+      <ul class="all-scores-list" id="allScoresList">
+        <!-- All scores will be listed here by JavaScript -->
+      </ul>
+      <button class="btn close-scoreboard-btn" id="closeScoreboardBtn">Close Scoreboard</button>
+    </div>
+  </div>
 
-  // Inicializa Firebase
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-  const serverTimestamp = firebase.database.ServerValue.TIMESTAMP; // Para usar o timestamp do servidor
+  <script>
+    // --- CONFIGURAÇÃO DO FIREBASE ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyC_SEU_API_KEY_AQUI", // Substitua pelo seu API Key
+      authDomain: "SEU_AUTH_DOMAIN_AQUI", // Substitua pelo seu Auth Domain
+      databaseURL: "https://SEU_PROJECT_ID-default-rtdb.firebaseio.com", // Substitua pelo seu Database URL
+      projectId: "SEU_PROJECT_ID_AQUI", // Substitua pelo seu Project ID
+      storageBucket: "SEU_STORAGE_BUCKET_AQUI", // Substitua pelo seu Storage Bucket
+      messagingSenderId: "SEU_MESSAGING_SENDER_ID_AQUI", // Substitua pelo seu Messaging Sender ID
+      appId: "SEU_APP_ID_AQUI" // Substitua pelo seu App ID
+    };
 
-  // Referências do Firebase
-  const gameStatusRef = db.ref('gameStatus');
-  const playersRef = db.ref('players');
+    // Inicializa o Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const playersRef = db.ref('players');
+    const gameStatusRef = db.ref('gameStatus');
+    const serverTimestamp = firebase.database.ServerValue.TIMESTAMP;
 
-  console.log("SCRIPT DO JOGO CARREGADO"); // Mensagem de debug
+    // --- CONSTANTES E VARIÁVEIS GLOBAIS ---
+    const TEACHER_PASSWORD = "teacherpassword"; // Senha do professor
+    const MASTER_TEACHER_PASSWORD = "masterpassword"; // Senha mestra para desbloquear patos
+    const ALL_STUDENTS_KEY = "allStudents"; // Chave para armazenar todos os alunos no localStorage
 
-  // --- CONSTANTS ---
-  const ALL_STUDENTS_KEY = "allStudents";
-  const CURRENT_HUNTER_KEY = "currentHunter";
-  const MASTER_TEACHER_PASSWORD = "masterduck"; // Altere "masterduck" para a senha mestra que desejar
-  const TEACHER_PASSWORD = "aura67"; // coloque aqui a senha que você quiser
+    let currentHunter = null; // Objeto do caçador logado
+    let allStudents = JSON.parse(localStorage.getItem(ALL_STUDENTS_KEY)) || {};
+    let gameEnded = false; // Estado do jogo: true se o jogo terminou, false caso contrário
+    let gameTimerInterval = null; // Para controlar o intervalo do timer
 
-  const duckConfigs = [
-    { id: 1, password: "DUCK-1-GALAXY", aura: 5, tier: "Easy", image: "duck_1.png" },
-    { id: 2, password: "DUCK-2-MOON", aura: 5, tier: "Easy", image: "duck_2.png" },
-    { id: 3, password: "DUCK-3-PIXEL", aura: 5, tier: "Easy", image: "duck_3.png" },
-    { id: 4, password: "DUCK-4-GLITCH", aura: 5, tier: "Easy", image: "duck_4.png" },
-    { id: 5, password: "DUCK-5-VIRUS", aura: 5, tier: "Easy", image: "duck_5.png" },
-    { id: 6, password: "DUCK-6-HYPE", aura: 5, tier: "Easy", image: "duck_6.png" },
-    { id: 7, password: "DUCK-7-AURAA", aura: 20, tier: "Bonus", image: "duck_7.png" }, // Bonus duck
-    { id: 8, password: "DUCK-8-GHOST", aura: 10, tier: "Medium", image: "duck_8.png" },
-    { id: 9, password: "DUCK-9-SHADOW", aura: 10, tier: "Medium", image: "duck_9.png" },
-    { id: 10, password: "DUCK-10-STATIC", aura: 10, tier: "Medium", image: "duck_10.png" },
-    { id: 11, password: "DUCK-11-WAVE", aura: 10, tier: "Medium", image: "duck_11.png" },
-    { id: 12, password: "DUCK-12-MATRIX", aura: 10, tier: "Medium", image: "duck_12.png" },
-    { id: 13, password: "DUCK-13-PIXEL", aura: 10, tier: "Medium", image: "duck_13.png" },
-    { id: 14, password: "DUCK-14-CRYPT", aura: 10, tier: "Medium", image: "duck_14.png" },
-    { id: 15, password: "DUCK-15-NEON", aura: 10, tier: "Medium", image: "duck_15.png" },
-    { id: 16, password: "DUCK-16-RETRO", aura: 10, tier: "Medium", image: "duck_16.png" },
-    { id: 17, password: "DUCK-17-CYBER", aura: 10, tier: "Medium", image: "duck_17.png" },
-    { id: 18, password: "DUCK-18-STEAM", aura: 10, tier: "Medium", image: "duck_18.png" },
-    { id: 19, password: "DUCK-19-TECH", aura: 10, tier: "Medium", image: "duck_19.png" },
-    { id: 20, password: "DUCK-20-BOSS", aura: 40, tier: "Boss", image: "duck_20.png" }, // Boss duck
-  ];
+    // --- ELEMENTOS DO DOM ---
+    const hunterNameInput = document.getElementById("hunterNameInput");
+    const setHunterNameBtn = document.getElementById("setHunterNameBtn");
+    const hunterDisplay = document.getElementById("hunterDisplay");
+    const ducksGrid = document.getElementById("ducksGrid");
+    const gameTimerElement = document.getElementById("gameTimer");
+    const endGameBtn = document.getElementById("endGameBtn");
+    const resetGameBtn = document.getElementById("resetGameBtn");
+    const scoreboardOverlay = document.getElementById("scoreboardOverlay");
+    const closeScoreboardBtn = document.getElementById("closeScoreboardBtn");
+    const podiumContainer = document.getElementById("podiumContainer");
+    const allScoresList = document.getElementById("allScoresList");
 
-  const tasks = {
-    1: { text: "Find the hidden message in the classroom. What is the first word?", note: "Hint: Look under the teacher's desk.", gaps: ["Hidden", "Message"], placeholder: "Your answer here" },
-    2: { text: "Solve the riddle: I have cities, but no houses; forests, but no trees; and water, but no fish. What am I?", note: "Think about maps.", gaps: ["Map"], placeholder: "Your answer here" },
-    3: { text: "Complete the sequence: 1, 1, 2, 3, 5, 8, ?", note: "Fibonacci sequence.", gaps: ["13"], placeholder: "Your answer here" },
-    4: { text: "What is the capital of Brazil?", note: "Starts with B.", gaps: ["Brasília"], placeholder: "Your answer here" },
-    5: { text: "Translate 'Hello' to Spanish.", note: "It's a common greeting.", gaps: ["Hola"], placeholder: "Your answer here" },
-    6: { text: "Name a planet in our solar system.", note: "Any planet will do.", gaps: ["Mars", "Jupiter", "Earth", "Venus", "Saturn", "Uranus", "Neptune", "Mercury"], placeholder: "Your answer here" },
-    7: { text: "BONUS MISSION: Find the teacher and ask for a special code. What is the code?", note: "Teacher has the answer!", gaps: ["SpecialCode"], placeholder: "Enter the code here" },
-    8: { text: "What is 2 + 2?", note: "Simple math.", gaps: ["4"], placeholder: "Your answer here" },
-    9: { text: "What color is the sky on a clear day?", note: "Think about the daytime.", gaps: ["Blue"], placeholder: "Your answer here" },
-    10: { text: "Which animal lays eggs and can fly?", note: "Think about birds.", gaps: ["Bird"], placeholder: "Your answer here" },
-    11: { text: "What is the opposite of 'hot'?", note: "Temperature.", gaps: ["Cold"], placeholder: "Your answer here" },
-    12: { text: "How many days are in a week?", note: "Count them.", gaps: ["7"], placeholder: "Your answer here" },
-    13: { text: "What do you use to write on a blackboard?", note: "It's white.", gaps: ["Chalk"], placeholder: "Your answer here" },
-    14: { text: "What is the largest ocean on Earth?", note: "Starts with P.", gaps: ["Pacific"], placeholder: "Your answer here" },
-    15: { text: "What is the main ingredient in bread?", note: "It's a grain.", gaps: ["Flour"], placeholder: "Your answer here" },
-    16: { text: "What do bees make?", note: "It's sweet.", gaps: ["Honey"], placeholder: "Your answer here" },
-    17: { text: "Which month comes after January?", note: "Second month.", gaps: ["February"], placeholder: "Your answer here" },
-    18: { text: "What is the sound a cat makes?", note: "Meow.", gaps: ["Meow"], placeholder: "Your answer here" },
-    19: { text: "What is the name of the big star in our solar system?", note: "It gives us light and heat.", gaps: ["Sun"], placeholder: "Your answer here" },
-    20: { text: "BOSS MISSION: Create a short story (3-5 sentences) about a duck's adventure. Your teacher will approve it.", note: "Be creative!", placeholder: "Write your story here" },
-  };
+    // --- DADOS DOS PATOS E MISSÕES ---
+    const ducks = [
+      { id: "duck1", image: "duck1.png", password: "DUCK1", tier: "Common", aura: 10 },
+      { id: "duck2", image: "duck2.png", password: "DUCK2", tier: "Uncommon", aura: 20 },
+      { id: "duck3", image: "duck3.png", password: "DUCK3", tier: "Rare", aura: 30 },
+      { id: "duck4", image: "duck4.png", password: "DUCK4", tier: "Epic", aura: 40 },
+      { id: "duck5", image: "duck5.png", password: "DUCK5", tier: "Legendary", aura: 50 },
+      { id: "duck6", image: "duck6.png", password: "DUCK6", tier: "Mythic", aura: 60 },
+      { id: "duck7", image: "duck7.png", password: "DUCK7", tier: "Common", aura: 10 },
+      { id: "duck8", image: "duck8.png", password: "DUCK8", tier: "Uncommon", aura: 20 },
+      { id: "duck9", image: "duck9.png", password: "DUCK9", tier: "Rare", aura: 30 },
+    ];
 
-  // --- GAME STATE & TIMER ---
-  const GAME_DURATION_SECONDS = 25 * 60; // 25 minutes
-  let gameTimerInterval;
-  let timeLeft = GAME_DURATION_SECONDS;
-  let gameEnded = false;
+    const tasks = {
+      duck1: { text: "What is the capital of France?", placeholder: "Paris" },
+      duck2: { text: "Name two primary colors.", gaps: ["Red", "Blue"], placeholder: "Red, Blue" },
+      duck3: { text: "Solve: 5 + 3 = ?", placeholder: "8" },
+      duck4: { text: "What is the largest ocean?", placeholder: "Pacific Ocean" },
+      duck5: { text: "Who painted the Mona Lisa?", placeholder: "Leonardo da Vinci" },
+      duck6: { text: "What is the chemical symbol for water?", placeholder: "H2O" },
+      duck7: { text: "Which planet is known as the Red Planet?", placeholder: "Mars" },
+      duck8: { text: "What is the square root of 81?", placeholder: "9" },
+      duck9: { text: "Name a famous scientist.", placeholder: "Albert Einstein" },
+    };
 
-  // --- DOM Elements ---
-  const gridElement = document.getElementById("grid");
-  const gameTimerElement = document.getElementById("gameTimer");
-  const timerDisplay = document.getElementById("timerDisplay");
-  const scoreboard = document.getElementById("scoreboard");
-  const podiumContainer = document.getElementById("podiumContainer");
-  const allScoresList = document.getElementById("allScoresList");
+    // --- FUNÇÕES DE UTILIDADE ---
 
-  // --- Local Storage & Current Hunter ---
-  let allStudents = JSON.parse(localStorage.getItem(ALL_STUDENTS_KEY)) || {};
-  let currentHunter = JSON.parse(localStorage.getItem(CURRENT_HUNTER_KEY));
-
-  function saveAllStudents() {
-    localStorage.setItem(ALL_STUDENTS_KEY, JSON.stringify(allStudents));
-  }
-
-  function saveCurrentHunter() {
-    localStorage.setItem(CURRENT_HUNTER_KEY, JSON.stringify(currentHunter));
-  }
-
-  async function setCurrentHunter(name) {
-    if (currentHunter && currentHunter.name === name) {
-      return; // Already selected
-    }
-
-    // Tenta carregar o hunter do Firebase
-    const snapshot = await playersRef.child(name).once('value');
-    let hunterData = snapshot.val();
-
-    if (!hunterData) {
-      // Se não existe no Firebase, cria um novo
-      hunterData = {
-        name: name,
-        clearedDucks: {},
-        totalAura: 0,
-        lastLogin: serverTimestamp // Usa o timestamp do servidor
-      };
-      await playersRef.child(name).set(hunterData);
-    } else {
-      // Se existe, atualiza o lastLogin
-      await playersRef.child(name).update({ lastLogin: serverTimestamp });
-    }
-
-    currentHunter = hunterData;
-    saveCurrentHunter();
-    updateHunterDisplay();
-    renderDucks(); // Renderiza os patos com o estado do novo hunter
-  }
-
-  function isCleared(duckId) {
-    return currentHunter && currentHunter.clearedDucks && currentHunter.clearedDucks[duckId];
-  }
-
-  async function markCleared(duck) {
-    if (!currentHunter) return;
-
-    // Atualiza no Firebase
-    const updates = {};
-    updates[`players/${currentHunter.name}/clearedDucks/${duck.id}`] = serverTimestamp;
-    updates[`players/${currentHunter.name}/totalAura`] = currentHunter.totalAura + duck.aura;
-    updates[`players/${currentHunter.name}/lastClearedDuck`] = duck.id;
-    updates[`players/${currentHunter.name}/lastClearedTime`] = serverTimestamp;
-
-    await db.ref().update(updates); // Atualiza múltiplos caminhos
-
-    // Atualiza o estado local
-    currentHunter.clearedDucks[duck.id] = true;
-    currentHunter.totalAura += duck.aura;
-    saveCurrentHunter();
-    updateHunterDisplay();
-    renderDucks(); // Re-renderiza para mostrar o pato como "cleared"
-  }
-
-  function resetGameLocalState() {
-    currentHunter = null;
-    localStorage.removeItem(CURRENT_HUNTER_KEY);
-    gameEnded = false;
-    if (gameTimerInterval) {
-      clearInterval(gameTimerInterval);
-      gameTimerInterval = null;
-    }
-    timeLeft = GAME_DURATION_SECONDS;
-    timerDisplay.textContent = formatTime(timeLeft);
-    gameTimerElement.classList.remove("critical");
-    gameTimerElement.style.display = 'none';
-    gridElement.style.display = 'grid';
-    scoreboard.style.display = 'none';
-    renderDucks();
-    updateHunterDisplay();
-  }
-
-  function canAccessDuck(duck) {
-    if (!currentHunter) return false;
-    if (isCleared(duck.id)) return true; // Já liberado, pode acessar
-
-    if (duck.id === 7) { // Bonus duck
-      return currentHunter.totalAura >= 20;
-    }
-    if (duck.id === 20) { // Boss duck
-      return currentHunter.totalAura >= 40;
-    }
-    return true;
-  }
-
-  function accessMessage(duck) {
-    if (!currentHunter) {
-      return "Please enter your hunter name first to start playing!";
-    }
-    if (duck.id === 7) {
-      return `You need at least 20 aura to open the BONUS duck. You currently have ${currentHunter.totalAura} aura.`;
-    }
-    if (duck.id === 20) {
-      return `You need at least 40 aura to open the BOSS duck. You currently have ${currentHunter.totalAura} aura.`;
-    }
-    return "";
-  }
-
-  // --- Hunter Selection UI ---
-
-  const hunterNameInput = document.getElementById("hunterNameInput");
-  const selectHunterBtn = document.getElementById("selectHunterBtn");
-  const resetProgressBtn = document.getElementById("resetProgressBtn");
-  const endGameBtn = document.getElementById("endGameBtn"); // Adicionado
-  const resetFirebaseTimerBtn = document.getElementById("resetFirebaseTimerBtn"); // Adicionado
-  const hunterNameDisplay = document.getElementById("hunterNameDisplay");
-  const hunterAuraDisplay = document.getElementById("hunterAuraDisplay");
-
-  function updateHunterDisplay() {
-    if (currentHunter) {
-      hunterNameDisplay.textContent = `Hunter: ${currentHunter.name}`;
-      hunterAuraDisplay.textContent = `Aura: ${currentHunter.totalAura}`;
-    } else {
-      hunterNameDisplay.textContent = "Hunter: None selected";
-      hunterAuraDisplay.textContent = "Aura: 0";
-    }
-  }
-
-  selectHunterBtn.addEventListener("click", async () => {
-    const name = hunterNameInput.value.trim();
-    if (name) {
-      await setCurrentHunter(name); // Use await aqui
-      if (!gameTimerInterval && !gameEnded) { // Start timer only if not already running and game not ended
-        // Tenta pegar o endTime atual do Firebase
-        const snapshot = await gameStatusRef.child('endTime').once('value');
-        let endTime = snapshot.val();
-
-        if (!endTime) {
-          // Se não existe (este é o primeiro jogador a iniciar), define o endTime no Firebase
-          endTime = Date.now() + (GAME_DURATION_SECONDS * 1000);
-          await gameStatusRef.child('endTime').set(endTime); // Usa await para garantir que o set termine
-          // O listener onValue vai pegar essa mudança e chamar setupGameTimerCountdown
-        }
-        // Se já existe, o listener onValue já vai ter iniciado o timer
-      }
-    } else {
-      alert("Please enter your hunter name!");
-    }
-  });
-
-  resetProgressBtn.addEventListener("click", () => {
-    if (confirm("Are you sure you want to reset ALL hunters' progress? This cannot be undone!")) {
-      // Não precisa limpar localStorage de allStudents, pois o resetGame() do professor já faz isso
-      // e o resetGameLocalState() é chamado para o cliente atual.
-      currentHunter = null;
-      saveCurrentHunter(); // Salva null para o hunter atual
-      updateHunterDisplay();
-      renderDucks();
-      // O resetGame() do professor já cuida do Firebase e do alerta
-      alert("All local progress has been reset. If you are the teacher, use the 'Reset All Progress' button for global reset.");
-    }
-  });
-
-  endGameBtn.addEventListener("click", () => {
-    if (confirm("Are you sure you want to end the game now? All ducks will be locked and scores displayed.")) {
-      endGame();
-    }
-  });
-
-  // Listener para o botão de resetar o timer do Firebase
-  if (resetFirebaseTimerBtn) { // Verifica se o botão existe no HTML
-    resetFirebaseTimerBtn.addEventListener("click", resetFirebaseTimerOnly);
-  }
-
-// --- Listener Global para o Timer do Firebase ---
-gameStatusRef.on('value', (snapshot) => {
-  const gameStatus = snapshot.val();
-
-  /* 1) Jogo foi encerrado (professor clicou “End Game” ou tempo acabou) */
-  if (!gameStatus || !gameStatus.endTime) {
-    if (gameTimerInterval) {          // para o cronômetro local
-      clearInterval(gameTimerInterval);
-      gameTimerInterval = null;
-    }
-    if (!gameEnded) {                 // garante 1 única execução
-      gameEnded = true;
-      endGame();                      // <<< bloqueia e mostra score
-    }
-    return;
-  }
-
-  /* 2) Jogo ainda ativo – sincroniza/continua contagem */
-  if (!gameTimerInterval && !gameEnded) {
-    setupGameTimerCountdown(gameStatus.endTime);
-  }
-});
-
-  function renderDucks() {
-    gridElement.innerHTML = '';
-    duckConfigs.forEach(cfg => gridElement.appendChild(buildCard(cfg)));
-  }
-
-  // --- Game Timer Functions ---
-
-  function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-  }
-
-  // Esta função agora APENAS configura o setInterval para contar a partir de um endTime
-  // Ela NÃO define o endTime no Firebase. Isso será feito pelo primeiro jogador.
-  function setupGameTimerCountdown(endTime) {
-    if (gameTimerInterval) clearInterval(gameTimerInterval); // Limpa qualquer timer anterior
-    gameEnded = false;
-    gameTimerElement.style.display = 'flex';
-
-    gameTimerInterval = setInterval(() => {
-      const now = Date.now();
-      const diff = Math.floor((endTime - now) / 1000);
-
-      timeLeft = Math.max(0, diff);
-      timerDisplay.textContent = formatTime(timeLeft);
-
-      if (timeLeft <= 60) {
-        gameTimerElement.classList.add("critical");
+    // NOVO: Função para atualizar o display do caçador
+    function updateHunterDisplay() {
+      if (currentHunter && currentHunter.name) {
+        hunterDisplay.textContent = `Hunter: ${currentHunter.name} | Aura: ${currentHunter.totalAura || 0}`;
+        hunterNameInput.value = currentHunter.name; // Preenche o input com o nome atual
+        hunterNameInput.disabled = true; // Desabilita o input
+        setHunterNameBtn.textContent = "Change Hunter"; // Muda o texto do botão
       } else {
-        gameTimerElement.classList.remove("critical"); // Remove se o tempo não for crítico
+        hunterDisplay.textContent = `Hunter: N/A | Aura: 0`;
+        hunterNameInput.value = "";
+        hunterNameInput.disabled = false;
+        setHunterNameBtn.textContent = "Start Hunting";
+      }
+    }
+
+    function isCleared(duckId) {
+      return currentHunter && currentHunter.clearedDucks && currentHunter.clearedDucks[duckId];
+    }
+
+    function canAccessDuck(duck) {
+      // Implemente sua lógica de acesso aqui, se houver tiers ou outras restrições
+      return true;
+    }
+
+    function accessMessage(duck) {
+      // Mensagem de erro se canAccessDuck retornar false
+      return "You don't have access to this duck yet!";
+    }
+
+    // --- FUNÇÕES DO JOGO ---
+
+    // NOVO: Função para configurar o contador regressivo do timer
+    function setupGameTimerCountdown(endTime) {
+      if (gameTimerInterval) {
+        clearInterval(gameTimerInterval);
       }
 
-      if (timeLeft <= 0) {
+      gameTimerElement.style.display = 'flex'; // Mostra o timer
+      gameTimerElement.classList.remove('ended'); // Remove o estilo de "terminado"
+
+      gameTimerInterval = setInterval(() => {
+        const now = Date.now();
+        const timeLeft = endTime - now;
+
+        if (timeLeft <= 0) {
+          clearInterval(gameTimerInterval);
+          gameTimerInterval = null;
+          gameTimerElement.textContent = "Time: 00:00";
+          gameTimerElement.classList.add('ended');
+          // Se o tempo acabar, e o jogo ainda não foi marcado como terminado no Firebase, termina.
+          // Isso evita chamadas repetidas se já foi terminado por outro cliente.
+          gameStatusRef.once('value', (snapshot) => {
+            const status = snapshot.val();
+            if (!status || !status.isGameEnded) {
+              gameStatusRef.update({ isGameEnded: true }); // Marca o jogo como terminado no Firebase
+            }
+          });
+          return;
+        }
+
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        gameTimerElement.textContent = `Time: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    // NOVO: Função para encerrar o jogo (localmente)
+    function endGame() {
+      gameEnded = true;
+      if (gameTimerInterval) {
         clearInterval(gameTimerInterval);
         gameTimerInterval = null;
-        endGame();
       }
-    }, 1000);
-  }
-
-function endGame() {
-  if (gameEnded) return;          // evita duplicar
-  gameEnded = true;
-
-  if (gameTimerInterval) {
-    clearInterval(gameTimerInterval);
-    gameTimerInterval = null;
-  }
-  gameTimerElement.style.display = 'none';
-  gridElement.style.display      = 'none';
-  scoreboard.style.display       = 'flex';
-  displayScores();
-}
-
-  // Função para resetar o jogo COMPLETAMENTE (professor)
-  async function resetGame() {
-    const teacherInput = prompt("Teacher password to reset ALL game progress:");
-    if (teacherInput === null) return;
-    if (teacherInput !== TEACHER_PASSWORD) {
-      alert("Incorrect teacher password!");
-      return;
+      gameTimerElement.textContent = "Time: 00:00";
+      gameTimerElement.classList.add('ended');
+      renderDucks(); // Renderiza os patos novamente para mostrar o estado bloqueado
+      displayScores(); // Mostra o placar
+      scoreboardOverlay.style.display = 'flex'; // Exibe o overlay do placar
     }
 
-    if (!confirm("Are you sure you want to reset ALL game progress and scores? This cannot be undone!")) {
-      return;
+    // NOVO: Função para resetar o estado local do jogo
+    function resetGameLocalState() {
+      gameEnded = false;
+      if (gameTimerInterval) {
+        clearInterval(gameTimerInterval);
+        gameTimerInterval = null;
+      }
+      gameTimerElement.style.display = 'none'; // Esconde o timer
+      gameTimerElement.classList.remove('ended');
+      scoreboardOverlay.style.display = 'none'; // Esconde o placar
+      renderDucks(); // Renderiza os patos para o estado normal
     }
 
-    // Limpa o banco de dados para uma nova partida
-    await gameStatusRef.set(null); // Reseta o status do jogo (incluindo endTime)
-    await playersRef.set(null);    // Reseta os dados dos jogadores
+    // NOVO: Função para resetar o jogo no Firebase (apenas professor)
+    async function resetGame() {
+      const teacherInput = prompt("Teacher password to reset the entire game:");
+      if (teacherInput === null) return;
+      if (teacherInput !== TEACHER_PASSWORD) {
+        alert("Incorrect teacher password!");
+        return;
+      }
+      if (!confirm("Are you sure you want to reset the entire game for everyone? This cannot be undone.")) {
+        return;
+      }
 
-    // Resetar o localStorage de todos os alunos (opcional, mas recomendado para consistência)
-    localStorage.removeItem(ALL_STUDENTS_KEY);
-    allStudents = {}; // Limpa o objeto local
-    currentHunter = null; // Limpa o caçador atual
+      await gameStatusRef.set({ isGameEnded: false, endTime: null }); // Reseta o status do jogo (incluindo endTime)
+      await playersRef.set(null);    // Reseta os dados dos jogadores
 
-    // O listener onValue vai detectar o `gameStatus` como null e chamar `resetGameLocalState()` em todos os clientes.
-    // Apenas para garantir que o cliente que iniciou o reset também se atualize:
-    resetGameLocalState();
-    updateHunterDisplay(); // Garante que o display do caçador seja atualizado
-    alert("Game reset for everyone!");
-  }
+      // Resetar o localStorage de todos os alunos (opcional, mas recomendado para consistência)
+      localStorage.removeItem(ALL_STUDENTS_KEY);
+      allStudents = {}; // Limpa o objeto local
+      currentHunter = null; // Limpa o caçador atual
 
-// Função para mostrar o pódio sincronizado com todos os alunos
-  function displayScores() {
-    // Buscamos todos os jogadores no banco de dados
-    playersRef.on('value', ((snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
+      // O listener onValue vai detectar o `gameStatus` como null e chamar `resetGameLocalState()` em todos os clientes.
+      // Apenas para garantir que o cliente que iniciou o reset também se atualize:
+      resetGameLocalState();
+      updateHunterDisplay(); // Garante que o display do caçador seja atualizado
+      alert("Game reset for everyone!");
+    }
 
-      // Converte o objeto do banco em uma lista e ordena por Aura
-      const sortedHunters = Object.values(data)
-        .sort((a, b) => b.totalAura - a.totalAura);
-
-      // Limpa os placares anteriores
-      podiumContainer.innerHTML = '';
-      allScoresList.innerHTML = '';
-
-      // Constrói o Pódio (1º, 2º e 3º)
-      // Ajustado para garantir que sempre haja 3 posições, mesmo que vazias
-      const podiumRanks = ["second", "first", "third"];
-      const podiumData = [sortedHunters[1], sortedHunters[0], sortedHunters[2]]; // Pega os 3 primeiros
-
-      podiumData.forEach((hunter, index) => {
-        const spot = document.createElement("div");
-        spot.className = `podium-spot ${podiumRanks[index]}`;
-        if (hunter) {
-          spot.innerHTML = `
-            <div class="podium-rank">${index === 1 ? '🥇' : (index === 0 ? '🥈' : '🥉')}</div>
-            <div class="podium-name">${hunter.name}</div>
-            <div class="podium-aura">${hunter.totalAura} Aura</div>
-          `;
-        } else {
-          spot.innerHTML = `
-            <div class="podium-rank">${index === 1 ? '🥇' : (index === 0 ? '🥈' : '🥉')}</div>
-            <div class="podium-name">---</div>
-            <div class="podium-aura">0 Aura</div>
-          `;
+    // Função para mostrar o pódio sincronizado com todos os alunos
+    function displayScores() {
+      // Buscamos todos os jogadores no banco de dados
+      playersRef.on('value', ((snapshot) => {
+        const data = snapshot.val();
+        if (!data) {
+          podiumContainer.innerHTML = '';
+          allScoresList.innerHTML = '';
+          return;
         }
-        podiumContainer.appendChild(spot);
-      });
 
-      // Constrói a lista completa de classificação
-      sortedHunters.forEach(hunter => {
-        const listItem = document.createElement("li");
-        listItem.innerHTML = `
-          <span>${hunter.name}</span>
-          <span>${hunter.totalAura} Aura</span>
-        `;
-        allScoresList.appendChild(listItem);
-      });
-    }));
-  }
+        // Converte o objeto do banco em uma lista e ordena por Aura
+        const sortedHunters = Object.values(data)
+          .sort((a, b) => b.totalAura - a.totalAura);
 
-  // NOVO: Função para resetar APENAS o timer no Firebase (professor)
-  async function resetFirebaseTimerOnly() {
-    const teacherInput = prompt("Teacher password to reset the game timer:");
-    if (teacherInput === null) return;
-    if (teacherInput !== TEACHER_PASSWORD) {
-      alert("Incorrect teacher password!");
-      return;
-    }
-    if (!confirm("Are you sure you want to reset ONLY the game timer for everyone?")) {
-      return;
-    }
-    await gameStatusRef.child('endTime').set(null);
-    alert("Game timer reset in Firebase!");
-  }
+        // Limpa os placares anteriores
+        podiumContainer.innerHTML = '';
+        allScoresList.innerHTML = '';
 
-  // --- Initial Setup ---
-  renderDucks();
-  updateHunterDisplay();
-  gameTimerElement.style.display = 'none'; // Hide timer initially until game starts
+        // Constrói o Pódio (1º, 2º e 3º)
+        // Ajustado para garantir que sempre haja 3 posições, mesmo que vazias
+        const podiumRanks = ["second", "first", "third"];
+        const podiumData = [sortedHunters[1], sortedHunters[0], sortedHunters[2]]; // Pega os 3 primeiros
 
-  function buildCard(duck) {
-    const task = tasks[duck.id];
-
-    const card = document.createElement("div");
-    card.className = "card";
-
-    const duckBtn = document.createElement("button");
-    duckBtn.className = "duck-btn";
-    duckBtn.setAttribute("aria-label", `Open Duck ${duck.id}`);
-
-    // Add 'locked' class if game has ended
-    if (gameEnded) {
-      duckBtn.classList.add('locked');
-    }
-
-    duckBtn.innerHTML = `
-      <div class="duck-cover ${isCleared(duck.id) ? 'cleared' : ''}">
-        <img src="${duck.image}" alt="Duck ${duck.id}">
-        ${isCleared(duck.id) ? '<div class="cleared-overlay">✅ HUNTED</div>' : ''}
-      </div>
-      <div style="display:flex; justify-content:space-between; width:100%; margin-top:4px;">
-        <span class="tier-label">${duck.tier}</span>
-        <span class="aura-label">+${duck.aura} aura</span>
-      </div>
-    `;
-
-    const collapse = document.createElement("div");
-    collapse.className = "collapse";
-
-    const inner = document.createElement("div");
-    inner.className = "collapse-inner";
-
-    const lockDiv = document.createElement("div");
-    lockDiv.innerHTML = `
-      <div class="label-small">Password from QR</div>
-      <div class="pw-row">
-        <input type="password" class="pw-input" placeholder="Type the password from your duck">
-        <button class="btn unlock-btn">Unlock</button>
-      </div>
-      <div class="error-msg"></div>
-    `;
-
-    const taskDiv = document.createElement("div");
-    taskDiv.style.display = "none";
-
-    let taskHTML = "";
-    if (task) {
-      taskHTML += `<div class="task-text">${task.text}</div>`;
-      if (task.note) taskHTML += `<div class="task-note">${task.note}</div>`;
-      if (task.gaps && task.gaps.length) {
-        taskHTML += `<ul class="gap-list">${task.gaps.map(g => `<li>${g}</li>`).join("")}</ul>`;
-        taskHTML += `<textarea class="answer-input" placeholder="${task.placeholder || "Write your answer here."}" value=""></textarea>`;
-      } 
-      else {
-        taskHTML += `<textarea class="answer-input" placeholder="Write your answer here." value=""></textarea>`;
-      }
-    } else {
-      taskHTML += `<div class="task-text">No mission yet. Ask your teacher.</div>`;
-    }
-    taskHTML += `<button class="btn approve-btn">Ask teacher to approve ✅</button>`;
-    taskDiv.innerHTML = taskHTML;
-
-    // --- CORREÇÃO DO TEXTAREA: garante placeholder e remove qualquer \n inicial ---
-    const answerTextarea = taskDiv.querySelector(".answer-input");
-    if (answerTextarea) {
-      // Pega o placeholder que foi definido no HTML (se houver)
-      const currentPlaceholder = answerTextarea.getAttribute("placeholder");
-
-      // Limpa TODO e qualquer conteúdo interno (inclusive \n ou texto "value")
-      answerTextarea.textContent = ""; // Garante que não há texto entre <textarea> e </textarea>
-      answerTextarea.value = "";       // Garante que o atributo value está vazio
-
-      // Se não havia placeholder no HTML, define um padrão
-      if (!currentPlaceholder) {
-        answerTextarea.setAttribute("placeholder", "Write your answer here.");
-      }
-      // Se por algum motivo o placeholder veio como textContent, move ele para o atributo
-      else if (answerTextarea.textContent && !answerTextarea.getAttribute("placeholder")) {
-        answerTextarea.setAttribute("placeholder", answerTextarea.textContent.trim());
-        answerTextarea.textContent = ""; // Limpa novamente após mover
-      }
-    }
-
-    const successDiv = document.createElement("div");
-    successDiv.className = "success-area";
-    successDiv.style.display = "none";
-    successDiv.innerHTML = `
-      <div class="success-main">✅ Approved!</div>
-      <div class="success-sub">🔥 You just farmed +${duck.aura} aura!</div>
-      <div class="success-timer">Locking again in <span class="timer-count">5</span>s…</div>
-    `;
-
-    inner.appendChild(lockDiv);
-    inner.appendChild(taskDiv);
-    inner.appendChild(successDiv);
-    collapse.appendChild(inner);
-    card.appendChild(duckBtn);
-    card.appendChild(collapse);
-
-    duckBtn.addEventListener("click", () => {
-      if (gameEnded) { // If game has ended, prevent opening cards
-        alert("The game has ended. You can view scores but not play.");
-        return;
-      }
-      if (!currentHunter) {
-        alert("Please enter your hunter name first to start playing!");
-        return;
-      }
-      if (!canAccessDuck(duck)) {
-        alert(accessMessage(duck));
-        return;
-      }
-      const open = collapse.classList.contains("open");
-      collapse.classList.toggle("open", !open);
-    });
-
-    const pwInput   = lockDiv.querySelector(".pw-input");
-    const unlockBtn = lockDiv.querySelector(".unlock-btn");
-    const errorMsg  = lockDiv.querySelector(".error-msg");
-
-    function tryUnlock() {
-      if (gameEnded) { return; } // Prevent unlocking if game ended
-      if (!currentHunter) { alert("Please enter your hunter name first!"); return; }
-
-      const val = (pwInput.value || "").trim();
-      if (!val) { errorMsg.textContent = "Type the password from your duck QR."; return; }
-      // NOVO: Verifica se a senha digitada é a senha do pato OU a senha mestra do professor
-      if (val.toUpperCase() !== duck.password.toUpperCase() && val.toUpperCase() !== MASTER_TEACHER_PASSWORD.toUpperCase()) {
-        errorMsg.textContent = "Wrong password. Check your QR code again, or ask your teacher for the master password.";
-        return;
-      }
-      errorMsg.textContent = "";
-      lockDiv.style.display = "none";
-      taskDiv.style.display = "flex";
-      taskDiv.style.flexDirection = "column";
-      taskDiv.style.gap = "8px";
-      const ta = taskDiv.querySelector(".answer-input");
-      if (ta) {
-        ta.value = "";      // você pode até remover esta linha se quiser manter qualquer texto antigo
-        ta.focus();
-        ta.setSelectionRange(0,0);
-      }
-    }
-
-    unlockBtn.addEventListener("click", tryUnlock);
-    pwInput.addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
-
-    const approveBtn = taskDiv.querySelector(".approve-btn");
-    if (approveBtn) {
-      approveBtn.addEventListener("click", () => {
-        if (gameEnded) { return; } // Prevent approving if game ended
-        const teacherInput = prompt("Teacher password:"); // Abre uma caixa para digitar a senha
-        if (teacherInput === null) { // Se o professor clicou em "Cancelar" no prompt
-          return; // Não faz nada e sai da função
-        }
-        if (teacherInput !== TEACHER_PASSWORD) { // Se a senha digitada for diferente da senha definida
-          alert("Incorrect teacher password!"); // Mostra um alerta de senha incorreta
-          return; // Não faz nada e sai da função
-        }
-        markCleared(duck);
-
-        taskDiv.style.display = "none";
-        successDiv.style.display = "flex";
-        successDiv.style.flexDirection = "column";
-        successDiv.style.gap = "4px";
-
-        const timerSpan = successDiv.querySelector(".timer-count");
-        let t = 5;
-        timerSpan.textContent = t;
-        const iv = setInterval(() => {
-          t--;
-          timerSpan.textContent = t;
-          if (t <= 0) {
-            clearInterval(iv);
-            successDiv.style.display = "none";
-            lockDiv.style.display    = "block";
-            taskDiv.style.display    = "none";
-            pwInput.value = "";
-            collapse.classList.remove("open");
-            renderDucks();
+        podiumData.forEach((hunter, index) => {
+          const spot = document.createElement("div");
+          spot.className = `podium-spot ${podiumRanks[index]}`;
+          if (hunter) {
+            spot.innerHTML = `
+              <div class="podium-rank">${index === 1 ? '🥇' : (index === 0 ? '🥈' : '🥉')}</div>
+              <div class="podium-name">${hunter.name}</div>
+              <div class="podium-aura">${hunter.totalAura} Aura</div>
+            `;
+          } else {
+            spot.innerHTML = `
+              <div class="podium-rank">${index === 1 ? '🥇' : (index === 0 ? '🥈' : '🥉')}</div>
+              <div class="podium-name">---</div>
+              <div class="podium-aura">0 Aura</div>
+            `;
           }
-        }, 1000);
+          podiumContainer.appendChild(spot);
+        });
+
+        // Constrói a lista completa de classificação
+        sortedHunters.forEach(hunter => {
+          const listItem = document.createElement("li");
+          listItem.innerHTML = `
+            <span>${hunter.name}</span>
+            <span>${hunter.totalAura} Aura</span>
+          `;
+          allScoresList.appendChild(listItem);
+        });
+      }));
+    }
+
+    // NOVO: Função para marcar um pato como "cleared"
+    async function markCleared(duck) {
+      if (!currentHunter || !currentHunter.name) {
+        alert("Please enter your hunter name first!");
+        return;
+      }
+
+      // Atualiza o hunter localmente
+      if (!currentHunter.clearedDucks) {
+        currentHunter.clearedDucks = {};
+      }
+      currentHunter.clearedDucks[duck.id] = serverTimestamp; // Marca com timestamp do servidor
+      currentHunter.totalAura = (currentHunter.totalAura || 0) + duck.aura;
+
+      // Salva no Firebase
+      await playersRef.child(currentHunter.name).set(currentHunter);
+
+      // Atualiza o localStorage
+      allStudents[currentHunter.name] = currentHunter;
+      localStorage.setItem(ALL_STUDENTS_KEY, JSON.stringify(allStudents));
+
+      updateHunterDisplay(); // Atualiza o display do hunter
+      renderDucks(); // Renderiza os patos novamente para mostrar o pato como "cleared"
+    }
+
+    function renderDucks() {
+      ducksGrid.innerHTML = ''; // Limpa o grid
+      ducks.forEach(duck => {
+        const card = buildCard(duck);
+        ducksGrid.appendChild(card);
       });
     }
 
-    return card;
-  }
-</script>
+    function buildCard(duck) {
+      const task = tasks[duck.id];
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const duckBtn = document.createElement("button");
+      duckBtn.className = "duck-btn";
+      duckBtn.setAttribute("aria-label", `Open Duck ${duck.id}`);
+
+      // Add 'locked' class if game has ended
+      if (gameEnded) {
+        duckBtn.classList.add('locked');
+      }
+
+      duckBtn.innerHTML = `
+        <div class="duck-cover ${isCleared(duck.id) ? 'cleared' : ''}">
+          <img src="${duck.image}" alt="Duck ${duck.id}">
+          ${isCleared(duck.id) ? '<div class="cleared-overlay">✅ HUNTED</div>' : ''}
+        </div>
+        <div style="display:flex; justify-content:space-between; width:100%; margin-top:4px;">
+          <span class="tier-label">${duck.tier}</span>
+          <span class="aura-label">+${duck.aura} aura</span>
+        </div>
+      `;
+
+      const collapse = document.createElement("div");
+      collapse.className = "collapse";
+
+      const inner = document.createElement("div");
+      inner.className = "collapse-inner";
+
+      const lockDiv = document.createElement("div");
+      lockDiv.innerHTML = `
+        <div class="label-small">Password from QR</div>
+        <div class="pw-row">
+          <input type="password" class="pw-input" placeholder="Type the password from your duck">
+          <button class="btn unlock-btn">Unlock</button>
+        </div>
+        <div class="error-msg"></div>
+      `;
+
+      const taskDiv = document.createElement("div");
+      taskDiv.style.display = "none";
+
+      let taskHTML = "";
+      if (task) {
+        taskHTML += `<div class="task-text">${task.text}</div>`;
+        if (task.note) taskHTML += `<div class="task-note">${task.note}</div>`;
+        if (task.gaps && task.gaps.length) {
+          taskHTML += `<ul class="gap-list">${task.gaps.map(g => `<li>${g}</li>`).join("")}</ul>`;
+          taskHTML += `<textarea class="answer-input" placeholder="${task.placeholder || "Write your answer here."}" value=""></textarea>`;
+        } 
+        else {
+          taskHTML += `<textarea class="answer-input" placeholder="Write your answer here." value=""></textarea>`;
+        }
+      } else {
+        taskHTML += `<div class="task-text">No mission yet. Ask your teacher.</div>`;
+      }
+      taskHTML += `<button class="btn approve-btn">Ask teacher to approve ✅</button>`;
+      taskDiv.innerHTML = taskHTML;
+
+      // --- CORREÇÃO DO TEXTAREA: garante placeholder e remove qualquer \n inicial ---
+      const answerTextarea = taskDiv.querySelector(".answer-input");
+      if (answerTextarea) {
+        // Pega o placeholder que foi definido no HTML (se houver)
+        const currentPlaceholder = answerTextarea.getAttribute("placeholder");
+
+        // Limpa TODO e qualquer conteúdo interno (inclusive \n ou texto "value")
+        answerTextarea.textContent = ""; // Garante que não há texto entre <textarea> e </textarea>
+        answerTextarea.value = "";       // Garante que o atributo value está vazio
+
+        // Se não havia placeholder no HTML, define um padrão
+        if (!currentPlaceholder) {
+          answerTextarea.setAttribute("placeholder", "Write your answer here.");
+        }
+        // Se por algum motivo o placeholder veio como textContent, move ele para o atributo
+        else if (answerTextarea.textContent && !answerTextarea.getAttribute("placeholder")) {
+          answerTextarea.setAttribute("placeholder", answerTextarea.textContent.trim());
+          answerTextarea.textContent = ""; // Limpa novamente após mover
+        }
+      }
+
+      const successDiv = document.createElement("div");
+      successDiv.className = "success-area";
+      successDiv.style.display = "none";
+      successDiv.innerHTML = `
+        <div class="success-main">✅ Approved!</div>
+        <div class="success-sub">🔥 You just farmed +${duck.aura} aura!</div>
+        <div class="success-timer">Locking again in <span class="timer-count">5</span>s…</div>
+      `;
+
+      inner.appendChild(lockDiv);
+      inner.appendChild(taskDiv);
+      inner.appendChild(successDiv);
+      collapse.appendChild(inner);
+      card.appendChild(duckBtn);
+      card.appendChild(collapse);
+
+      duckBtn.addEventListener("click", () => {
+        if (gameEnded) { // If game has ended, prevent opening cards
+          alert("The game has ended. You can view scores but not play.");
+          return;
+        }
+        if (!currentHunter) {
+          alert("Please enter your hunter name first to start playing!");
+          return;
+        }
+        if (!canAccessDuck(duck)) {
+          alert(accessMessage(duck));
+          return;
+        }
+        const open = collapse.classList.contains("open");
+        collapse.classList.toggle("open", !open);
+      });
+
+      const pwInput   = lockDiv.querySelector(".pw-input");
+      const unlockBtn = lockDiv.querySelector(".unlock-btn");
+      const errorMsg  = lockDiv.querySelector(".error-msg");
+
+      function tryUnlock() {
+        if (gameEnded) { return; } // Prevent unlocking if game ended
+        if (!currentHunter) { alert("Please enter your hunter name first!"); return; }
+
+        const val = (pwInput.value || "").trim();
+        if (!val) { errorMsg.textContent = "Type the password from your duck QR."; return; }
+        // NOVO: Verifica se a senha digitada é a senha do pato OU a senha mestra do professor
+        if (val.toUpperCase() !== duck.password.toUpperCase() && val.toUpperCase() !== MASTER_TEACHER_PASSWORD.toUpperCase()) {
+          errorMsg.textContent = "Wrong password. Check your QR code again, or ask your teacher for the master password.";
+          return;
+        }
+        errorMsg.textContent = "";
+        lockDiv.style.display = "none";
+        taskDiv.style.display = "flex";
+        taskDiv.style.flexDirection = "column";
+        taskDiv.style.gap = "8px";
+        const ta = taskDiv.querySelector(".answer-input");
+        if (ta) {
+          ta.value = "";      // você pode até remover esta linha se quiser manter qualquer texto antigo
+          ta.focus();
+          ta.setSelectionRange(0,0);
+        }
+      }
+
+      unlockBtn.addEventListener("click", tryUnlock);
+      pwInput.addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
+
+      const approveBtn = taskDiv.querySelector(".approve-btn");
+      if (approveBtn) {
+        approveBtn.addEventListener("click", async () => { // Adicionado 'async' aqui
+          if (gameEnded) { return; } // Prevent approving if game ended
+          const teacherInput = prompt("Teacher password:"); // Abre uma caixa para digitar a senha
+          if (teacherInput === null) { // Se o professor clicou em "Cancelar" no prompt
+            return; // Não faz nada e sai da função
+          }
+          if (teacherInput !== TEACHER_PASSWORD) { // Se a senha digitada for diferente da senha definida
+            alert("Incorrect teacher password!"); // Mostra um alerta de senha incorreta
+            return; // Não faz nada e sai da função
+          }
+          await markCleared(duck); // Usar await aqui para garantir que o Firebase seja atualizado antes de renderizar
+
+          taskDiv.style.display = "none";
+          successDiv.style.display = "flex";
+          successDiv.style.flexDirection = "column";
+          successDiv.style.gap = "4px";
+
+          const timerSpan = successDiv.querySelector(".timer-count");
+          let t = 5;
+          timerSpan.textContent = t;
+          const iv = setInterval(() => {
+            t--;
+            timerSpan.textContent = t;
+            if (t <= 0) {
+              clearInterval(iv);
+              successDiv.style.display = "none";
+              lockDiv.style.display    = "block";
+              taskDiv.style.display    = "none";
+              pwInput.value = "";
+              collapse.classList.remove("open");
+              renderDucks();
+            }
+          }, 1000);
+        });
+      }
+
+      return card;
+    }
+  </script>
 </body>
 </html>
