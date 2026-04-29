@@ -800,24 +800,28 @@
     resetFirebaseTimerBtn.addEventListener("click", resetFirebaseTimerOnly);
   }
 
-  // --- Listener Global para o Timer do Firebase ---
-  gameStatusRef.on('value', (snapshot) => {
-    const gameStatus = snapshot.val();
-    if (gameStatus && gameStatus.endTime) {
-      if (!gameTimerInterval && !gameEnded) {
-        setupGameTimerCountdown(gameStatus.endTime);
-      }
-    } else {
-      // Se gameStatus ou endTime for null, significa que o jogo foi resetado ou não começou
-      if (gameTimerInterval) {
-        clearInterval(gameTimerInterval);
-        gameTimerInterval = null;
-      }
-      if (!gameEnded) { // Se o jogo não terminou oficialmente, reseta o estado local
-        resetGameLocalState();
-      }
+// --- Listener Global para o Timer do Firebase ---
+gameStatusRef.on('value', (snapshot) => {
+  const gameStatus = snapshot.val();
+
+  /* 1) Jogo foi encerrado (professor clicou “End Game” ou tempo acabou) */
+  if (!gameStatus || !gameStatus.endTime) {
+    if (gameTimerInterval) {          // para o cronômetro local
+      clearInterval(gameTimerInterval);
+      gameTimerInterval = null;
     }
-  });
+    if (!gameEnded) {                 // garante 1 única execução
+      gameEnded = true;
+      endGame();                      // <<< bloqueia e mostra score
+    }
+    return;
+  }
+
+  /* 2) Jogo ainda ativo – sincroniza/continua contagem */
+  if (!gameTimerInterval && !gameEnded) {
+    setupGameTimerCountdown(gameStatus.endTime);
+  }
+});
 
   function renderDucks() {
     gridElement.innerHTML = '';
@@ -860,18 +864,19 @@
     }, 1000);
   }
 
-  function endGame() {
-    gameEnded = true;
-    if (gameTimerInterval) {
-      clearInterval(gameTimerInterval);
-      gameTimerInterval = null;
-    }
-    gameTimerElement.style.display = 'none'; // Hide timer
-    gridElement.style.display = 'none'; // Hide ducks
-    scoreboard.style.display = 'flex'; // Show scoreboard
+function endGame() {
+  if (gameEnded) return;          // evita duplicar
+  gameEnded = true;
 
-    displayScores();
+  if (gameTimerInterval) {
+    clearInterval(gameTimerInterval);
+    gameTimerInterval = null;
   }
+  gameTimerElement.style.display = 'none';
+  gridElement.style.display      = 'none';
+  scoreboard.style.display       = 'flex';
+  displayScores();
+}
 
   // Função para resetar o jogo COMPLETAMENTE (professor)
   async function resetGame() {
