@@ -943,7 +943,7 @@ gameStatusRef.on('value', (snapshot) => {
     }
 
     // Limpa o banco de dados para uma nova partida
-    await gameStatusRef.set(null); // Reseta o status do jogo (incluindo endTime)
+    await gameStatusRef.set({ endTime: null, isGameEnded: false }); // Reseta o status do jogo (incluindo endTime e isGameEnded)
     await playersRef.set(null);    // Reseta os dados dos jogadores
 
     // Resetar o localStorage de todos os alunos (opcional, mas recomendado para consistência)
