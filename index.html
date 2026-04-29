@@ -789,9 +789,10 @@
     }
   });
 
-  endGameBtn.addEventListener("click", () => {
+  endGameBtn.addEventListener("click", async () => {
     if (confirm("Are you sure you want to end the game now? All ducks will be locked and scores displayed.")) {
-      endGame();
+      // Atualiza o Firebase informando que o jogo acabou para todos
+      await gameStatusRef.update({ isEnded: true });
     }
   });
 
@@ -803,19 +804,23 @@
   // --- Listener Global para o Timer do Firebase ---
   gameStatusRef.on('value', (snapshot) => {
     const gameStatus = snapshot.val();
-    if (gameStatus && gameStatus.endTime) {
-      if (!gameTimerInterval && !gameEnded) {
-        setupGameTimerCountdown(gameStatus.endTime);
+    if (gameStatus) {
+      if (gameStatus.isEnded) {
+        // Se o professor encerrou o jogo, finaliza para todos
+        if (!gameEnded) endGame();
+      } else if (gameStatus.endTime) {
+        // Se o jogo está rolando, configura o timer
+        if (!gameTimerInterval && !gameEnded) {
+          setupGameTimerCountdown(gameStatus.endTime);
+        }
       }
     } else {
-      // Se gameStatus ou endTime for null, significa que o jogo foi resetado ou não começou
+      // Se gameStatus for null (jogo resetado)
       if (gameTimerInterval) {
         clearInterval(gameTimerInterval);
         gameTimerInterval = null;
       }
-      if (!gameEnded) { // Se o jogo não terminou oficialmente, reseta o estado local
-        resetGameLocalState();
-      }
+      resetGameLocalState();
     }
   });
 
