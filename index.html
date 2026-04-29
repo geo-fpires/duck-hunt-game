@@ -782,8 +782,20 @@
   });
 
   endGameBtn.addEventListener("click", async () => {
+    // Pede a senha do professor
+    const teacherInput = prompt("Teacher password to end the game:");
+
+    // Se clicar em cancelar, não faz nada
+    if (teacherInput === null) return; 
+
+    // Verifica se a senha está correta
+    if (teacherInput !== TEACHER_PASSWORD) {
+      alert("Incorrect teacher password!");
+      return;
+    }
+
+    // Confirmação final e atualização no Firebase
     if (confirm("Are you sure you want to end the game now? All ducks will be locked and scores displayed.")) {
-      // Atualiza o Firebase informando que o jogo acabou para todos
       await gameStatusRef.update({ isEnded: true });
     }
   });
