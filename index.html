@@ -1049,10 +1049,10 @@ function displayScores() {
       if (task.note) taskHTML += `<div class="task-note">${task.note}</div>`;
       if (task.gaps && task.gaps.length) {
         taskHTML += `<ul class="gap-list">${task.gaps.map(g => `<li>${g}</li>`).join("")}</ul>`;
-        taskHTML += `<textarea class="answer-input" placeholder="${task.placeholder || "Write your answer here."}" value=""></textarea>`;
+        taskHTML += `<textarea class="answer-input" placeholder="${task.placeholder || "Write your answer here."}"></textarea>`;
       } 
       else {
-        taskHTML += `<textarea class="answer-input" placeholder="Write your answer here." value=""></textarea>`;
+        taskHTML += `<textarea class="answer-input" placeholder="${task.placeholder || "Write your answer here."}"></textarea>`;
       }
     } else {
       taskHTML += `<div class="task-text">No mission yet. Ask your teacher.</div>`;
